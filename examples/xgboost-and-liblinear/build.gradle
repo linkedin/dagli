@@ -1,0 +1,15 @@
+test {
+  maxHeapSize = "4g"
+}
+
+dependencies {
+  implementation project(':common')
+  implementation project(':data')
+  implementation project(':liblinear')
+  implementation project(':text-tokenization')
+  implementation project(':xgboost')
+
+  // without the annotation processor, we can't build our CharacterDialogStruct:
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

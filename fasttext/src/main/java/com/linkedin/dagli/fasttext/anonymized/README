@@ -1,0 +1,12 @@
+README
+------
+
+Anonymized FastText is a fork of JavaFastText, itself a Java port of FastText.  Anonymized FastText implements a number
+of improvements over the original implementation, including hashing of tokens (hence the name, but please note that
+hashing does not prevent any information recovery; e.g. it is easy to test if a token was seen during training by
+hashing it and checking for that hash, but it is much harder to determine what the tokens were de novo).
+
+JavaFastText (https://github.com/ivanhk/fastText_java) is licensed under the BSD 3-clause license.
+
+The original FastText C++ implementation (https://github.com/facebookresearch/fastText) is licensed under the MIT
+license.

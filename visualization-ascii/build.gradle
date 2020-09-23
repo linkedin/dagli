@@ -1,0 +1,4 @@
+dependencies {
+  api project(':core')
+  implementation project.ext.dependencies.'ascii-graph'
+}

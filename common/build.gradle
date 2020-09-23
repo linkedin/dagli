@@ -1,0 +1,24 @@
+dependencies {
+  api project(':core')
+  api project(':util')
+
+  api project(':math-distribution')
+  api project(':math-vector')
+
+  implementation project.ext.dependencies.'commons-rng-core'
+  api project.ext.dependencies.'log4j2-api'
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}
+
+task testSerialization(type: JavaExec) {
+  classpath = sourceSets.test.runtimeClasspath
+
+  main = 'com.linkedin.dagli.tester.TransformerBackwardCompatibilityTester'
+
+  // arguments to pass to the application
+  args '-package', 'com.linkedin.dagli', '-classes', 'vector.AveragedDenseVector', '-dir',
+      sourceSets.test.resources.srcDirs[0].toString() + '/serialized'
+}
+test.dependsOn testSerialization

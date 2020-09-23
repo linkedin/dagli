@@ -1,0 +1,4 @@
+dependencies {
+  api project(':objectio-core')
+  implementation project.ext.dependencies.junit
+}

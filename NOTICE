@@ -1,0 +1,38 @@
+Copyright 2020 LinkedIn Corporation
+All Rights Reserved.
+
+Licensed under the BSD 2-Clause License (the "License").
+See LICENSE in the project root for license information.
+
+This product includes:
+
+Code ported from SparkML's Isotonic Regression implementation (IsotonicRegression, IsotonicRegressor, MonotonicPiecewiseLinearFunction):
+* Spark MLLib's Isotonic Regression Implementation
+* https://github.com/apache/spark
+* Copyright 2014-present The Apache Software Foundation
+* License: Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+
+FastText training code (in the com.linkedin.dagli.model.anonymized package) based on:
+* JavaFastText
+* https://github.com/ivanhk/fastText_java
+* Copyright 2016-present, Facebook, Inc.
+* License: BSD 3-clause license, https://opensource.org/licenses/BSD-3-Clause
+
+JavaFastText is itself based on:
+* FastText (original C++ release)
+* https://github.com/facebookresearch/fastText
+* Copyright 2016-present, Facebook, Inc.
+* License: MIT license, https://opensource.org/licenses/MIT
+
+A MurmurHash3 Java implementation:
+* MurmurHash3 Java port by Yonik Seeley
+* https://github.com/yonik/java_util/blob/master/src/util/hash/MurmurHash3.java
+* Public domain
+
+Lucene's JFlex tokenization rules, which are the basis of those in text-tokenization-jflex:
+* Lucene
+* https://github.com/apache/lucene-solr/tree/master/lucene
+* Copyright 2001-present The Apache Software Foundation
+* License: Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+
+The text of the licenses for these included works may be found in the /licenses/ directory.

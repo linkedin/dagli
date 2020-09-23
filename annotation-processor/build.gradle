@@ -1,0 +1,6 @@
+dependencies {
+  api project(':annotation')
+  api project.ext.dependencies.javapoet
+  annotationProcessor project.ext.dependencies.'auto-service'
+  implementation project.ext.dependencies.'auto-service'
+}

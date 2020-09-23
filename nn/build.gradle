@@ -1,0 +1,11 @@
+dependencies {
+  api project(':core')
+  api project(':common')
+
+  api project(':math-distribution')
+  api project(':math-mdarray')
+  api project(':math-vector')
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

@@ -1,0 +1,10 @@
+project.sourceSets.main.java.srcDir('src/template/generated')
+
+dependencies {
+    implementation project(':math-number')
+    implementation project(':math-hashing')
+    api project(':util')
+
+    implementation project.ext.dependencies.fastutil
+    testImplementation project.ext.dependencies.kryo
+}

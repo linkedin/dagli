@@ -1,0 +1,22 @@
+dependencies {
+  api project(':annotation')
+  api project(':objectio-core')
+  api project(':objectio-kryo')
+  api project(':tuple')
+
+  // util includes util-* for convenience
+  api project(':util-array')
+  api project(':util-collection')
+  api project(':util-core')
+  api project(':util-function')
+
+  implementation project.ext.dependencies.migz
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+
+  testAnnotationProcessor project(':annotation-processor')
+  testImplementation project(':annotation-processor')
+
+  testImplementation project(':objectio-testing')
+}

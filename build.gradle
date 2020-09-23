@@ -1,0 +1,78 @@
+allprojects {
+  apply plugin: 'checkstyle'
+  apply plugin: 'idea'
+}
+
+def dagliVersion = "14.0.0-beta1"
+def javaVersion = JavaVersion.VERSION_1_9
+def jdk = "1.9"
+
+idea {
+  project {
+    jdkName = jdk // you may still need to specify the JDK manually in IntelliJ
+    languageLevel = javaVersion
+  }
+}
+
+subprojects {
+  apply plugin: 'java-library'
+
+  group = "com.linkedin.dagli"
+  version = dagliVersion
+  buildDir = "${rootProject.projectDir}/build/${project.name}" // use common build folder
+
+  repositories {
+    mavenCentral()
+  }
+
+  sourceCompatibility = javaVersion
+  targetCompatibility = javaVersion
+
+  test {
+    useJUnitPlatform()
+    maxHeapSize = "4g"
+  }
+
+  // define constants shared among subprojects here
+  ext {
+    // some tests are very expensive and extensive; we skip these unless "-Palltests" is added to the gradle
+    // command-line, e.g. "gradle build -Palltests"
+    test {
+      systemProperty "com.linkedin.dagli.alltests", rootProject.hasProperty('alltests')
+    }
+
+    dependencies = [
+      "ahocorasick": "org.ahocorasick:ahocorasick:0.4.0",
+      "ascii-graph": "com.github.mdr:ascii-graphs_2.10:0.0.3",
+      "avro": "org.apache.avro:avro:1.8.2",
+      "auto-service": "com.google.auto.service:auto-service:1.0-rc2",
+      "commons-csv": "org.apache.commons:commons-csv:1.5",
+      "commons-lang": "org.apache.commons:commons-lang3:3.7",
+      "commons-math": "org.apache.commons:commons-math3:3.6.1",
+      "commons-rng-core": "org.apache.commons:commons-rng-core:1.3",
+      "concurrentli": "com.concurrentli:concurrentli:1.3.2",
+      "deeplearning4j": "org.deeplearning4j:deeplearning4j-core:1.0.0-beta7",
+      "fastutil": "it.unimi.dsi:fastutil:8.3.0",
+      "javacpp": "org.bytedeco:javacpp:1.5.3",
+      "javapoet": "com.squareup:javapoet:1.9.0",
+      "jflex": "de.jflex:jflex:1.6.1",
+      "junit": "org.junit.jupiter:junit-jupiter-engine:5.6.2",
+      "junit-params": "org.junit.jupiter:junit-jupiter-params:5.6.2",
+      "kryo": "com.esotericsoftware:kryo:4.0.2",
+      "liblinear": "com.jeffreypasternack:liblinear:2.21",
+      "libphonenumber": "com.googlecode.libphonenumber:libphonenumber:8.9.5",
+      "log4j2-api": "org.apache.logging.log4j:log4j-api:2.13.3",
+      "log4j2-core": "org.apache.logging.log4j:log4j-core:2.13.3",
+      "log4j2-slf4j-impl": "org.apache.logging.log4j:log4j-slf4j-impl:2.13.3",
+      "migz": "com.linkedin.migz:migz:2.0.beta-1",
+      "nd4j": "org.nd4j:nd4j-native-platform:1.0.0-beta7",
+      "xgboost4j": "ml.dmlc:xgboost4j:0.90",
+    ]
+  }
+
+  // common dependencies across all subprojects
+  dependencies {
+    testImplementation project.ext.dependencies.junit
+    testImplementation project.ext.dependencies.'junit-params'
+  }
+}

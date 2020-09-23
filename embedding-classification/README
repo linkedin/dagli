@@ -1,0 +1,1 @@
+Generic inference for classification models that embed their examples and labels to find the greatest dot-product.

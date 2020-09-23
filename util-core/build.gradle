@@ -1,0 +1,10 @@
+dependencies {
+  api project(':annotation')
+  implementation project.ext.dependencies.concurrentli
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+
+  testAnnotationProcessor project(':annotation-processor')
+  testImplementation project(':annotation-processor')
+}

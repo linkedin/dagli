@@ -1,0 +1,7 @@
+test {
+    maxHeapSize = "12g"
+}
+
+dependencies {
+    testImplementation project.ext.dependencies.fastutil
+}

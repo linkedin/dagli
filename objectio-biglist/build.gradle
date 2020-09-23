@@ -1,0 +1,5 @@
+dependencies {
+  api project(':objectio-core')
+  api project.ext.dependencies.fastutil
+  testImplementation project(':objectio-testing')
+}

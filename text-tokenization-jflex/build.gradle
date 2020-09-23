@@ -1,0 +1,59 @@
+plugins {
+  id 'eclipse'
+  id 'idea'
+}
+
+dependencies {
+    api project.ext.dependencies.jflex
+}
+
+def jflexInputDir = "${projectDir}/src/main/jflex/com/linkedin/dagli/text/jflex"
+def jflexOutputDir = "${projectDir}/src/main/jflexGeneratedSrc"
+
+sourceSets {
+  main {
+    java {
+      srcDirs jflexOutputDir
+    }
+  }
+}
+
+task jflexCodeGen {
+  inputs.dir jflexInputDir
+  outputs.dir jflexOutputDir
+
+  doLast {
+    delete jflexOutputDir
+    mkdir jflexOutputDir
+
+    if ((new File(jflexInputDir)).exists()) {
+      ant.taskdef(
+        name: 'jflex',
+        classname: 'jflex.anttask.JFlexTask',
+        classpath: sourceSets.main.compileClasspath.asPath
+      )
+      fileTree(jflexInputDir).filter { it.name.endsWith('.jflex') }.each { File file ->
+        ant.jflex(
+          file: file.path,
+          destdir: jflexOutputDir
+        )
+      }
+    }
+  }
+}
+
+task jflexCodeClean {
+  doLast {
+    delete jflexOutputDir
+  }
+}
+
+eclipseClasspath.dependsOn jflexCodeGen
+ideaModule.dependsOn jflexCodeGen
+compileJava.dependsOn jflexCodeGen
+clean.dependsOn jflexCodeClean
+
+tasks.withType(Javadoc) {
+  // No public classes
+  failOnError = false
+}

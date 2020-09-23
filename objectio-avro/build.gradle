@@ -1,0 +1,6 @@
+dependencies {
+  api project(':objectio-core')
+  testImplementation project(':objectio-testing')
+
+  api project.ext.dependencies.avro
+}

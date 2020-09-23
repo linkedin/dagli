@@ -1,0 +1,12 @@
+dependencies {
+  api project(':common')
+  api project(':core')
+  implementation project(':util')
+
+  api project(':math-vector')
+
+  implementation project.ext.dependencies.'commons-math'
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

@@ -1,0 +1,16 @@
+test {
+  maxHeapSize = "8g"
+}
+
+dependencies {
+  api project(':core')
+  api project(':common')
+  api project(':embedding-classification')
+
+  api project(':math-distribution')
+  api project(':math-vector')
+  implementation project.ext.dependencies.migz
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

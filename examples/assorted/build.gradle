@@ -1,0 +1,13 @@
+dependencies {
+  implementation project(':common')
+  implementation project(':data')
+  implementation project(':fasttext')
+  implementation project(':liblinear')
+  implementation project(':text-tokenization')
+  implementation project(':word2vec')
+  implementation project(':xgboost')
+
+  // without the annotation processor, we can't build our CharacterDialogStruct:
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

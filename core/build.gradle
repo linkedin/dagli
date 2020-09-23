@@ -1,0 +1,39 @@
+project.sourceSets.main.java.srcDir('src/template/generated')
+
+dependencies {
+  api project(':math-distribution')
+  api project(':math-hashing')
+
+  api project(':objectio-core')
+  api project(':objectio-biglist')
+  api project(':objectio-kryo')
+  api project(':objectio-tuple')
+
+  api project(':tuple')
+  api project(':util')
+  api project(':annotation')
+
+  implementation project.ext.dependencies.'log4j2-api'
+  implementation project.ext.dependencies.'fastutil'
+  implementation project.ext.dependencies.concurrentli
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+
+  testAnnotationProcessor project(':annotation-processor')
+  testImplementation project(':annotation-processor')
+
+  testImplementation project.ext.dependencies.'log4j2-core'
+}
+
+task testSerialization(type: JavaExec) {
+  classpath = sourceSets.test.runtimeClasspath
+
+  main = 'com.linkedin.dagli.tester.TransformerBackwardCompatibilityTester'
+
+  // arguments to pass to the application
+  args '-package', 'com.linkedin.dagli', '-classes',
+      'dag.MultithreadedDAGExecutor,dag.FastPreparedDAGExecutor,dag.SimpleDAGExecutor', '-dir',
+      sourceSets.test.resources.srcDirs[0].toString() + '/serialized'
+}
+test.dependsOn testSerialization

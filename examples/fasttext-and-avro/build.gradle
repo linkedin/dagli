@@ -1,0 +1,17 @@
+project.sourceSets.main.java.srcDir('src/generated')
+
+test {
+  maxHeapSize = "8g"
+}
+
+dependencies {
+  implementation project(':common')
+  implementation project(':data')
+  implementation project(':fasttext')
+  implementation project(':objectio-avro')
+  implementation project(':text-tokenization')
+
+  // without the annotation processor, we can't build our CharacterDialogStruct:
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

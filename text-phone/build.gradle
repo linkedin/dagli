@@ -1,0 +1,7 @@
+dependencies {
+  api project.ext.dependencies.libphonenumber
+  api project(':core')
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

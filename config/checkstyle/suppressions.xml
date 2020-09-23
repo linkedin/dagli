@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<suppressions>
+  <suppress checks="LineLengthCheck"
+            files="core/src/template/*" />
+  <suppress checks="LineLengthCheck"
+            files="util-function/src/template/*" />
+  <suppress files="/fasttext/src/main/java/com/linkedin/dagli/fasttext/anonymized/*" checks="[a-zA-Z0-9]*"/>
+  <suppress files="/math-hashing/src/main/java/com/linkedin/dagli/math/hashing/MurmurHash3.java" checks="[a-zA-Z0-9]*"/>
+  <suppress files="/text-tokenization-jflex/src/main/jflexGeneratedSrc/*" checks="[a-zA-Z0-9]*"/>
+  <suppress files="/examples/fasttext-and-avro/src/generated/java/com/linkedin/dagli/examples/fasttextandavro/*" checks="[a-zA-Z0-9]*"/>
+</suppressions>

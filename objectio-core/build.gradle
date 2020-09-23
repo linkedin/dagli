@@ -1,0 +1,10 @@
+dependencies {
+  implementation project(':util-array')
+  api project(':util-collection')
+  api project(':util-core')
+
+  api project.ext.dependencies.fastutil
+  implementation project.ext.dependencies.concurrentli
+
+  testImplementation project(':objectio-testing')
+}

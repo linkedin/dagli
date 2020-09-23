@@ -1,0 +1,35 @@
+plugins {
+  id "com.google.osdetector" version "1.6.2"
+}
+
+def platform = osdetector.classifier
+if (osdetector.os == "osx") {
+  platform = "mac" + platform // need to adjust "osx-*" to "macosx-*"
+}
+
+dependencies {
+  api project(':core')
+  api project(':common')
+  api project(':nn')
+
+  api project(':math-distribution')
+  api project(':math-number')
+  api project(':math-vector')
+
+  api project.ext.dependencies.deeplearning4j
+
+  testImplementation project.ext.dependencies.'log4j2-slf4j-impl'
+  testImplementation project.ext.dependencies.'log4j2-core'
+
+  testImplementation project.ext.dependencies.nd4j
+  testImplementation project.ext.dependencies.javacpp
+
+  // explicitly importing the exact libraries needed for the platform seems to be necessary due to a "feature" of Gradle
+  // that prevents it from importing transitive dependencies when directed by a JAR's pom.xml
+  testImplementation "org.bytedeco:javacpp:1.5.3:$platform"
+  testImplementation "org.nd4j:nd4j-native:1.0.0-beta7:$platform"
+  testImplementation "org.bytedeco:openblas:0.3.9-1.5.3:$platform"
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}

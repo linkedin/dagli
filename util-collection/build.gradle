@@ -1,0 +1,5 @@
+dependencies {
+  api project.ext.dependencies.fastutil
+  api project(':util-core')
+  api project(':util-function')
+}

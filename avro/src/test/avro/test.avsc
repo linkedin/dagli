@@ -1,0 +1,30 @@
+{
+  "name":"TestAvroSchema",
+  "doc":"Avro schema for testing Dagli Avro support",
+  "type":"record",
+  "namespace":"com.linkedin.dagli.data.test",
+  "fields":[
+    {
+      "name": "created",
+      "type": "long",
+      "doc": "When this record was created"
+    },
+    {
+      "name": "edited",
+      "type": ["null", "long" ],
+      "default": null,
+      "doc": "When this record was edited"
+    },
+    {
+      "name": "userName",
+      "type": "string",
+      "doc" : "The name of the user"
+    },
+    {
+      "name": "recursion",
+      "type": ["null", "TestAvroSchema" ],
+      "default": null,
+      "doc" : "The a recursive instance of this record type"
+    }
+  ]
+}

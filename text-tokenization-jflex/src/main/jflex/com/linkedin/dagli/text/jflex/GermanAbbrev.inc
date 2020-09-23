@@ -1,0 +1,1 @@
+corpus_abbrev = (Abg|Abk|abs|[Aa]llg|anl|Bj|[Bb]spw|bzgl|Bzw|Coll|CORP|dict|Dkfm|Doz|Dra|Dt|dtsch|Eff|ehem|Eidg|Einf|engl|erm|Erw|Feat|Fig|Ggf|ggfs|ggü|Gr|grm|Hr|ibm|ifun|iHv|[Ii]n[ck]l|Inh|insb|ital|[ij]ur|Jg|Jh|Jhd|Jhr|Kfm|mtl|Prof|resp|StD|Stpfl|Str|[sS]tv|techn|tgl|[Uu]niv|wko|Wr|Zt|Zwtl)

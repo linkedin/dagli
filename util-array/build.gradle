@@ -1,0 +1,7 @@
+project.sourceSets.main.java.srcDir('src/template/generated')
+
+dependencies {
+  implementation project(':util-collection')
+  api project(':util-core')
+  api project.ext.dependencies.fastutil
+}

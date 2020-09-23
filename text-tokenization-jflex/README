@@ -1,0 +1,5 @@
+This module contains a tokenizer implemented via JFlex rules based on those used by Lucene's tokenizer.
+
+Authors: Juan Bottaro, Yannick Versley, and Jorge Handl
+
+The original JFlex rules from Lucene are licensed under the Apache 2.0 license.

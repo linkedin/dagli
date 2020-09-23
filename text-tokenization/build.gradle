@@ -1,0 +1,7 @@
+dependencies {
+  api project(':core')
+  implementation project(':text-tokenization-jflex')
+
+  annotationProcessor project(':annotation-processor')
+  implementation project(':annotation-processor')
+}
