@@ -3,7 +3,8 @@
 package com.linkedin.dagli.tuple;
 
 /**
- * A tuple of arity <@t.ArrayTuple arity />.
+ * A tuple of arity ${arity}.
+ *
  * FieldTuples are more memory-efficient than ArrayTuples because they do not need to store an extra object (the array),
  * but ArrayTuples are faster to create if the tuple elements are already extant within an array.
  */

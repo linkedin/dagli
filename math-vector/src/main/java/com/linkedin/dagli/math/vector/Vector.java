@@ -274,13 +274,14 @@ public interface Vector extends Iterable<VectorElement>, Size64, Serializable {
   }
 
   /**
-   * Calculates the norm or "norm" (a true norm is returned iff p >= 1).
+   * Calculates the norm or "norm" (a true norm is returned iff {@code p >= 1}).
    * See: https://en.wikipedia.org/wiki/Norm_(mathematics)
    *
    * At p == 0 the definition of the "norm" is the number of non-zero entries.
    * At p == Infinity the norm is the maximum absolute value in the vector.
    *
-   * @param p the p-value of the norm, >= 0.  At p == 1 this is Manhattan distance, at p == 2 Euclidean distance, etc.
+   * @param p the p-value of the norm ({@code >= 0}.  At p == 1 this is Manhattan distance, at p == 2 Euclidean
+   *          distance, etc.
    * @return the norm
    */
   default double norm(double p) {
@@ -469,8 +470,8 @@ public interface Vector extends Iterable<VectorElement>, Size64, Serializable {
    * Derived classes are free to substitute a non-lazy vector if it can be computed cheaply (e.g. a very small
    * DenseFloatVector).  The implementation must, like the default "lazy" one, still have a trivial cost.
    *
-   * @param min the minimum value of the clipping range; must be <= 0
-   * @param max the maximum value of the clipping range; must be >= 0
+   * @param min the minimum value of the clipping range; must be {@code <= 0}
+   * @param max the maximum value of the clipping range; must be {@code >= 0}
    * @return a vector whose elements have the clipped values of this vector
    */
   default Vector lazyClip(double min, double max) {

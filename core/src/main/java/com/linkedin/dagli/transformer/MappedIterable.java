@@ -285,7 +285,6 @@ public class MappedIterable<T, R>
      * }</pre>
      *
      * @param preparedWithMappedInputFunction the prepared transformer to wrap
-     * @return a copy of this instance that will wrap the specified transformer
      */
     public Prepared(
         Function<? super Placeholder<T>, ? extends PreparedTransformer<? extends R>> preparedWithMappedInputFunction) {

@@ -77,12 +77,12 @@ public interface DAGTransformer<R, S extends DAGTransformer<R, S>> extends Trans
    *
    * Note: graphs in Dagli are often optimized, so the graph returned by this method may be different than the
    * graph you expect, although it will be functionally equivalent.  For example, if you create a DAG like so:
-   * <code>
+   * <pre>{@code
    *   Placeholder<String> placeholder = new Placeholder<>();
    *   LowerCased<String> lowerCased = new LowerCased().withInput(placeholder);
    *   UpperCased<String> upperCased = new UpperCased().withInput(placeholder);
    *   DAG1x1.Prepared<String, String> dag = DAG.Prepared.withPlaceholder(placeholder).withOutput(lowerCased)
-   * </code>
+   * }</pre>
    * dag.graph() will not contain the "upperCased" node because it's not needed to compute the DAG's output.
    *
    * @return a {@link Graph} object that describes the graph structure of this instance.

@@ -17,7 +17,7 @@ public class VariadicList<T> extends AbstractPreparedTransformerVariadic<T, List
   private static final long serialVersionUID = 1;
 
   /**
-   * Creates a new instance that initially has no inputs (these must be specified with {@link #withInputs(Producer[])})
+   * Creates a new instance that initially has no inputs (these must be specified with {@code withInputs(...)})
    */
   public VariadicList() { }
 

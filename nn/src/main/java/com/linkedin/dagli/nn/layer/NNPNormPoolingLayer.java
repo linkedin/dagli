@@ -56,7 +56,7 @@ public class NNPNormPoolingLayer extends AbstractVectorSequencePoolingLayer<NNPN
    *
    * By default, p is 2 (Euclidean norm).
    *
-   * @param p the p value to use; must be >= 1
+   * @param p the p value to use; must be {@code >= 1}
    * @return a copy of this layer that will pool via a p-norm with the specified p value
    */
   public NNPNormPoolingLayer withP(int p) {

@@ -61,7 +61,7 @@ public class TruncatedList<T>
    * The default maximum size is {@link Integer#MAX_VALUE}, which will cause this transformer to simply produce the
    * inputted list untruncated.
    *
-   * @param maxSize the maximum size of the truncated list (must be >= 0)
+   * @param maxSize the maximum size of the truncated list (must be {@code >= 0})
    * @return a copy of this instance that will truncate lists to the specified maximum size
    */
   public TruncatedList<T> withMaxSize(int maxSize) {
@@ -76,7 +76,7 @@ public class TruncatedList<T>
    * If no input is specified, the default maximum size is {@link Integer#MAX_VALUE}, which will cause this transformer
    * to simply produce the inputted list untruncated.
    *
-   * @param maxSize the maximum size of the truncated list (must be >= 0)
+   * @param maxSize the maximum size of the truncated list (must be {@code >= 0})
    * @return a copy of this instance that will truncate lists to the specified maximum size
    */
   public TruncatedList<T> withMaxSizeInput(Producer<? extends Integer> maxSize) {

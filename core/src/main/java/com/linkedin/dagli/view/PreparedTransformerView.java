@@ -9,9 +9,8 @@ import com.linkedin.dagli.transformer.PreparedTransformer;
  * Provides a simple view of a preparable transformer that is just the prepared transformer itself.
  *
  * For example, an instance created as
- * <code>
- *   new PreparedTransformerView<>(someXGBoostClassificationTransformer)
- * </code>
+ * {@code new PreparedTransformerView<>(someXGBoostClassificationTransformer)}
+ *
  * where <code>someXGBoostClassificationTransformer</code> is an XGBoostClassification will produce a value (that can
  * be consumed by its downstream children in the DAG) of the trained XGBoostClassification.Prepared XGBoost model.
  *

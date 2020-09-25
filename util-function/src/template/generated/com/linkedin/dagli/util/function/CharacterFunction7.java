@@ -55,7 +55,7 @@ public interface CharacterFunction7<A, B, C, D, E, F, G> extends FunctionBase {
      * when appropriate.  Generally such an implementation will simply create a new instance wrapping
      * wrappedFunction.safelySerializable() instead of wrappedFunction.
      *
-     * Anonymous lambdas, such as "a -> a + 5", are *not* safely-serializable, even if they are technically
+     * Anonymous lambdas, such as "{@code a -> a + 5}", are *not* safely-serializable, even if they are technically
      * serializable, as they are extraordinarily fragile and will only deserialize correctly under these conditions:
      * (1) the class in which they were created must exist in both serializing and deserializing programs.
      * (2) the ORDER in which the lambdas are defined must not change.  The names of the generated anonymous classes are

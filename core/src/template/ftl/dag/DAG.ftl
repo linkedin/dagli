@@ -60,12 +60,14 @@ public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Pr
  * created DAG.
  *
  * For example, let's say we define the following graph:
+ * <pre>{@code
  * PlaceholderA -> Transformer1
  * PlaceholderB -> Transformer1
  * GeneratorC -> Transformer1
  * Transformer1 -> Transformer2
  * PlaceholderB -> Transformer2
  * GeneratorC -> Transformer2
+ * }</pre>
  *
  * This is a graph where Transformer1 receives inputs from PlaceholderA, PlaceholderB, and GeneratorC, and the
  * downstream Transformer2 receives the output of Transformer1 and the inputs from PlaceholderB and GeneratorC.

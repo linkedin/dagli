@@ -31,12 +31,16 @@ public @interface VisitedBy {
    * to the annotated class.  A value of "com.xyz.SomeVisitor" will result in an interface called "SomeVisitor" being
    * generated in the "com.xyz" package.  If the package is omitted (e.g. just the value "SomeClass" is provided) the
    * class will be generated in the current package.
+   *
+   * @return the package and class name for the visitor interface that will be generated
    */
   String value();
 
   /**
    * If true, a default implementation for the visit() method for the annotation class will be created that throws
    * {@link UnsupportedOperationException}.  If false (the default), no default implementation will be created.
+   *
+   * @return whether or not to add a default, exception-throwing implementation for the created visit method
    */
   boolean throwIfUnimplemented() default false;
 }

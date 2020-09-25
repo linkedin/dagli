@@ -328,9 +328,10 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
    * Specifically, <strong>vector elements with indices less than 0 or {@code >= maxLength} will be silently ignored by
    * the neural network.</strong>
    *
-   * If the input vectors have negative or very high indices, use {@link #withInputFromDensifiedVectors(Producer[])}
-   * instead, which will "densify" them and ensure that no values are truncated.  This method is intended for vectors
-   * that are already dense-like (e.g. one/multi-hot vectors for labels).
+   * If the input vectors have negative or very high indices, use
+   * {@link #withFeaturesInputFromDensifiedVectors(Producer[])} instead, which will "densify" them and ensure that no
+   * values are truncated.  This method is intended for vectors that are already dense-like (e.g. one/multi-hot vectors
+   * for labels).
    *
    * These inputted values will be passed through an automatically-created dense layer whose number of outputs will
    * match the number of labels (except if {@link #withBinaryLabelInput(Producer)} is used to create a binary

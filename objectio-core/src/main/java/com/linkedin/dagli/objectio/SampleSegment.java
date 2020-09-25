@@ -45,7 +45,7 @@ public class SampleSegment implements Serializable {
    * Creates a new segment with a default random seed.
    *
    * @param start a [0, 1] value specifying the start of the segment, inclusive.
-   * @param end a [0, 1] value specified the end of the segment, exclusive.  Must be >= start.
+   * @param end a [0, 1] value specified the end of the segment, exclusive.  Must be {@code >= start}.
    */
   public SampleSegment(double start, double end) {
     this(start, end, 0);
@@ -55,7 +55,7 @@ public class SampleSegment implements Serializable {
    * Creates a new segment.
    *
    * @param start a [0, 1] value specifying the start of the segment, inclusive.
-   * @param end a [0, 1] value specified the end of the segment, exclusive.  Must be >= start.
+   * @param end a [0, 1] value specified the end of the segment, exclusive.  Must be {@code >= start}.
    * @param seed a random seed that should be used for sampling.
    */
   public SampleSegment(double start, double end, long seed) {

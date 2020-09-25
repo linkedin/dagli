@@ -97,6 +97,7 @@ public class TupleReader<T extends Tuple> implements ObjectReader<T> {
    */
   private static class Iterator<T extends Tuple> implements ObjectIterator<T> {
     private final ObjectIterator<Object>[] _iterators;
+    @SuppressWarnings("unchecked")
     private final T[] _minibuffer = (T[]) new Tuple[1];
 
     public Iterator(ObjectIterator<Object>[] iterators) {

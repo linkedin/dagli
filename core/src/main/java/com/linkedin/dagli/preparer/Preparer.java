@@ -40,7 +40,7 @@ public interface Preparer<R, N extends PreparedTransformer<? extends R>> {
   /**
    * Dagli-internal method.  Not intended for use by client code.
    *
-   * Processes the provided input values.  Note that the values[] array may be reused & modified afterwards by the
+   * Processes the provided input values.  Note that the values[] array may be reused and modified afterwards by the
    * caller.  Because of this you must not allow values[] to "escape" this method (e.g. by storing a reference to it),
    * although of course you may store a clone of the array, etc.
    *

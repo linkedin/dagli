@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface OptionalField {
   /**
-   * The (exact) name of the field to be made optional.  For example, if the field name is {@code _myField}, this value
-   * should be "_myField".
+   * @return the (exact) name of the field to be made optional.  For example, if the field name is {@code _myField},
+   *         this value should be "_myField".
    */
   String value();
 }

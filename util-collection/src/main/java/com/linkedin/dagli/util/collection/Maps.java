@@ -226,7 +226,7 @@ public abstract class Maps {
    * @param constructor a function (typically a constructor, e.g. HashMap::new) that maps the expected size of the
    *                    resulting map to a (typically new) map instance that will be returned by this method.  If the
    *                    resulting map is expected to be much smaller than the original, you may want to force the
-   *                    instantiation of a smaller map, e.g. by passing <code>size -> new HashMap(size / 10)</code>.
+   *                    instantiation of a smaller map, e.g. by passing {@code size -> new HashMap(size / 10)}.
    * @param <M> the type of the resulting map
    * @param <K> the type of the key in the map
    * @param <V> the type of the value in the map
@@ -253,7 +253,7 @@ public abstract class Maps {
    * @param constructor a function (typically a constructor, e.g. HashMap::new) that maps the expected size of the
    *                    resulting map to a (typically new) map instance that will be returned by this method.  If the
    *                    resulting map is expected to be much smaller than the original, you may want to force the
-   *                    instantiation of a smaller map, e.g. by passing <code>size -> new HashMap(size / 10)</code>.
+   *                    instantiation of a smaller map, e.g. by passing {@code size -> new HashMap(size / 10)}.
    * @param <M> the type of the resulting map
    * @param <K> the type of the key in the map
    * @param <V> the type of the value in the map

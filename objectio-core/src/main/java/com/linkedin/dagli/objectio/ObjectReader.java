@@ -207,7 +207,7 @@ public interface ObjectReader<T> extends Iterable<T>, AutoCloseable, Size64 {
    * The primary utility of this view is interfacing with APIs that require collections; the limitation is that the
    * ObjectReader must have fewer than Integer.MAX_VALUE elements; otherwise an IndexOutOfBoundsException is thrown.
    *
-   * @throws IndexOutOfBoundsException if the size of this ObjectReader is > Integer.MAX_VALUE
+   * @throws IndexOutOfBoundsException if the size of this ObjectReader is greater than Integer.MAX_VALUE
    * @return a collection wrapping this instance
    */
   default Collection<T> toCollection() {
@@ -376,9 +376,11 @@ public interface ObjectReader<T> extends Iterable<T>, AutoCloseable, Size64 {
    * mapper, which transforms the original elements into an Iterable of zero or more derived elements; the returned
    * ObjectReader's elements are a concatenation of all of the elements of these iterables, ordered by the
    * corresponding original mapped items.  So if the original ObjectReader is [A, B, C], and the mapping function is:
+   * <pre>{@code
    * A -> [1, 2]
    * B -> [3, 4]
-   * C -> [5, 6],
+   * C -> [5, 6]
+   * }</pre>
    * the flatMapped result will be: [1, 2, 3, 4, 5, 6]
    *
    * Notes:
@@ -434,9 +436,9 @@ public interface ObjectReader<T> extends Iterable<T>, AutoCloseable, Size64 {
    * near the end of the original reader.
    *
    * The advantage over a true, uniform shuffle (e.g. Fisher-Yates) is that the memory requirement is O(K) rather than
-   * O(n), where n is the number of elements in the wrapped reader.  If K >= n this class performs a true shuffle.  For
-   * machine learning purposes a partial shuffle can achieve much of the benefit of a full shuffle without a potentially
-   * high shuffling cost.
+   * O(n), where n is the number of elements in the wrapped reader.  If {@code K >= n} this class performs a true
+   * shuffle.  For machine learning purposes a partial shuffle can achieve much of the benefit of a full shuffle without
+   * a potentially high shuffling cost.
    *
    * Note that the buffer is not allocated when this method is called.  Instead, it is created when iterating over the
    * shuffled data.  The returned reader is "lazy", meaning that it stores no data (modulo the aforementioned buffer)
@@ -467,9 +469,9 @@ public interface ObjectReader<T> extends Iterable<T>, AutoCloseable, Size64 {
    * near the end of the original reader.
    *
    * The advantage over a true, uniform shuffle (e.g. Fisher-Yates) is that the memory requirement is O(K) rather than
-   * O(n), where n is the number of elements in the wrapped reader.  If K >= n this class performs a true shuffle.  For
-   * machine learning purposes a partial shuffle can achieve much of the benefit of a full shuffle without a potentially
-   * high shuffling cost.
+   * O(n), where n is the number of elements in the wrapped reader.  If {@code K >= n} this class performs a true
+   * shuffle.  For machine learning purposes a partial shuffle can achieve much of the benefit of a full shuffle without
+   * a potentially high shuffling cost.
    *
    * Note that the buffer is not allocated when this method is called.  Instead, it is created when iterating over the
    * shuffled data.  The returned reader is "lazy", meaning that it stores no data (modulo the aforementioned buffer)

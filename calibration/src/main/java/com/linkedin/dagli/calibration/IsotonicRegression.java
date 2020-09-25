@@ -54,8 +54,8 @@ public class IsotonicRegression
   }
 
   /**
-   * Sets the input that will provide the weight for each example (must be > 0).  This allows some examples to be have
-   * greater impact on the learned function than others.
+   * Sets the input that will provide the weight for each example (must be {@code > 0}).  This allows some examples to
+   * be have greater impact on the learned function than others.
    *
    * By default, this input is a constant that provides a weight of 1.0 for all examples.
    *
@@ -126,8 +126,8 @@ public class IsotonicRegression
 
   /**
    * A prepared Isotonic Regressor representing a piecewise linear function with the guarantee that either:
-   * f(x) >= f(x') if x > x' (if monotonically increasing) or
-   * f(x) <= f(x') if x > x' (if monotonically decreasing)
+   * {@code f(x) >= f(x') if x > x'} (if monotonically increasing) or
+   * {@code f(x) <= f(x') if x > x'} (if monotonically decreasing)
    */
   @ValueEquality
   public static class Prepared extends AbstractPreparedTransformer3<Number, Number, Number, Double, Prepared> {

@@ -18,8 +18,8 @@ public enum Deduplication {
    * If multiple entries (label and probability pairs) share the same label, the highest probability associated with
    * that label will be used.
    *
-   * For example, if the distribution is "A" -> 0.3 and "B" -> 0.5, and we map both events' labels to "C", the resulting
-   * distribution would be "C" -> 0.5.
+   * For example, if the distribution is {@code "A" -> 0.3} and {@code "B" -> 0.5}, and we map both events' labels to
+   * "C", the resulting distribution would be {@code "C" -> 0.5}.
    */
   MAX,
 
@@ -27,8 +27,8 @@ public enum Deduplication {
    * If multiple entries (label and probability pairs) share the same label, the label is associated with the <b>sum</b>
    * of all probabilities associated with that label.
    *
-   * For example, if the distribution is "A" -> 0.3 and "B" -> 0.5, and we map all labels to "C", the resulting
-   * distribution would be "C" -> 0.8.
+   * For example, if the distribution is {@code "A" -> 0.3} and {@code "B" -> 0.5}, and we map all labels to "C", the
+   * resulting distribution would be {@code "C" -> 0.8}.
    */
   MERGE,
 }

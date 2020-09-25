@@ -22,8 +22,8 @@ public class LazyClippedVector extends AbstractPreparedTransformer1WithInput<Vec
    *
    * The default minimum is {@link Double#NEGATIVE_INFINITY}.
    *
-   * @param min the minimum value (must be <= 0); values in the input vector less than this value will be clipped to be
-   *            this minimum
+   * @param min the minimum value (must be {@code <= 0}); values in the input vector less than this value will be
+   *            clipped to be this minimum
    * @return a copy of this instance that will clip with the specified minimum value
    */
   public LazyClippedVector withMinimumValue(double min) {
@@ -36,8 +36,8 @@ public class LazyClippedVector extends AbstractPreparedTransformer1WithInput<Vec
    *
    * The default maximum is {@link Double#POSITIVE_INFINITY}.
    *
-   * @param max the maximum value (must be >= 0); values in the input vector greater than this value will be clipped to
-   *            be this maximum
+   * @param max the maximum value (must be {@code >= 0}); values in the input vector greater than this value will be
+   *            clipped to be this maximum
    * @return a copy of this instance that will clip with the specified maximum value
    */
   public LazyClippedVector withMaximumValue(double max) {

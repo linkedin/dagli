@@ -27,7 +27,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @param <Q> the type of the result of the composed function
@@ -41,7 +41,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -54,7 +54,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -67,7 +67,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -80,7 +80,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -93,7 +93,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -106,7 +106,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -119,7 +119,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -132,7 +132,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -145,7 +145,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function
    * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -186,7 +186,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * when appropriate.  Generally such an implementation will simply create a new instance wrapping
      * wrappedFunction.safelySerializable() instead of wrappedFunction.
      *
-     * Anonymous lambdas, such as "a -> a + 5", are *not* safely-serializable, even if they are technically
+     * Anonymous lambdas, such as "{@code a -> a + 5}", are *not* safely-serializable, even if they are technically
      * serializable, as they are extraordinarily fragile and will only deserialize correctly under these conditions:
      * (1) the class in which they were created must exist in both serializing and deserializing programs.
      * (2) the ORDER in which the lambdas are defined must not change.  The names of the generated anonymous classes are
@@ -216,7 +216,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @param <Q> the type of the result of the composed function
@@ -231,7 +231,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -245,7 +245,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -259,7 +259,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -273,7 +273,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -287,7 +287,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -301,7 +301,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -314,7 +314,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -328,7 +328,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}
@@ -342,7 +342,7 @@ public interface Function8<A, B, C, D, E, F, G, H, R> extends FunctionBase {
      * Composes this function with another by mapping the result of this function.  The returned function is equivalent
      * to {@code mapper.apply(this.apply(...))}.
      *
-     * This method is analogous to {@link Function#andThen(Function)}.
+     * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
      *
      * @param mapper the function that will map the result of this one in the returned composed function
      * @return a composed function equivalent to {@code mapper.apply(this.apply(...))}

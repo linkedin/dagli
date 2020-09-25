@@ -8,8 +8,8 @@ import java.util.Objects;
 
 
 /**
- * Implementation of a {@link Vector} where the indices of non-zero values are all >= 0; these values are stored in
- * an array.
+ * Implementation of a {@link Vector} where the indices of non-zero values are all {@code >= 0}; these values are stored
+ * in an array.
  */
 public final class DenseFloatArrayVector extends AbstractVector implements MutableDenseVector, Cloneable {
   private static final long serialVersionUID = 1;

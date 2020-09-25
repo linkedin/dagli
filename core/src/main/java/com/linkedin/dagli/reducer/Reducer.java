@@ -541,8 +541,8 @@ public interface Reducer<T> {
      *
      * @param first the first {@link Level} to compare, may be null
      * @param second the second {@link Level} to compare, may be null
-     * @return a value < 0 if the first level is ordered before the second, 0 if they are equal, a value > 0 if the
-     *         first level is ordered after the second.
+     * @return a {@code value < 0} if the first level is ordered before the second, 0 if they are equal, a
+     *         {@code value > 0} if the first level is ordered after the second.
      */
     public static int compare(Level first, Level second) {
       if (first == second) {

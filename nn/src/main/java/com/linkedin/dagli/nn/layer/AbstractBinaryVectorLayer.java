@@ -23,9 +23,10 @@ abstract class AbstractBinaryVectorLayer<R, S extends AbstractBinaryVectorLayer<
    * Specifically, <strong>vector elements with indices less than 0 or {@code >= maxWidth} will be silently ignored by
    * the neural network.</strong>
    *
-   * If the input vectors have negative or very high indices, use {@link #withFirstInputFromDensifiedVector(Producer)}
-   * instead, which will "densify" them and ensure that no values are truncated.  This method is intended for vectors
-   * that are already dense-like (e.g. one/multi-hot vectors for labels).
+   * If the input vectors have negative or very high indices, use
+   * {@link #withFirstInputFromDensifiedVectors(Producer[])} instead, which will "densify" them and ensure that no
+   * values are truncated.  This method is intended for vectors that are already dense-like (e.g. one/multi-hot vectors
+   * for labels).
    *
    * @param input a {@link Producer} that will provide a vector input to this layer
    * @param maxWidth any vector elements with indices equal or greater to this value will be ignored
@@ -41,9 +42,10 @@ abstract class AbstractBinaryVectorLayer<R, S extends AbstractBinaryVectorLayer<
    * Specifically, <strong>vector elements with indices less than 0 or {@code >= maxWidth} will be silently ignored by
    * the neural network.</strong>
    *
-   * If the input vectors have negative or very high indices, use {@link #withSecondInputFromDensifiedVector(Producer)}
-   * instead, which will "densify" them and ensure that no values are truncated.  This method is intended for vectors
-   * that are already dense-like (e.g. one/multi-hot vectors for labels).
+   * If the input vectors have negative or very high indices, use
+   * {@link #withSecondInputFromDensifiedVectors(Producer[])} instead, which will "densify" them and ensure that no
+   * values are truncated.  This method is intended for vectors that are already dense-like (e.g. one/multi-hot vectors
+   * for labels).
    *
    * @param input a {@link Producer} that will provide a vector input to this layer
    * @param maxWidth any vector elements with indices equal or greater to this value will be ignored

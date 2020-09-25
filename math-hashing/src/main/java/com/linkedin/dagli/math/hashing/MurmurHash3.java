@@ -236,7 +236,7 @@ public abstract class MurmurHash3 {
    * @param offset the offset in key where hashing begins
    * @param len the number of bytes of key to hash
    * @param seed the hashing seed
-   * @param out a long array (of length >= 2) that will store the 128-bit hash as a pair of longs
+   * @param out a long array (of {@code length >= 2}) that will store the 128-bit hash as a pair of longs
    */
   public static void murmurhash3_x64_128(byte[] key, int offset, int len, int seed, long[] out) {
     // The original algorithm does have a 32 bit unsigned seed.

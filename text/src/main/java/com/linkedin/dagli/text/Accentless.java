@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * normalization.  You may wish to re-normalize the result via {@link NormalizedUnicode} if this is not your preferred
  * normalization form.
  *
- * E.g. Cómo estás -> Como estas
+ * E.g. {@code Cómo estás -> Como estas}
  *
  * @author Jeff Pasternack (jepasternack@linkedin.com)
  */

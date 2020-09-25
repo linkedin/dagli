@@ -13,7 +13,7 @@ import org.ahocorasick.trie.Emit;
  * provided by a replacement map.
  *
  * Possible uses are normalization (replacing permutations of words with their lemmatized form), improper language
- * correction ("damn" -> "darn"), etc.
+ * correction ({@code "damn" -> "darn"}), etc.
  *
  * @author Jeff Pasternack (jepasternack@linkedin.com)
  */

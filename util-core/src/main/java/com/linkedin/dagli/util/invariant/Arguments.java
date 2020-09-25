@@ -16,7 +16,7 @@ public abstract class Arguments {
   private Arguments() { }
 
   /**
-   * Checks if a provided value is within the specified range (min <= value <= max), throwing an
+   * Checks if a provided value is within the specified range ({@code min <= value <= max}), throwing an
    * {@link IllegalArgumentException} if not.
    *
    * @param value the value to check
@@ -28,7 +28,7 @@ public abstract class Arguments {
   }
 
   /**
-   * Checks if a provided value is within the specified range (min <= value <= max), throwing an
+   * Checks if a provided value is within the specified range ({@code min <= value <= max}), throwing an
    * {@link IllegalArgumentException} if not.
    *
    * @param value the value to check
@@ -48,7 +48,7 @@ public abstract class Arguments {
   }
 
   /**
-   * Checks if a provided value is within the specified range (min <= value <= max), throwing an
+   * Checks if a provided value is within the specified range ({@code min <= value <= max}), throwing an
    * {@link IllegalArgumentException} if not.
    *
    * @param value the value to check
@@ -60,7 +60,7 @@ public abstract class Arguments {
   }
 
   /**
-   * Checks if a provided value is within the specified range (min <= value <= max), throwing an
+   * Checks if a provided value is within the specified range ({@code min <= value <= max}), throwing an
    * {@link IllegalArgumentException} if not.
    *
    * @param value the value to check

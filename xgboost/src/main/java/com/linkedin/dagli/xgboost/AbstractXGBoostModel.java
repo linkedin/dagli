@@ -161,7 +161,7 @@ abstract class AbstractXGBoostModel<
    * Sets the learning rate multiplier.  Lower values effectively slow learning, which can result in a better fitting
    * model.  The default is 0.3.
    *
-   * @param learningRateMultiplier the learning rate multiplier to use (must be > 0)
+   * @param learningRateMultiplier the learning rate multiplier to use (must be {@code > 0})
    * @return a copy of this instance that will use the specified learning rate multiplier
    */
   public S withLearningRateMultiplier(double learningRateMultiplier) {
@@ -182,7 +182,7 @@ abstract class AbstractXGBoostModel<
    * Sets the maximum depth of each learned tree.  The default is 3.  Deeper trees can learn more complex conjunctions
    * over the features, but are also more liable to overfit.
    *
-   * @param maxDepth the maximum tree depth to use, >= 1
+   * @param maxDepth the maximum tree depth to use, {@code >= 1}
    * @return a copy of this instance that will use the specified maximum tree depth
    */
   public S withMaxDepth(int maxDepth) {
@@ -237,11 +237,11 @@ abstract class AbstractXGBoostModel<
   }
 
   /**
-   * Gets the number of threads used for training.  A value <= 0 means that as many threads as there are logical CPU
-   * cores will be used.
+   * Gets the number of threads used for training.  A value {@code <= 0} means that as many threads as there are logical
+   * CPU cores will be used.
    *
-   * @return the number of threads to be used, or a value <= 0 indicating that the number used will equal the number of
-   *         logical cores.
+   * @return the number of threads to be used, or a value {@code <= 0} indicating that the number used will equal the
+   *         number of logical cores.
    */
   public int getThreadCount() {
     return _threadCount;
@@ -250,7 +250,7 @@ abstract class AbstractXGBoostModel<
   /**
    * Sets the number of threads that will be used for training.
    *
-   * A value <= 0 will request the use of as many threads as there are logical CPU cores.
+   * A value {@code <= 0} will request the use of as many threads as there are logical CPU cores.
    *
    * @param threadCount the number of threads to be used
    * @return a copy of this instance, configured to use the requested number of training threads

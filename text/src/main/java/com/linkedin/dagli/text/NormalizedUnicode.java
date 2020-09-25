@@ -9,7 +9,7 @@ import java.text.Normalizer;
  * Normalizes the Unicode of the inputted text, which can avoid issues where two texts are semantically equivalent but
  * have different Unicode representations.
  *
- * E.g. "ﬀ" -> "ff" (under NKFC/D normalization forms)
+ * E.g. {@code "ﬀ" -> "ff"} (under NKFC/D normalization forms)
  *
  * @author Jeff Pasternack (jepasternack@linkedin.com)
  */

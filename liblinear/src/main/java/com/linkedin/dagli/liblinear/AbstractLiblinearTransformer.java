@@ -90,9 +90,9 @@ abstract class AbstractLiblinearTransformer<L, R, N extends PreparedTransformer2
 
   /**
    * Sets the bias that will be used; we will automatically add this as an extra feature to all examples when
-   * bias >= 0.  The default is 1.
+   * {@code bias >= 0}.  The default is 1.
    *
-   * @param bias the bias to use, or < 0 to not automatically add any bias.
+   * @param bias the bias to use, or {@code < 0} to not automatically add any bias.
    */
   public S withBias(double bias) {
     return clone(c -> c._bias = bias);

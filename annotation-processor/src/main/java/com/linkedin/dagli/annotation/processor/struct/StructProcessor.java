@@ -274,13 +274,14 @@ public class StructProcessor extends AbstractDagliProcessor {
       }
     }
 
-    if (result.isEmpty()) {
-      processingEnv.getMessager()
-          .printMessage(Diagnostic.Kind.NOTE,
-              "Creating a Struct from the class "
-                  + structElement.getSimpleName().toString() + " but this class does not have any non-static, "
-                  + "non-private, non-final fields.", structElement);
-    }
+// TODO: implement a mechanism for annotation processor "logging verbosity" to reduce compiler messaging spam
+//    if (result.isEmpty()) {
+//      processingEnv.getMessager()
+//          .printMessage(Diagnostic.Kind.NOTE,
+//              "Creating a Struct from the class "
+//                  + structElement.getSimpleName().toString() + " but this class does not have any non-static, "
+//                  + "non-private, non-final fields.", structElement);
+//    }
     return result;
   }
 

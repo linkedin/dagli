@@ -20,7 +20,7 @@ import com.linkedin.dagli.util.function.Function9;
  * If you're using serializable function objects or method references (e.g. String::length, str::startsWith, etc.), you
  * can stop reading here.
  *
- * For lambdas (anonymous functions, i.e. (args) -> { body }), there are strict limitations with respect to
+ * For lambdas (anonymous functions, i.e. {@code (args) -> { body }}), there are strict limitations with respect to
  * serializability because they are implemented as anonymous classes.  Make sure you understand these, as otherwise your
  * DAG may be writable, but not readable, or an innocuous change may break deserialization after initially working fine!
  *

@@ -13,10 +13,10 @@ import java.lang.annotation.Target;
  * If this annotation is not used, the default accessibility is PUBLIC.
  *
  * Here's an example that defines a struct with package-private accessibility:
- * <pre>{@code
- * @Accessibility(Accessibility.Level.PACKAGE_PRIVATE)
- * @Struct("Record")
- * class RecordDef {
+ * <pre>
+ * {@code @Accessibility(Accessibility.Level.PACKAGE_PRIVATE)}
+ * {@code @Struct("Record")}
+ * {@code class RecordDef {
  *   String name;
  *   int age;
  * }
@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface Accessibility {
   /**
-   * The accessibility level that will be used by the generated struct class.
+   * @return the accessibility level that will be used by the generated struct class.
    */
   Level value();
 

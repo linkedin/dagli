@@ -16,8 +16,10 @@ import java.io.UncheckedIOException;
 public interface StreamTransformer {
   /**
    * Returns a new StreamTransformer that transforms with the following mapping:
+   * <pre>{@code
    * outputStream -> this.transform(other.transform(outputStream))
    * inputStream -> this.transform(other.transform(inputStream))
+   * }</pre>
    *
    * @param other the other transformer to compose with this one
    * @return a new transformer created by composing this transformer with another.  Written bytes are transformed with

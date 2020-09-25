@@ -24,6 +24,8 @@ public @interface Versioned {
   /**
    * Whether or not Versioned is to be enforced strictly.  If true, violations will result in compiler errors rather
    * than warnings.  The default is false (not strict).
+   *
+   * @return whether or not this annotation will be enforced strictly
    */
   boolean strict() default false;
 }

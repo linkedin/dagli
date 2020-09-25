@@ -10,8 +10,8 @@ import java.util.Arrays;
 
 
 /**
- * Implementation of a {@link Vector} where the indices of non-zero values are all >= 0; these values correspond to
- * a specified range within a {@link FloatBuffer}.  This class can be substantially more efficient than {@link DenseFloatArrayVector}
+ * Implementation of a {@link Vector} where the indices of non-zero values are all {@code >= 0}; these values correspond
+ * to a specified range within a {@link FloatBuffer}.  This class can be substantially more efficient than {@link DenseFloatArrayVector}
  * when the number and length of your vectors are known in advance, because allocating one large {@link FloatBuffer} to store
  * all the elements is cheaper than allocating many smaller arrays; you also have the opportunity to allocate the
  * {@link FloatBuffer} as a direct (off-heap) buffer.
@@ -37,8 +37,8 @@ public final class DenseFloatBufferVector extends AbstractVector implements Muta
   /**
    * Creates a {@link DenseFloatBufferVector} backed by the provided {@link FloatBuffer}.  The vector takes as its initial
    * values whatever values there are in the corresponding portion of the FloatBuffer backing it, and subsequent changes
-   * to one will affect the other.  Although offset may be > 0 to point to where the start of the vector's data is in
-   * the buffer, the corresponding first element in the created vector always has index 0.
+   * to one will affect the other.  Although the offset may be greater than 0 to point to where the start of the
+   * vector's data is in the buffer, the corresponding first element in the created vector always has index 0.
    *
    * @param buffer the underlying {@link FloatBuffer} that backs this vector
    * @param offset the offset within the FloatBuffer where this vector begins

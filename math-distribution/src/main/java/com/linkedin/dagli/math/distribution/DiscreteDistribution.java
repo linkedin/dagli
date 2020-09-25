@@ -141,12 +141,15 @@ public interface DiscreteDistribution<T>
    * "Multiplies" this distribution with others.  The product distribution is defined as having probabilities that, for
    * each label, are the product of the probabilities of that label in all the multiplied distributions.  So, for
    * example, if we have three distributions:
+   * <pre>{@code
    * A -> {"one" -> 0.5, "two" -> "0.5"}
    * B -> {"one" -> 0.1, "two" -> "0.5"}
    * C -> {"one" -> 0.5}
+   * }</pre>
    *
-   * Then A.multiply(B, C) results in the distribution {"one" -> 0.025}.  Notice that in distribution C the probability
-   * of event "two" was implicitly zero, so its probability in the product distribution is thus also necessarily zero.
+   * Then A.multiply(B, C) results in the distribution {@code "one" -> 0.025}.  Notice that in distribution C the
+   * probability of event "two" was implicitly zero, so its probability in the product distribution is thus also
+   * necessarily zero.
    *
    * @param others the other distributions to multiply with this distribution; these distributions may have arbitrary
    *               label types, but events with labels not present in this distribution will not be included in the
@@ -198,13 +201,15 @@ public interface DiscreteDistribution<T>
    * to more than 1).  The product distribution is defined as having probabilities that, for
    * each label, are the product of the probabilities of that label in all the multiplied distributions.  So, for
    * example, if we have three distributions:
+   * <pre>{@code
    * A -> {"one" -> 0.5, "two" -> "0.5"}
    * B -> {"one" -> 0.1, "two" -> "0.5"}
    * C -> {"one" -> 0.5}
+   * }</pre>
    *
-   * Then A.multiply(0.2, B, C) results in the distribution {"one" -> 0.05, "two" -> 0.05}.  Notice that in distribution
-   * B, the probability of event "one" is taken to be 0.2 (and not 0.1), and in C the probability of event "two" is
-   * also taken to be 0.2 despite not being present in the distribution.
+   * Then A.multiply(0.2, B, C) results in the distribution {@code {"one" -> 0.05, "two" -> 0.05}}.  Notice that in
+   * distribution B, the probability of event "one" is taken to be 0.2 (and not 0.1), and in C the probability of event
+   * "two" is also taken to be 0.2 despite not being present in the distribution.
    *
    * Note that the minimum probability value only applies for events that are present in at least one of the operands of
    * the multiplication; the product of the above multiplication will <strong>not</strong>, for example, have an event
@@ -373,7 +378,7 @@ public interface DiscreteDistribution<T>
   }
 
   /**
-   * Creates a new distribution by mapping {@link LabelProbability} entries (label -> probability pairs) to new,
+   * Creates a new distribution by mapping {@link LabelProbability} entries ({@code label -> probability} pairs) to new,
    * potentially different entries.  Mapping an entry to a null will result in that entry being deleted entirely.
    *
    * @param mapper a {@link LabelProbability}-mapping function that will generate new entries from existing entries.  If

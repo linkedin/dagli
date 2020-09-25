@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  *
  * Note that, like all {@link DiscreteDistribution}s, {@link #stream()} and other iterators include only non-zero
  * probability events.  This means that iterating over the {@link BinaryDistribution}'s {@link LabelProbability} entries
- * may yield two entries (if 0 < P(TRUE) < 1) or just one (if P(TRUE) == 1 or P(TRUE) == 0).
+ * may yield two entries (if {@code 0 < P(TRUE) < 1}) or just one (if P(TRUE) == 1 or P(TRUE) == 0).
  */
 public class BinaryDistribution extends AbstractDiscreteDistribution<Boolean> {
   private static final long serialVersionUID = 1;

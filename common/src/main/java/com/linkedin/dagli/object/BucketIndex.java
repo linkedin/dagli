@@ -49,7 +49,7 @@ public class BucketIndex extends
    *
    * The default number of buckets is 10.
    *
-   * @param count the number of buckets to use (must be >= 1)
+   * @param count the number of buckets to use (must be {@code >= 1})
    * @return a copy of this instance that will use the specified number of buckets
    */
   public BucketIndex withBucketCount(int count) {

@@ -1,3 +1,10 @@
+// This gradle file does all common configuration of Dagli's modules (subprojects), notably using a common registry of
+// dependencies to avoid cross-module misalignment.
+//
+// To build (and test) Dagli, run "gradle build".
+// To publish Dagli, run "gradle uploadArchives --no-daemon --no-parallel"
+// ("--no-daemon --no-parallel" is required, as otherwise the published data will likely be corrupt/incomplete.)
+
 allprojects {
   apply plugin: 'checkstyle'
   apply plugin: 'idea'
@@ -15,8 +22,18 @@ idea {
 }
 
 subprojects {
+  // everything is a Java library (except the example modules, but application-vs-library is unimportant for us)
   apply plugin: 'java-library'
 
+  // used when publishing artifacts to central repository:
+  apply plugin: 'maven'
+  apply plugin: 'signing'
+
+  if (project.parent.name == "examples" || project.name == "examples") {
+    uploadArchives.enabled = false // don't upload example JARs
+  }
+
+  archivesBaseName = project.name
   group = "com.linkedin.dagli"
   version = dagliVersion
   buildDir = "${rootProject.projectDir}/build/${project.name}" // use common build folder
@@ -27,6 +44,9 @@ subprojects {
 
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
+
+  // for now, print out only the most significant javadoc issues
+  javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
   test {
     useJUnitPlatform()
@@ -74,5 +94,79 @@ subprojects {
   dependencies {
     testImplementation project.ext.dependencies.junit
     testImplementation project.ext.dependencies.'junit-params'
+  }
+
+  // artifact publishing tasks and configuration
+  jar {
+    manifest {
+      attributes('Copyright': 'Copyright 2020 LinkedIn Corporation. All rights reserved.',
+          'License': 'Licensed under the BSD-2 Clause license.  See LICENSE in the project root for license information.')
+    }
+
+    group = 'com.linkedin.dagli'
+    version = dagliVersion
+    archivesBaseName = project.name
+  }
+
+  task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+  }
+
+  task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+
+  artifacts {
+    archives javadocJar, sourcesJar
+  }
+
+  signing {
+    sign configurations.archives
+  }
+
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+
+        pom.project {
+          name project.name
+          packaging 'jar'
+
+          description 'DAG-oriented machine learning framework for bug-resistant, readable, efficient, maintainable and trivially deployable models in Java and other JVM languages'
+          url 'https://github.com/linkedin/dagli'
+
+          scm {
+            connection 'scm:git@github.com:linkedin/dagli.git'
+            developerConnection 'scm:git@github.com:linkedin/dagli.git'
+            url 'scm:git@github.com:linkedin/dagli.git'
+          }
+
+          licenses {
+            license {
+              name 'BSD 2-Clause License'
+              url 'https://opensource.org/licenses/BSD-2-Clause'
+            }
+          }
+
+          developers {
+            developer {
+              id 'jeffpasternack'
+              name 'Jeff Pasternack'
+            }
+          }
+        }
+      }
+    }
   }
 }

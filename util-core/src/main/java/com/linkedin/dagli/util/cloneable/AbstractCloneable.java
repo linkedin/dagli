@@ -6,18 +6,18 @@ import java.util.function.Consumer;
 
 /**
  * AbstractCloneable provides convenient clone methods which can be used to implement in-place builder mechanics (i.e.
- * "someObject.withProperty(X)" would be implemented as "this.clone(c -> c._property = x);").
+ * "someObject.withProperty(X)" would be implemented as "{@code this.clone(c -> c._property = x);}").
  *
  * AbstractCloneable provides the same shallow cloning as Object.clone(), not deep copies, although the {@link #clone()}
  * method may be overridden to deeply clone some or all fields as desired.
  *
  * To make the clone method public, simply add this code to your class:
- * <pre> {@code
- * @Override
- * public YourClass clone() {
- *   return super.clone();
- * }
- * } </pre>
+ * <pre>
+ * {@code @Override                                   }
+ * {@code public YourClass clone() {                  }
+ * {@code   return super.clone();                     }
+ * {@code }                                           }
+ * </pre>
  *
  * @param <S> the type of the ultimate derived class that extends from this one; this should be a concrete class, such
  *            as {@code MyClass<String>}, not a wildcard class such as {@code MyClass<? super String>}

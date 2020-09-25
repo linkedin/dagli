@@ -6,7 +6,7 @@ import java.util.function.IntFunction;
 
 
 /**
- * A tuple of arity ArrayTuple1<A> that is backed by an array.
+ * A tuple of arity 1 that is backed by an array.
  * ArrayTuples are less memory-efficient than FieldTuples because they require storing an extra object (the array),
  * but are trivially cheap to create from an existing array of tuple elements.
  */

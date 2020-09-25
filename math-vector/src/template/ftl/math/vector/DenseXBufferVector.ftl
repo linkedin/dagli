@@ -14,8 +14,8 @@ import java.nio.${bufferType};
 import java.util.Arrays;
 
 /**
- * Implementation of a {@link Vector} where the indices of non-zero values are all >= 0; these values correspond to
- * a specified range within a {@link ${bufferType}}.  This class can be substantially more efficient than {@link <@v.DenseVector typeIndex />}
+ * Implementation of a {@link Vector} where the indices of non-zero values are all {@code >= 0}; these values correspond
+ * to a specified range within a {@link ${bufferType}}.  This class can be substantially more efficient than {@link <@v.DenseVector typeIndex />}
  * when the number and length of your vectors are known in advance, because allocating one large {@link ${bufferType}} to store
  * all the elements is cheaper than allocating many smaller arrays; you also have the opportunity to allocate the
  * {@link ${bufferType}} as a direct (off-heap) buffer.
@@ -41,8 +41,8 @@ public final class <@v.DenseBufferVector typeIndex /> extends AbstractVector imp
   /**
    * Creates a {@link <@v.DenseBufferVector typeIndex />} backed by the provided {@link ${bufferType}}.  The vector takes as its initial
    * values whatever values there are in the corresponding portion of the ${bufferType} backing it, and subsequent changes
-   * to one will affect the other.  Although offset may be > 0 to point to where the start of the vector's data is in
-   * the buffer, the corresponding first element in the created vector always has index 0.
+   * to one will affect the other.  Although the offset may be greater than 0 to point to where the start of the
+   * vector's data is in the buffer, the corresponding first element in the created vector always has index 0.
    *
    * @param buffer the underlying {@link ${bufferType}} that backs this vector
    * @param offset the offset within the ${bufferType} where this vector begins

@@ -31,16 +31,14 @@ import java.lang.annotation.Target;
  * Here's an example that defines a struct with three fields (one optional) which will be generated in the current
  * package as a class called "Record":
  * <pre>
- * {@code
- * @Struct("Record")
- * class RecordBase implements Serializable {
- *   private static final long serialVersionUID = 1;
- *
- *   String name;
- *   int age;
- *   @Optional Locale preferredLocale = Locale.US;
- * }
- * }
+ * {@code @Struct("Record")}                                    }
+ * {@code class RecordBase implements Serializable {            }
+ * {@code   private static final long serialVersionUID = 1;     }
+ * {@code                                                       }
+ * {@code   String name;                                        }
+ * {@code   int age;                                            }
+ * {@code   @Optional Locale preferredLocale = Locale.US;       }
+ * {@code }                                                     }
  * </pre>
  */
 @Retention(RetentionPolicy.CLASS)
@@ -51,6 +49,8 @@ public @interface Struct {
    * A value of "com.xyz.SomeClass" will result in a class called "SomeClass" being generated in the "com.xyz" package.
    * If the package is omitted (e.g. just the value "SomeClass" is provided) the class will be generated in the current
    * package.
+   *
+   * @return the package name and class for the generated struct
    */
   String value();
 }

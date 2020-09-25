@@ -107,7 +107,7 @@ public class DensifiedVector
 
     /**
      * Creates a new prepared vector densifier with the specified densification map and inputs.
-     * @param densificationMap Maps from the sparse index to the dense index; default value must be < 0
+     * @param densificationMap Maps from the sparse index to the dense index; default value must be {@code < 0}
      */
     public Prepared(Long2IntOpenHashMap densificationMap) {
       super();

@@ -10,6 +10,7 @@ public abstract class PrimitiveNumberTypes {
 
   /**
    * @return true iff type is {@code double.class} or {@code float.class}
+   * @param type the primitive type whose floatingpointitude is to be queried
    */
   public static boolean isFloatingPoint(Class<? extends Number> type) {
     assert type.isPrimitive();
@@ -43,7 +44,7 @@ public abstract class PrimitiveNumberTypes {
   }
 
   /**
-   * Returns float.class if minBits <= 32 and double.class otherwise.
+   * Returns float.class if {@code minBits <= 32} and {@code double.class} otherwise.
    *
    * @param minBits the minimum bits the float should have
    * @return the smallest floating point primitive type with at least the number of bits specified (or

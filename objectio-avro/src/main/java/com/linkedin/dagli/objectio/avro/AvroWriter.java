@@ -68,7 +68,7 @@ public class AvroWriter<T extends GenericRecord> implements ObjectWriter<T> {
    *                    in the future, and it is also illegal to specify a record count when appending to a file.
    * @throws UncheckedIOException if a problem occurs opening or created the file, including if the file is being opened
    *                              to append additional records but a record count has been previously specified
-   * @throws IllegalArgumentException if recordCount is >= 0 and the writer is appending to an existing file
+   * @throws IllegalArgumentException if {@code recordCount >= 0} and the writer is appending to an existing file
    */
   public AvroWriter(Class<T> recordType, Path path, long recordCount) {
     _class = recordType;

@@ -266,7 +266,7 @@ abstract class AbstractFastTextModel<
    * for each example in each epoch.  This is the default behavior.
    *
    * It's a bad idea to use negative sampling when the number of labels is small (sampling negatives makes the most
-   * sense when [actual number of labels] >> [sampledNegatives]).  Sampling is done with replacement, so in a
+   * sense when {@code [actual number of labels] >> [sampledNegatives]}).  Sampling is done with replacement, so in a
    * hypothetical scenario with 4 labels and [sampledNegatives] == 4, for any given example at least one negative will
    * be sampled twice and one or more negative labels may not be sampled at all!  Instead, for relatively small label
    * spaces, just use softmax loss.
@@ -560,7 +560,7 @@ abstract class AbstractFastTextModel<
    * for each example in each epoch.  This is the default behavior.
    *
    * It's a bad idea to use negative sampling when the number of labels is small (sampling negatives makes the most
-   * sense when [actual number of labels] >> [sampledNegatives]).  Sampling is done with replacement, so in a
+   * sense when {@code [actual number of labels] >> [sampledNegatives]}).  Sampling is done with replacement, so in a
    * hypothetical scenario with 4 labels and [sampledNegatives] == 4, for any given example at least one negative will
    * be sampled twice and one or more negative labels may not be sampled at all!  Instead, for relatively small label
    * spaces, just use softmax loss.

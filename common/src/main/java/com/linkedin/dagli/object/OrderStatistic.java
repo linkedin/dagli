@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 /**
- * The <a href="https://en.wikipedia.org/wiki/Order_statistic><i>k</i>th order statistic</a> is the kth smallest
+ * The <a href="https://en.wikipedia.org/wiki/Order_statistic"><i>k</i>th order statistic</a> is the kth smallest
  * value is a sequence of values.
  *
  * This transformer finds the kth order statistic from a (sorted) multiset that associates each value with its count.

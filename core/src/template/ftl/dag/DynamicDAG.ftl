@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.com.linkedin.dagli.util.stream.Collectors;
+import java.util.stream.Collectors;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 <#macro Common prepared>
@@ -125,7 +125,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
   private void setDAG() {
     _outputToIndexMap = new Object2IntOpenHashMap<>(_outputs.size());
-    _outputs.com.linkedin.dagli.util.stream().map(Producer::handle).forEach(handle -> _outputToIndexMap.put(handle, _outputToIndexMap.size()));
+    _outputs.stream().map(Producer::handle).forEach(handle -> _outputToIndexMap.put(handle, _outputToIndexMap.size()));
 
     _dag = new DAGStructure<>(DAGReducer.reduce(new DeduplicatedDAG(_placeholders, _outputs), _reductionLevel));
     this._inputs = new ArrayList<>(MissingInput.producerList(_placeholders.size()));
@@ -393,7 +393,7 @@ public class DynamicDAG<R> extends AbstractPreparableTransformerDynamic<R, Dynam
     inputList.addAll(requiredDirectInputsList);
     inputList.addAll(minimalInputs);
 
-    List<Placeholder<?>> placeholders = inputList.com.linkedin.dagli.util.stream()
+    List<Placeholder<?>> placeholders = inputList.stream()
         .map(replacementMap::get)
         .map(producer -> (Placeholder<?>) producer)
         .collect(Collectors.toList());

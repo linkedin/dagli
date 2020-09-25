@@ -227,7 +227,7 @@ abstract class AbstractIndex<I, T, R, N extends AbstractIndex.Prepared<I, T, R, 
    * their frequency, not comparator order.)
    *
    * Items that compare lower will have lower indices.  For example, if the mapped items are {"C", "A", "B"} and
-   * a natural ordering comparator is used the mapped indices will be {"A" -> 0, "B" -> 1, "C" -> 2}.
+   * a natural ordering comparator is used the mapped indices will be {@code {"A" -> 0, "B" -> 1, "C" -> 2}}.
    *
    * By default, if no comparator is specified, indices will be assigned in decreasing order of frquency (the most
    * frequent item will be assigned to index 0, the second-most frequent index 1, etc.)
@@ -295,7 +295,7 @@ abstract class AbstractIndex<I, T, R, N extends AbstractIndex.Prepared<I, T, R, 
    * The default value is 1.
    *
    * @param minimumRetentionFrequency the minimum number of times an item must be seen during preparation to be assigned
-   *                                  an explicit index (and not be considered "unknown"); must be >= 1
+   *                                  an explicit index (and not be considered "unknown"); must be {@code >= 1}
    * @return a copy of this instance that will use the specified minimum retention frequency
    */
   public S withMinimumFrequency(int minimumRetentionFrequency) {

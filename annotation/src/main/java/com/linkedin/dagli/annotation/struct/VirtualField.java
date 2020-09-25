@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface VirtualField {
   /**
-   * The name of the generated transformer.  If no name ("") is specified, the name of the method will be used.
+   * @return the name of the generated transformer.  If no name ("") is specified, the name of the method will be used.
    */
   String value() default "";
 }

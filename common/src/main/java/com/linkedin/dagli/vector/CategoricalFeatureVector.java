@@ -22,8 +22,8 @@ import org.apache.commons.rng.core.source64.XoRoShiRo128PlusPlus;
  * there were elements in the iterable input</strong>.
  *
  * As an example, if our input is the list of {@link String} objects ["Hello", "World", "!"], we might compute a
- * sparse vector of [-93 -> 1, 1652 -> 1, -4321 -> 1, 3399 -> 1] (these indices are hypothetical and will tend to be
- * much larger in practice as the indices will be roughly uniformly distributed 64-bit integers).  Note that there is
+ * sparse vector of {@code [-93 -> 1, 1652 -> 1, -4321 -> 1, 3399 -> 1]} (these indices are hypothetical and will tend
+ * to be much larger in practice as the indices will be roughly uniformly distributed 64-bit integers).  There is
  * no relationship between the ordering of the categorical features (either by feature index or by value) and the
  * resulting sparse indices (i.e. categorical feature #1 with value 0 could have a higher or lower index that feature #2
  * with value 0 or feature #1 with value 1.)

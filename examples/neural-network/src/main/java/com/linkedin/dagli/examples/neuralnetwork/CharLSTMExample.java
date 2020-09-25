@@ -42,7 +42,7 @@ import org.apache.logging.log4j.core.config.Configurator;
  * layer as "chars", distinct from the Shakespearean character names we are predicting.
  *
  * Note that this model takes a long time (2+ hours) to train using the naive CPU ND4J libraries specified in our
- * build.gradle file.  Switching to the <a href="http://deeplearning4j.org/cpu>AVX-2</a> (supported by virtually all
+ * build.gradle file.  Switching to the <a href="http://deeplearning4j.org/cpu">AVX-2</a> (supported by virtually all
  * modern x86 CPUs) or <a href="https://deeplearning4j.konduit.ai/config/backends/config-cudnn">GPU</a> variants may
  * dramatically improve this (you may want to also tune the minibatch size).
  *
