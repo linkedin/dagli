@@ -18,13 +18,16 @@ regression classifier:
         .asLeafFeatures();
 
     NgramVector ngramFeatures = new NgramVector().withMaxSize(3).withInput(tokens);
-    CompositeSparseVector combinedFeatures = new CompositeSparseVector().withInputs(ngramFeatures, leafFeatures);
-    LiblinearClassification<String> prediction = new LiblinearClassification<String>().withFeatureInput(combinedFeatures).withLabelInput(label);
+    CompositeSparseVector combinedFeatures = 
+        new CompositeSparseVector().withInputs(ngramFeatures, leafFeatures);
+    LiblinearClassification<String> prediction = 
+        new LiblinearClassification<String>().withFeatureInput(combinedFeatures).withLabelInput(label);
 
-    DAG2x1<String, LabelType, DiscreteDistribution<String>> model = DAG.withPlaceholders(text, label).withOutput(prediction);   
-    DAG2x1.Prepared<String, LabelType, DiscreteDistribution<String>> trainedModel = model.prepare(textList, labelList);
+    DAG2x1.Prepared<String, LabelType, DiscreteDistribution<String>> trainedModel = 
+        DAG.withPlaceholders(text, label).withOutput(prediction).prepare(textList, labelList);
+    
     LabelType prediction = trainedModel.apply("Some text for which to predict a label", null);
-    // trainedModel can now be serialized and later loaded on a server, in a CLI app, within a Hive UDF, etc. 
+    // trainedModel now can be serialized and later loaded on a server, in a CLI app, in a Hive UDF...
 
 This code is fairly minimal; Dagli also provides mechanisms to more elegantly encapsulate example data 
 ([@Structs](documentation/structs.md)), read in data (e.g. from delimiter-separated value or Avro files), evaluate model 
