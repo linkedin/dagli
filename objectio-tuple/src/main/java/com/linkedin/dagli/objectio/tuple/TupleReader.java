@@ -151,6 +151,7 @@ public class TupleReader<T extends Tuple> implements ObjectReader<T> {
   }
 
   @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public ObjectIterator<T> iterator() {
     ObjectIterator[] res = ArraysEx.mapArray(_objectReaders, ObjectIterator[]::new, ObjectReader::iterator);
     return new Iterator<T>(res);

@@ -24,12 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Consumer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,11 +42,14 @@ public class DAGTest {
     Configurator.setLevel(SimpleDAGExecutor.class.getName(), Level.TRACE);
   }
 
-  public final static DAGExecutor[] PREPARABLE_EXECUTORS =
-      ArraysEx.concat(new DAGExecutor[]{new SimpleDAGExecutor(), new LocalDAGExecutor()}, getMultithreadedExecutors());
+  public static DAGExecutor[] preparableExecutors() {
+    return ArraysEx.concat(new DAGExecutor[]{new SimpleDAGExecutor(), new LocalDAGExecutor()},
+        getMultithreadedExecutors());
+  }
 
-  public final static PreparedDAGExecutor[] PREPARED_EXECUTORS =
-      ArraysEx.concat(PREPARABLE_EXECUTORS, getFastPreparedExecutors());
+  public static PreparedDAGExecutor[] preparedExecutors() {
+    return ArraysEx.concat(preparableExecutors(), getFastPreparedExecutors());
+  }
 
   private static PreparedDAGExecutor[] getFastPreparedExecutors() {
     int[] minInputsPerThreads = RUN_ALL_TESTS ? new int[]{1, 2, 3, 4, 8, 16} : new int[]{4};
@@ -87,20 +91,6 @@ public class DAGTest {
     }
 
     return executors;
-  }
-
-  private static void test(DAGExecutor[] executors, Consumer<DAGExecutor> test) {
-    for (int i = 0; i < executors.length; i++) {
-      System.err.println("Testing executor " + i + " " + executors[i].toString());
-      test.accept(executors[i]);
-    }
-  }
-
-  private static void test(PreparedDAGExecutor[] executors, Consumer<PreparedDAGExecutor> test) {
-    for (int i = 0; i < executors.length; i++) {
-      System.err.println("Testing executor " + i + " " + executors[i].toString());
-      test.accept(executors[i]);
-    }
   }
 
   @ValueEquality
@@ -150,7 +140,6 @@ public class DAGTest {
     }
 
     public class Preparer extends AbstractStreamPreparer1<T, T, FilteringTransformer> {
-
       @Override
       public PreparerResult<FilteringTransformer> finish() {
         return new PreparerResult<>(new FilteringTransformer(MissingInput.get()));
@@ -168,12 +157,9 @@ public class DAGTest {
     }
   }
 
-  @Test
-  public void testBasicPrepared() {
-    test(PREPARED_EXECUTORS, DAGTest::testBasicPreparedImpl);
-  }
-
-  public static void testBasicPreparedImpl(PreparedDAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparedExecutors")
+  public void testBasicPrepared(PreparedDAGExecutor executor) {
     Placeholder<Integer> intPlaceholder = new Placeholder<>("Integer Placeholder");
     Placeholder<Double> doublePlaceholder = new Placeholder<>("Double Placeholder");
 
@@ -209,12 +195,9 @@ public class DAGTest {
         ObjectReader.equals(res, ObjectReader.of(Tuple2.of(7.5, 9.0), Tuple2.of(1.5, 3.0), Tuple2.of(0.0, 1.0))));
   }
 
-  @Test
-  public void testTrivialPreparable() {
-    test(PREPARABLE_EXECUTORS, DAGTest::testTrivialPreparableDAG);
-  }
-
-  private static void testTrivialPreparableDAG(DAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
+  public void testTrivialPreparableDAG(DAGExecutor executor) {
     Placeholder<Integer> intPlaceholder = new Placeholder<>("Integer Placeholder");
     MemorizedFilterTransformer<Integer> filter = new MemorizedFilterTransformer<>(intPlaceholder);
 
@@ -231,12 +214,9 @@ public class DAGTest {
         Arrays.asList(null, null, 3, 4, null, null));
   }
 
-  @Test
-  public void testPreparable() {
-    test(PREPARABLE_EXECUTORS, DAGTest::testPreparableDAG);
-  }
-
-  private static void testPreparableDAG(DAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
+  public void testPreparableDAG(DAGExecutor executor) {
     Placeholder<Integer> intPlaceholder = new Placeholder<>("Integer Placeholder");
     TestAddAsDoublesTransformer indexGenerator =
         new TestAddAsDoublesTransformer(new ExampleIndex(), new Constant<>(1));
@@ -261,12 +241,9 @@ public class DAGTest {
         Arrays.asList(null, null, 12.0, 16.0, 24.0, null));
   }
 
-  @Test
-  public void testPreparable2() {
-    test(PREPARABLE_EXECUTORS, DAGTest::testPreparableDAG2);
-  }
-
-  private static void testPreparableDAG2(DAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
+  public void testPreparableDAG2(DAGExecutor executor) {
     Placeholder<Integer> intPlaceholder = new Placeholder<>("Integer Placeholder");
     TestAddAsDoublesTransformer indexGenerator =
         new TestAddAsDoublesTransformer(new ExampleIndex(), new Constant<>(1));
@@ -288,12 +265,9 @@ public class DAGTest {
     assertEquals(res.getPreparedDAG().applyAll(Arrays.asList(3, -1000, -100)).toList(), Arrays.asList(4.0, null, null));
   }
 
-  @Test
-  public void testSubgraphs() {
-    test(PREPARED_EXECUTORS, DAGTest::testSubgraphsImpl);
-  }
-
-  private static void testSubgraphsImpl(PreparedDAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparedExecutors")
+  public void testSubgraphs(PreparedDAGExecutor executor) {
     Placeholder<Integer> a = new Placeholder<>();
     Placeholder<Integer> b = new Placeholder<>();
     Placeholder<String> c = new Placeholder<>();
@@ -329,12 +303,9 @@ public class DAGTest {
     assertEquals((int) identityDAG.apply(2), 2);
   }
 
-  @Test
-  public void testTrivialPlaceholderOutput() {
-    test(PREPARED_EXECUTORS, DAGTest::testTrivialPlaceholderOutputImpl);
-  }
-
-  private static void testTrivialPlaceholderOutputImpl(PreparedDAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparedExecutors")
+  public void testTrivialPlaceholderOutput(PreparedDAGExecutor executor) {
     Placeholder<Integer> intPlaceholder = new Placeholder<>("Integer");
     TestAddAsDoublesTransformer indexGenerator =
         new TestAddAsDoublesTransformer(new ExampleIndex(), new Constant<>(1));
@@ -355,12 +326,9 @@ public class DAGTest {
     assertTrue(ObjectReader.equals(expectedOutputs2.createReader(), res.getResult2()));
   }
 
-  @Test
-  public void testDeepGraph() {
-    test(PREPARABLE_EXECUTORS, DAGTest::testDeepGraphImpl);
-  }
-
-  private static void testDeepGraphImpl(DAGExecutor executor) {
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
+  public void testDeepGraph(DAGExecutor executor) {
     Random r = new Random(0);
 
     Placeholder<Long> p0s1 = new Placeholder<>();
@@ -441,11 +409,8 @@ public class DAGTest {
         Tuple4.of(null, 0L, placeholder.size64(), placeholder.size64()));
   }
 
-  @Test
-  public void testEmbeddedDAG() {
-    test(PREPARED_EXECUTORS, this::testEmbeddedDAG);
-  }
-
+  @ParameterizedTest
+  @MethodSource("preparedExecutors")
   public void testEmbeddedDAG(PreparedDAGExecutor executor) {
     Placeholder<Long> summand1Placeholder = new Placeholder<>();
     Placeholder<Long> summand2Placeholder = new Placeholder<>();
@@ -464,18 +429,8 @@ public class DAGTest {
     assertEquals((long) sequentialDAG.apply(3L), 3);
   }
 
-  @Test
-  public void testViewsBasic() {
-    for (DAGExecutor executor : PREPARABLE_EXECUTORS) {
-      basicViewTest(executor);
-      basicViewTest2(executor);
-      basicViewTest3(executor);
-      basicViewBatchTest(executor);
-      basicViewBatchTest2(executor);
-      basicViewBatchTest3(executor);
-    }
-  }
-
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
   public void basicViewTest(DAGExecutor executor) {
     Placeholder<String> input = new Placeholder<>();
     DelayedIdentity<String> delayedIdentity = new DelayedIdentity<String>(0).withInput(input);
@@ -492,6 +447,8 @@ public class DAGTest {
     assertEquals(prepared.getResult1().toList().get(2), "Three");
   }
 
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
   public void basicViewTest2(DAGExecutor executor) {
     Placeholder<String> input = new Placeholder<>();
     DelayedIdentity<String> delayedIdentity = new DelayedIdentity<String>(0).withInput(input);
@@ -505,6 +462,8 @@ public class DAGTest {
     assertEquals((long) prepared.toList().get(3), 4);
   }
 
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
   public void basicViewTest3(DAGExecutor executor) {
     Placeholder<String> input = new Placeholder<>();
     DelayedIdentity<String> delayedIdentity = new DelayedIdentity<String>(0).withInput(input);
@@ -527,6 +486,8 @@ public class DAGTest {
     assertEquals((long) prepared.toList().get(3).get2(), 8);
   }
 
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
   public void basicViewBatchTest(DAGExecutor executor) {
     Placeholder<String> input = new Placeholder<>();
     DelayedIdentityBatchPrepared<String> delayedIdentity = new DelayedIdentityBatchPrepared<String>(0).withInput(input);
@@ -542,6 +503,8 @@ public class DAGTest {
     assertEquals(prepared.getResult1().toList().get(2), "Three");
   }
 
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
   public void basicViewBatchTest2(DAGExecutor executor) {
     Placeholder<String> input = new Placeholder<>();
     DelayedIdentityBatchPrepared<String> delayedIdentity = new DelayedIdentityBatchPrepared<String>(0).withInput(input);
@@ -555,6 +518,8 @@ public class DAGTest {
     assertEquals((long) prepared.toList().get(3), 4);
   }
 
+  @ParameterizedTest
+  @MethodSource("preparableExecutors")
   public void basicViewBatchTest3(DAGExecutor executor) {
     Placeholder<String> input = new Placeholder<>();
     DelayedIdentity<String> delayedIdentity = new DelayedIdentity<String>(0).withInput(input);

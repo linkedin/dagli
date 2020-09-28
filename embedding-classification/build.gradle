@@ -5,5 +5,5 @@ dependencies {
   api project(':math-vector')
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

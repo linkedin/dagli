@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 public class FunctionTest {
   @Test
   public void testVariadic() {
-    consumerV((Integer... args) -> System.out.println(args.length));
+    int[] sum = new int[1]; // not used for anything beyond making sure Java doesn't elide our call below
+    consumerV((Integer... args) -> sum[0] += args.length);
     Assertions.assertEquals(3, consumerI(args -> args.length));
     Assertions.assertEquals(3, (int) this.<Integer>consumerG(args -> args.length));
   }

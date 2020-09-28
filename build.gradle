@@ -10,7 +10,7 @@ allprojects {
   apply plugin: 'idea'
 }
 
-def dagliVersion = "14.0.0-beta1"
+def dagliVersion = "14.0.0-beta2"
 def javaVersion = JavaVersion.VERSION_1_9
 def jdk = "1.9"
 

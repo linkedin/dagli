@@ -3,5 +3,5 @@ dependencies {
   implementation project(':text-tokenization-jflex')
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

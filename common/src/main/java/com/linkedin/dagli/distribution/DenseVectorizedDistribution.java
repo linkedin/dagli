@@ -84,6 +84,7 @@ public abstract class DenseVectorizedDistribution {
     public DenseFloatArrayVector apply(DiscreteDistribution<T> val1) {
       float[] result = new float[_indices.size()];
       val1.stream().forEach(labelProbability -> {
+        @SuppressWarnings("deprecation") // get() is not equivalent to getInt() because the former can return null
         Integer index = _indices.get(labelProbability.getLabel());
         if (index != null) {
           result[index] = (float) labelProbability.getProbability();

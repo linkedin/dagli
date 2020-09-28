@@ -56,24 +56,16 @@ public class XGBoostToyTest {
 
     DAG2x1<String, DenseFloatArrayVector, DiscreteDistribution<String>> dag =
         DAG.withPlaceholders(labelPlaceholder, vectorPlaceholder).withOutput(xgBoostClassification);
-
-    long time = System.currentTimeMillis();
-    System.out.println("Preparing DAG");
+    
     List<DenseFloatArrayVector> data = getData(100000, 0);
     List<String> labels = getLabels(data);
     DAG1x1.Prepared<DenseFloatArrayVector, DiscreteDistribution<String>> preparedDAG =
         dag.prepare(labels, data).withGeneratorAsInput1(Constant.nullValue());
-
-    //System.out.println("Finished in " + Long.toString(System.currentTimeMillis() - time) + " milliseconds");
-
-    time = System.currentTimeMillis();
-    System.out.println("Evaluating DAG");
+    
     List<DenseFloatArrayVector> evalData = getData(100000, 1);
     for (DenseFloatArrayVector vec : evalData) {
       preparedDAG.apply(vec);
     }
-
-    //System.out.println("Finished in " + Long.toString(System.currentTimeMillis() - time) + " milliseconds");
   }
 
   @Test
@@ -89,8 +81,7 @@ public class XGBoostToyTest {
 
     DAG2x1<String, DenseFloatArrayVector, DiscreteDistribution<String>> dag =
         DAG.withPlaceholders(labelPlaceholder, vectorPlaceholder).withOutput(xgBoostClassification);
-
-    System.out.println("Preparing DAG");
+    
     List<DenseFloatArrayVector> data = getData(100000, 0);
     List<String> labels = getLabels(data);
     DAG2x1.Prepared<String, DenseFloatArrayVector, DiscreteDistribution<String>> preparedDAG =

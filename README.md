@@ -35,11 +35,11 @@ performance, and much more.  You can find demonstrations of these among the
 Dagli is [split into a number of modules](documentation/modules.md); just add dependencies on those you need in your 
 project.  For example, the dependencies for our above introductory example might look like this in Gradle:
 
-    implementation 'com.linkedin.dagli:core:14.0.0-beta1'              // every project using Dagli should include this
-    implementation 'com.linkedin.dagli:common:14.0.0-beta1'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
-    implementation 'com.linkedin.dagli:text-tokenization:14.0.0-beta1' // the text tokenization transformer ("Tokens")
-    implementation 'com.linkedin.dagli:liblinear:14.0.0-beta1'         // the Dagli Liblinear classification model
-    implementation 'com.linkedin.dagli:xgboost:14.0.0-beta1'           // the Dagli XGBoost classification and regression models
+    implementation 'com.linkedin.dagli:core:14.0.0-beta2'              // every project using Dagli should include this
+    implementation 'com.linkedin.dagli:common:14.0.0-beta2'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
+    implementation 'com.linkedin.dagli:text-tokenization:14.0.0-beta2' // the text tokenization transformer ("Tokens")
+    implementation 'com.linkedin.dagli:liblinear:14.0.0-beta2'         // the Dagli Liblinear classification model
+    implementation 'com.linkedin.dagli:xgboost:14.0.0-beta2'           // the Dagli XGBoost classification and regression models
     
 # Benefits
 - Write your machine learning pipeline as a directed acyclic graph (DAG) **once** for both training and inference.  No 
@@ -136,13 +136,18 @@ custom UDFs that train, evaluate or apply Dagli models.
 
 
 # Versioning
-Our initial public release is `14.0.0-beta1`, with the "beta" designation motivated by the extensive changes relative to 
+Our initial public release was `14.0.0-beta1`, with the "beta" designation motivated by the extensive changes relative to 
 the previous (LinkedIn-internal) version and the greater diversity of applications entailed by a public release.
 
 While in beta, releases with potentially breaking API or serialization changes will be accompanied by a major version 
 increment (e.g. `15.0.0-beta1`).  However, after the beta designation is removed, subsequent revisions will be backward
 compatible <small>(with a *possible* exception for modules with non-backward-compatible external dependencies)</small>, 
 allowing large projects to transitively depend on multiple versions of Dagli without dependency shading.
+
+## Version History
+- `14.0.0-beta2` *9/27/20*: update dependency metadata to prevent the annotation processors' dependencies from 
+  transitively leaking into the client's classpath  
+- `14.0.0-beta1`: initial public release
 
 # License
 Copyright 2020 LinkedIn Corporation.  All Rights Reserved.

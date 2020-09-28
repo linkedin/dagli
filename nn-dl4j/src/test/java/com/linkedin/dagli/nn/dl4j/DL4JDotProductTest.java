@@ -32,8 +32,6 @@ public class DL4JDotProductTest {
     INDArray res = net.feedForward(new INDArray[]{Nd4j.createFromArray(3.0, 2.0, 2.0, 3.0).reshape(2, 2),
         Nd4j.createFromArray(6.0, 5.0, 2.0, 3.0).reshape(2, 2)}, false).get("dot");
 
-    System.out.println(res);
-
     Assertions.assertEquals(28, res.getDouble(0));
     Assertions.assertEquals(13, res.getDouble(1));
   }

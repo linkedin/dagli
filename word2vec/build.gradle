@@ -4,5 +4,5 @@ dependencies {
   implementation project(':math-hashing')
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

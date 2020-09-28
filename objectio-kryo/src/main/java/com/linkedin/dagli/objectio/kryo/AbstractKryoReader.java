@@ -192,6 +192,7 @@ abstract class AbstractKryoReader<T> implements ObjectReader<T> {
      * @return the next object deserialized from the input
      */
     private T readObject() {
+      @SuppressWarnings("unchecked")
       T res = (T) _kryo.readClassAndObject(_input);
       _readCount++;
       if (_readCount % _cacheHorizon == 0) {
@@ -215,14 +216,6 @@ abstract class AbstractKryoReader<T> implements ObjectReader<T> {
     public void close() {
       _input.close();
       closed = true;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-      super.finalize();
-      if (!closed) {
-        System.out.println(stack);
-      }
     }
   }
 }

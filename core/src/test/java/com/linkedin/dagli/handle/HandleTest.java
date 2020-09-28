@@ -4,7 +4,6 @@ import com.linkedin.dagli.dag.DAG;
 import com.linkedin.dagli.dag.DAG1x5;
 import com.linkedin.dagli.dag.DAG2x3;
 import com.linkedin.dagli.dag.DAGExecutor;
-import com.linkedin.dagli.dag.DAGTest;
 import com.linkedin.dagli.dag.DelayedIdentity;
 import com.linkedin.dagli.dag.PreparedDAGExecutor;
 import com.linkedin.dagli.dag.Sum;
@@ -13,7 +12,8 @@ import com.linkedin.dagli.tuple.Tuple3;
 import com.linkedin.dagli.tuple.Tuple5;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 
 /**
@@ -26,8 +26,9 @@ public class HandleTest {
     private static final long serialVersionUID = 1;
   }
 
-  @Test
-  public void unorderedInputsTest() {
+  @ParameterizedTest
+  @MethodSource("com.linkedin.dagli.dag.DAGTest#preparedExecutors")
+  public void unorderedInputsTest(PreparedDAGExecutor executor) {
     Placeholder<Long> input1 = new Placeholder<>();
     Placeholder<Long> input2 = new Placeholder<>();
 
@@ -41,13 +42,12 @@ public class HandleTest {
     DAG2x3.Prepared<Long, Long, Long, Long, Long> dag =
         DAG.Prepared.withPlaceholders(input1, input2).withOutputs(sum1, sum2, sum3);
 
-    for (PreparedDAGExecutor executor : DAGTest.PREPARED_EXECUTORS) {
-      Assertions.assertEquals(dag.withExecutor(executor).apply(5L, 6L), Tuple3.of(11L, 11L, 11L));
-    }
+    Assertions.assertEquals(dag.withExecutor(executor).apply(5L, 6L), Tuple3.of(11L, 11L, 11L));
   }
 
-  @Test
-  public void preparedHandleTest() {
+  @ParameterizedTest
+  @MethodSource("com.linkedin.dagli.dag.DAGTest#preparableExecutors")
+  public void preparedHandleTest(DAGExecutor executor) {
     Placeholder<Long> input = new Placeholder<>();
 
     DelayedIdentity<Long> delayedIdentityA1 = new DelayedIdentity<Long>(0).withInput(input);
@@ -65,11 +65,9 @@ public class HandleTest {
         .withOutputs(delayedIdentityC1, delayedIdentityA1, delayedIdentityB2, delayedIdentityB3, delayedIdentityB4);
 
 
-    for (DAGExecutor executor : DAGTest.PREPARABLE_EXECUTORS) {
-      DAG1x5.Prepared<Long, Long, Long, Long, Long, Long> preparedDAG =
-          preparableDAG.withExecutor(executor).prepare(Arrays.asList(1L, 2L, 3L));
+    DAG1x5.Prepared<Long, Long, Long, Long, Long, Long> preparedDAG =
+        preparableDAG.withExecutor(executor).prepare(Arrays.asList(1L, 2L, 3L));
 
-      Assertions.assertEquals(preparedDAG.apply(3L), Tuple5.of(3L, 3L, 3L, 3L, 3L));
-    }
+    Assertions.assertEquals(preparedDAG.apply(3L), Tuple5.of(3L, 3L, 3L, 3L, 3L));
   }
 }

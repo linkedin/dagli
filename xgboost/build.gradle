@@ -8,7 +8,7 @@ dependencies {
   api project.ext.dependencies.xgboost4j
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }
 
 task testSerialization(type: JavaExec) {

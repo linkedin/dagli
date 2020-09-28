@@ -13,5 +13,5 @@ dependencies {
 
   // without the annotation processor, we can't build our CharacterDialogStruct:
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

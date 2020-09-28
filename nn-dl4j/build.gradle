@@ -31,5 +31,5 @@ dependencies {
   testImplementation "org.bytedeco:openblas:0.3.9-1.5.3:$platform"
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

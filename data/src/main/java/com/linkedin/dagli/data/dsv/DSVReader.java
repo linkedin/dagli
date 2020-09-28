@@ -55,7 +55,7 @@ public class DSVReader<T> extends AbstractCloneable<DSVReader<T>> implements Obj
   private Singleton<Long> _calculatedSize = null;
 
   private static class ConstantSingleton extends Singleton<Long> {
-    private long _size;
+    private final long _size;
     public ConstantSingleton(long size) {
       _size = size;
     }
@@ -86,7 +86,7 @@ public class DSVReader<T> extends AbstractCloneable<DSVReader<T>> implements Obj
         throw new UncheckedIOException(e);
       }
     }
-  };
+  }
 
   /**
    * Returns a copy of this instance that will use the specified Reader-supplying function to get the Reader that will
@@ -226,7 +226,7 @@ public class DSVReader<T> extends AbstractCloneable<DSVReader<T>> implements Obj
    * @param schema the schema to use
    * @return a copy of this instance that will use the specified schema.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public <U> DSVReader<U> withSchema(RowSchema<U, ?> schema) {
     return (DSVReader) clone(c -> c._rowSchema = (RowSchema) schema);
   }
@@ -240,6 +240,7 @@ public class DSVReader<T> extends AbstractCloneable<DSVReader<T>> implements Obj
 
     private final ArrayList<BiConsumer<CSVRecord, Object>> _consumers;
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Iterator(DSVReader<T> owner) {
       if (owner._rowSchema == null) {
         throw new NullPointerException("No row schema has been provided for this DSVReader instance.  Please obtain a "
@@ -305,9 +306,7 @@ public class DSVReader<T> extends AbstractCloneable<DSVReader<T>> implements Obj
           });
         } else if (field instanceof RowSchema.AllFields) {
           RowSchema.AllFields<Object> allFields = (RowSchema.AllFields<Object>) field;
-          _consumers.add((record, acc) -> {
-            allFields.read(acc, headers, recordToStringArray(record));
-          });
+          _consumers.add((record, acc) -> allFields.read(acc, headers, recordToStringArray(record)));
         } else if (field instanceof RowSchema.MultiField.Indexed) {
           RowSchema.MultiField.Indexed<Object> indexedFields = (RowSchema.MultiField.Indexed<Object>) field;
           _consumers.add((record, acc) -> {

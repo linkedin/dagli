@@ -157,7 +157,7 @@ public class LiblinearClassification<L>
     private static final long serialVersionUID = 1;
 
     @DeepArrayValueEquality
-    private final L[] _labels;
+    private final L[] _labels; // Object[] masquerading as L[]: the "naked" array must not leak from this class
     private final boolean _isBinary;
 
     /**
@@ -204,13 +204,14 @@ public class LiblinearClassification<L>
      *
      * @return a list of the labels; this should not be modified
      */
+    @SuppressWarnings("unchecked")
     public List<L> getLabels() {
       // check for special, degenerate case where either false or true never seen during training
       if (_labels.length == 1 && _labels[0] instanceof Boolean) {
-        boolean[] labels = new boolean[2];
-        labels[0] = (Boolean) _labels[0];
-        labels[1] = !labels[0];
-        return (List) Arrays.asList(labels);
+        ArrayList<Boolean> result = new ArrayList<>(2);
+        result.add((Boolean) _labels[0]);
+        result.add(!result.get(0));
+        return (List<L>) result; // we know L is Boolean (or a supertype of Boolean)
       }
 
       return Arrays.asList(_labels);
@@ -288,12 +289,12 @@ public class LiblinearClassification<L>
       return _featureIDMap;
     }
 
+    @SuppressWarnings("unhecked")
     Prepared(double bias, Model model, Object2IntOpenHashMap<L> labelIDMap,
         Long2IntOpenHashMap featureIDMap) {
       super(bias, model, featureIDMap);
 
       _labels = (L[]) new Object[labelIDMap.size()];
-
       labelIDMap.forEach((label, id) -> _labels[id] = label);
 
       if (_labels.length == 2) {
@@ -314,6 +315,7 @@ public class LiblinearClassification<L>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DiscreteDistribution<L> apply(L val1, Vector val2) {
       ArrayList<Feature> features = new ArrayList<>(Math.toIntExact(val2.size64() + (_bias >= 0 ? 1 : 0)));
       val2.forEach((elementIndex, value) -> {

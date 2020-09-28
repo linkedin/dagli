@@ -6,5 +6,5 @@ dependencies {
   implementation project.ext.dependencies.concurrentli
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

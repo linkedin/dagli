@@ -9,7 +9,7 @@ dependencies {
   api project.ext.dependencies.'log4j2-api'
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }
 
 task testSerialization(type: JavaExec) {

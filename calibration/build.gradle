@@ -3,5 +3,5 @@ dependencies {
   api project(':common')
 
   annotationProcessor project(':annotation-processor')
-  implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
 }

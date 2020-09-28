@@ -38,12 +38,12 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
    * An entry in the hash table that also doubles as a {@link Map.Entry} implementation.  Entries in a given "bucket"
    * are stored in a singly-linked list.
    *
+   * BigHashMap does not serialize these entries directly and thus they do not need to be (and are not) serializable.
+   *
    * @param <K> the type of the key
    * @param <V> the type of the value
    */
   private static class LinkedHashEntry<K, V> implements Entry<K, V> {
-    private static final long serialVersionUID = 1;
-
     private final K _key;
     private final long _hash;
 
@@ -300,6 +300,7 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public int size() {
     return Math.toIntExact(_size);
   }
@@ -511,6 +512,7 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int size() {
       return BigHashMap.this.size();
     }
@@ -592,7 +594,7 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
     @Override
     public Iterator<V> iterator() {
       return new Iterator<V>() {
-        EntryIterator _wrapped = new EntryIterator();
+        final EntryIterator _wrapped = new EntryIterator();
 
         @Override
         public boolean hasNext() {
@@ -612,6 +614,7 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int size() {
       return Math.toIntExact(_size);
     }
@@ -656,6 +659,7 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
         return false;
       }
 
+      @SuppressWarnings("unchecked")
       Entry<K, V> mapped = BigHashMap.this.getEntry((K) entry.getKey());
 
       return mapped != null && Objects.equals(mapped.getValue(), entry.getValue());
@@ -687,6 +691,7 @@ public class BigHashMap<K, V> implements Map<K, V>, Size64, Serializable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int size() {
       return BigHashMap.this.size();
     }

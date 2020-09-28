@@ -141,6 +141,7 @@ public class AvroWriter<T extends GenericRecord> implements ObjectWriter<T> {
    * @param schema the schema being written
    * @param path the path being written to
    */
+  @SuppressWarnings({"unchecked", "rawtypes"})
   private void initGeneric(Schema schema, Path path) {
     _initialized = true;
     _dataFileWriter = new DataFileWriter<>(new GenericDatumWriter<T>(schema));

@@ -6,7 +6,7 @@ dependencies {
     testImplementation project(':math-vector')
 
     annotationProcessor project(':annotation-processor')
-    implementation project(':annotation-processor')
+  compileOnly project(':annotation-processor')
     testAnnotationProcessor project(':annotation-processor')
-    testImplementation project(':annotation-processor')
+  testCompileOnly project(':annotation-processor')
 }
