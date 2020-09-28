@@ -50,8 +50,7 @@ need to specify a pipeline for training and a separate pipeline for inference.  
 with a single pipeline definition.
 - Bug-resiliency: easy-to-read ML pipeline definitions, ubiquitous static typing, and most things in Dagli are 
 **immutable**.
-- Portability: works on your server, in a Hadoop mapper, a CLI program, in your IDE, etc. on any platform* <small>(some 
-models, such as XGBoost, have native code dependencies that may have limited support beyond Linux/Windows/Mac)</small> 
+- Portability: works on your server, in a Hadoop mapper, a CLI program, in your IDE, etc. on any platform
 - Deployability: an entire pipeline is serialized and deserialized as a single object
 - Abstraction: creating new transformations and models is straightforward and these can be reused in any Dagli pipeline
 - Speed: highly parallel multithreaded execution, graph (pipeline) optimizations, minibatching
@@ -144,8 +143,8 @@ the previous (LinkedIn-internal) version and the greater diversity of applicatio
 
 While in beta, releases with potentially breaking API or serialization changes will be accompanied by a major version 
 increment (e.g. `15.0.0-beta1`).  However, after the beta designation is removed, subsequent revisions will be backward
-compatible <small>(with a *possible* exception for modules with non-backward-compatible external dependencies)</small>, 
-allowing large projects to transitively depend on multiple versions of Dagli without dependency shading.
+compatible, allowing large projects to transitively depend on multiple versions of Dagli without dependency shading (with
+the *possible* exception of modules with non-backward-compatible external dependencies).
 
 ## Version History
 - `14.0.0-beta2` *9/27/20*: update dependency metadata to prevent the annotation processors' dependencies from 
