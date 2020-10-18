@@ -37,7 +37,7 @@ abstract class AbstractUnaryVectorSequenceLayer<R, S extends AbstractUnaryVector
 
   @Override
   void validate() {
-    Objects.requireNonNull(_inputLayer, "An input layer has not been specified for the layer " + getIdentifier());
+    Objects.requireNonNull(_inputLayer, "An input layer has not been specified for the layer " + getName());
 
     super.validate();
   }

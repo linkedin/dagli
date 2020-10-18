@@ -1,0 +1,3 @@
+freemarkerLinks: {
+    core: ../../../core/src/template/ftl
+}

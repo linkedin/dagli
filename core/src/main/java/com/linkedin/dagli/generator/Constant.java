@@ -92,9 +92,19 @@ public final class Constant<R> extends AbstractGenerator<R, Constant<R>> impleme
     return Objects.hashCode(_value) + HASH_SALT;
   }
 
+  private String valueAsString() {
+    // add quotes around strings to avoid possible confusion for human readers
+    return _value instanceof CharSequence ? "\"" + _value + "\"" : _value.toString();
+  }
+
   @Override
-  public String getName() {
-    return "Constant(" + _value + ")";
+  protected String getDefaultName() {
+    return "Constant = " + valueAsString();
+  }
+
+  @Override
+  protected String getDefaultShortName() {
+    return valueAsString();
   }
 
   /**

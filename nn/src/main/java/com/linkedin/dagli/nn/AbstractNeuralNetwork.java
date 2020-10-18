@@ -1,5 +1,7 @@
 package com.linkedin.dagli.nn;
 
+import com.linkedin.dagli.dag.AbstractGraph;
+import com.linkedin.dagli.dag.Graph;
 import com.linkedin.dagli.distribution.SampledWithReplacement;
 import com.linkedin.dagli.generator.Constant;
 import com.linkedin.dagli.math.distribution.BinaryDistribution;
@@ -522,7 +524,7 @@ public abstract class AbstractNeuralNetwork<
       if (result.containsKey(layer)) {
         continue; // ignore duplicate layers
       }
-      String baseName = layer.getName() == null ? layer.getClass().getSimpleName() : layer.getName();
+      String baseName = layer.internalAPI().hasName() ? layer.getClass().getSimpleName() : layer.getName();
       String name = baseName + "-0";
       for (int i = 1; !usedNames.add(name); i++) {
         name = baseName + "-" + i;
@@ -968,6 +970,41 @@ public abstract class AbstractNeuralNetwork<
    */
   public S withOptimizer(Optimizer optimizer) {
     return clone(c -> ((AbstractNeuralNetwork<?, ?, ?>) c)._optimizer = optimizer);
+  }
+
+  @Override
+  protected Graph<Object> subgraph() {
+    HashMap<Object, List<?>> result = new HashMap<>();
+    ArrayDeque<NNLayer<?, ?>> queue = new ArrayDeque<>(getOutputLayers());
+    result.put(this, new ArrayList<>(getOutputLayers())); // this neural network producer is only "leaf" in the subgraph
+
+    while (!queue.isEmpty()) {
+      NNLayer<?, ?> next = queue.poll();
+      if (!result.containsKey(next)) {
+        ArrayList<Object> parents = new ArrayList<>();
+        if (next instanceof NNChildLayer) {
+          List<? extends NNLayer<?, ?>> parentLayers = ((NNChildLayer<?, ?>) next).internalAPI().getInputLayers();
+          queue.addAll(parentLayers);
+          parents.addAll(parentLayers);
+        }
+
+        parents.addAll(next.internalAPI().getExampleInputProducers());
+        parents.addAll(next.internalAPI().getDynamicConfigurationInputProducers());
+        result.put(next, parents);
+      }
+    }
+
+    return new AbstractGraph<Object>() {
+      @Override
+      public Set<?> nodes() {
+        return result.keySet();
+      }
+
+      @Override
+      public List<?> parents(Object vertex) {
+        return result.get(vertex);
+      }
+    };
   }
 
   /**

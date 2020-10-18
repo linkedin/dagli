@@ -6,6 +6,7 @@ import com.linkedin.dagli.annotation.equality.HandleEquality;
 import com.linkedin.dagli.annotation.equality.IgnoredByValueEquality;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.annotation.producer.internal.IsAbstractProducer;
+import com.linkedin.dagli.dag.Graph;
 import com.linkedin.dagli.handle.ProducerHandle;
 import com.linkedin.dagli.producer.internal.ProducerInternalAPI;
 import com.linkedin.dagli.reducer.ClassReducerTable;
@@ -53,6 +54,9 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
   private long _uuidLeastSignificantBits;
   private long _uuidMostSignificantBits;
 
+  // remember the client-provided name for this instance; if null, a default name will be used instead
+  private String _name;
+
   // this flag is used to cache our knowledge of whether this instance is constant-result or not:
   private byte _isConstantResult = 0; // 0: unknown, 1 == no, 2 == yes
 
@@ -66,7 +70,17 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
    * Creates a new instance.  A UUID (used when referencing producers) will be randomly generated.
    */
   public AbstractProducer() {
+    this(null);
+  }
+
+  /**
+   * Creates a new instance.  A UUID (used when referencing producers) will be randomly generated.
+   *
+   * @param name a human-friendly name for the producer (may be null, in which case the default name will be used)
+   */
+  public AbstractProducer(String name) {
     setRandomUUID(this);
+    _name = name;
   }
 
   /**
@@ -75,12 +89,60 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
    * UUIDs are used to refer to producers, but should not participate in their {@link Object#equals(Object)} or
    * {@link Object#hashCode()} methods (except for {@link com.linkedin.dagli.placeholder.Placeholder}s.
    *
+   * @param name a human-friendly name for the producer (may be null, in which case the default name will be used)
    * @param uuidMostSignificantBits the highest 64 bits of the UUID
    * @param uuidLeastSignificantBits the lowest 64 bits of the UUID
    */
-  public AbstractProducer(long uuidMostSignificantBits, long uuidLeastSignificantBits) {
+  public AbstractProducer(String name, long uuidMostSignificantBits, long uuidLeastSignificantBits) {
+    _name = name;
     _uuidMostSignificantBits = uuidMostSignificantBits;
     _uuidLeastSignificantBits = uuidLeastSignificantBits;
+  }
+
+  @Override
+  public String getName() {
+    return hasName() ? _name : getDefaultName();
+  }
+
+  @Override
+  public String getShortName() {
+    return hasName() ? _name : getDefaultShortName();
+  }
+
+  /**
+   * @return true iff an explicit name for this producer has been set (e.g. by {@link #withName(String)})
+   */
+  protected boolean hasName() {
+    return _name != null;
+  }
+
+  /**
+   * @return the default name for this producer when the client has not explicitly set a name with
+   *         {@link #withName(String)}
+   */
+  protected String getDefaultName() {
+    return Producer.super.getName();
+  }
+
+  /**
+   * @return the default short name for this producer when the client has not explicitly set a name with
+   *         {@link #withName(String)}
+   */
+  protected String getDefaultShortName() {
+    return Producer.super.getShortName();
+  }
+
+  /**
+   * Returns a copy of this producer that will use the provided human-friendly name.
+   *
+   * If this method is not employed (or {@code null} is passed), this producer will use its default name, but using this
+   * method to provide an explicit name can make your DAG more debuggable and interpretable.
+   *
+   * @param name the name to assign to this instance, or null to use the default name
+   * @return a copy of this producer that will use the provided human-friendly name
+   */
+  public S withName(String name) {
+    return clone(c -> ((AbstractProducer<?, ?, ?>) c)._name = name);
   }
 
   /**
@@ -177,6 +239,34 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
     }
 
     return _isConstantResult == 2;
+  }
+
+  /**
+   * Gets a "subgraph" that describes this producer as a {@link Graph} of arbitrary nodes.  This subgraph should provide
+   * a human-interpretable graph (e.g. to be rendered by a visualizer) representing this producer's architecture.
+   *
+   * Although some complex producers can benefit greatly by providing a subgraph (e.g. neural networks), it is not
+   * required and, moreover, inappropriate for most producer implementations.  The default implementation of this method
+   * simply returns {@code null}.
+   *
+   * Guidelines:
+   * (1) The <i>parents</i> of subgraph nodes can be either be within the subgraph or among the ancestors of this
+   *     producer in the encapsulating DAG.  Subgraph nodes must not have children outside the subgraph.
+   * (2) A producer's subgraph nodes should contain that producer, with edges pointing to other nodes in the subgraph
+   *     indicating how the final result output by that producer is derived.
+   * (3) The types of the vertices in the subgraph may be any arbitrary objects, but it should not include any producer
+   *     that is also present in the encapsulating DAG (except for the {@link Producer} which this subgraph represents.)
+   * (4) Subgraphs may contain loops.
+   *
+   * Subgraphs are <strong>not</strong> guaranteed to be consistent, even across producers that compare as
+   * {@link Object#equals(Object)}.  In particular, a deserialized object need not have the same subgraph as its
+   * progenitor.
+   *
+   * @return a human-interpretable description of this producer as a (sub)graph, or {@code null} when no graph is
+   *         available
+   */
+  protected Graph<Object> subgraph() {
+    return null;
   }
 
   private static Class<?> getMostDerivedDeclaringClass(Class<?> mostDerivedClass, String methodName) {
@@ -455,6 +545,11 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
     public ProducerHandle<S> getHandle() {
       return AbstractProducer.this.getHandle();
     }
+
+    @Override
+    public Graph<Object> subgraph() {
+      return AbstractProducer.this.subgraph();
+    }
   }
 
   // It's possible this may be dangerous if createInternalAPI() ever did something that actually used fields on children
@@ -466,7 +561,7 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
   }
 
   // static method to set a random UUID on the specified instance
-  private static void setRandomUUID(AbstractProducer t) {
+  private static void setRandomUUID(AbstractProducer<?, ?, ?> t) {
     UUID newUUID = UUID.randomUUID();
     t._uuidLeastSignificantBits = newUUID.getLeastSignificantBits();
     t._uuidMostSignificantBits = newUUID.getMostSignificantBits();

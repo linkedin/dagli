@@ -28,7 +28,15 @@ public abstract class AbstractGenerator<R, S extends AbstractGenerator<R, S>>
    * Creates a new generator with a random UUID
    */
   public AbstractGenerator() {
-    super();
+    this(null);
+  }
+
+  /**
+   * Creates a new generator with a random UUID
+   * @param name a human-friendly name for the producer (may be null, in which case the default name will be used)
+   */
+  public AbstractGenerator(String name) {
+    super(name);
   }
 
   /**
@@ -38,6 +46,17 @@ public abstract class AbstractGenerator<R, S extends AbstractGenerator<R, S>>
    * @param uuidLeastSignificantBits least significant 64 bits of the UUID
    */
   public AbstractGenerator(long uuidMostSignificantBits, long uuidLeastSignificantBits) {
-    super(uuidMostSignificantBits, uuidLeastSignificantBits);
+    this(null, uuidMostSignificantBits, uuidLeastSignificantBits);
+  }
+
+  /**
+   * Creates a new generator with the specified UUID
+   *
+   * @param name a human-friendly name for the producer (may be null, in which case the default name will be used)
+   * @param uuidMostSignificantBits most significant 64 bits of the UUID
+   * @param uuidLeastSignificantBits least significant 64 bits of the UUID
+   */
+  public AbstractGenerator(String name, long uuidMostSignificantBits, long uuidLeastSignificantBits) {
+    super(name, uuidMostSignificantBits, uuidLeastSignificantBits);
   }
 }

@@ -25,7 +25,7 @@ abstract class AbstractUnaryVectorLayer<R, S extends AbstractUnaryVectorLayer<R,
    * @return a copy of this layer that will accept the specified layer's activations/outputs as inputs
    */
   @SafeVarargs
-  public final S withInputFromConcatenatedLayers(NNLayer<DenseVector, ? extends NonTerminalLayer>... layers) {
+  public final S withInputs(NNLayer<DenseVector, ? extends NonTerminalLayer>... layers) {
     return withInput(new NNVectorConcatenationLayer().withAdditionalInputs(layers));
   }
 

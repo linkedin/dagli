@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.io.IOException;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
@@ -14,7 +15,7 @@ import java.lang.invoke.MethodType;
  * method reference; fortunately, however, deserialization will not be affected: if you can serialize it, you'll be able
  * to deserialize later on any JVM.
  */
-class ShortMethodReference6<A, B, C, D, E, F> implements ShortFunction6.Serializable<A, B, C, D, E, F> {
+class ShortMethodReference6<A, B, C, D, E, F> implements ShortFunction6.Serializable<A, B, C, D, E, F>, Named {
   private static final long serialVersionUID = 1;
 
   // hash and equality distinguish between different types of MethodReferenceX classes even when the underlying method
@@ -103,5 +104,15 @@ class ShortMethodReference6<A, B, C, D, E, F> implements ShortFunction6.Serializ
   @Override
   public String toString() {
     return _methodReference.toString();
+  }
+
+  @Override
+  public String getName() {
+    return _methodReference.getName();
+  }
+
+  @Override
+  public String getShortName() {
+    return _methodReference.getShortName();
   }
 }

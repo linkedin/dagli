@@ -14,4 +14,18 @@ import com.linkedin.dagli.annotation.Versioned;
 @Versioned
 public abstract class NNRootLayer<R, S extends NNRootLayer<R, S>> extends NNLayer<R, S> implements NonTerminalLayer {
   private static final long serialVersionUID = 1;
+
+  @Override
+  public InternalAPI internalAPI() {
+    return new InternalAPI();
+  }
+
+  /**
+   * Methods provided exclusively for use by Dagli.
+   *
+   * Client code should not use these methods as they are subject to change at any time.
+   */
+  public class InternalAPI extends NNLayer<R, S>.InternalAPI {
+    InternalAPI() { }
+  }
 }

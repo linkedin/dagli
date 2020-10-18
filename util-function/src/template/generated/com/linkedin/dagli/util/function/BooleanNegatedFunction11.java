@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -13,7 +14,7 @@ import java.util.Objects;
  * serializable.
  */
 class BooleanNegatedFunction11<A, B, C, D, E, F, G, H, I, J, K> implements
-    BooleanFunction11<A, B, C, D, E, F, G, H, I, J, K>, java.io.Serializable {
+    BooleanFunction11<A, B, C, D, E, F, G, H, I, J, K>, java.io.Serializable, Named {
   private static final int CLASS_HASH = BooleanNegatedFunction11.class.hashCode();
 
   private final BooleanFunction11<A, B, C, D, E, F, G, H, I, J, K> _function;
@@ -65,6 +66,16 @@ class BooleanNegatedFunction11<A, B, C, D, E, F, G, H, I, J, K> implements
       return this._function.equals(((BooleanNegatedFunction11) obj)._function);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "!(" + Named.getShortName(_function) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return "!(" + Named.getShortName(_function) + ")";
   }
 
   static class Serializable<A, B, C, D, E, F, G, H, I, J, K> extends

@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * A function class implementing BooleanFunction4.Serializable<A, B, C, D> that returns false if any of
  * the function's inputs are null.
  */
-class BooleanDefaultOnNullArgument4<A, B, C, D> implements BooleanFunction4.Serializable<A, B, C, D> {
+class BooleanDefaultOnNullArgument4<A, B, C, D> implements BooleanFunction4.Serializable<A, B, C, D>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = BooleanDefaultOnNullArgument4.class.hashCode();
   private final BooleanFunction4<A, B, C, D> _wrapped;
@@ -48,5 +49,15 @@ class BooleanDefaultOnNullArgument4<A, B, C, D> implements BooleanFunction4.Seri
       return this._wrapped.equals(((BooleanDefaultOnNullArgument4) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? false : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? false : " + Named.getShortName(_wrapped);
   }
 }

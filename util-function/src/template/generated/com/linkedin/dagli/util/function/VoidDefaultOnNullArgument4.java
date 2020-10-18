@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * A function class implementing VoidFunction4.Serializable<A, B, C, D> that returns null if any of
  * the function's inputs are null.
  */
-class VoidDefaultOnNullArgument4<A, B, C, D> implements VoidFunction4.Serializable<A, B, C, D> {
+class VoidDefaultOnNullArgument4<A, B, C, D> implements VoidFunction4.Serializable<A, B, C, D>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = VoidDefaultOnNullArgument4.class.hashCode();
   private final VoidFunction4<A, B, C, D> _wrapped;
@@ -47,5 +48,15 @@ class VoidDefaultOnNullArgument4<A, B, C, D> implements VoidFunction4.Serializab
       return this._wrapped.equals(((VoidDefaultOnNullArgument4) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? null : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? null : " + Named.getShortName(_wrapped);
   }
 }

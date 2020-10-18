@@ -3,6 +3,8 @@ package com.linkedin.dagli.nn.layer;
 import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.math.vector.Vector;
 import com.linkedin.dagli.producer.Producer;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -22,7 +24,7 @@ abstract class AbstractVectorLossLayer<R, S extends AbstractVectorLossLayer<R, S
   @Override
   void validate() {
     Objects.requireNonNull(_supervisionProvider,
-        "Labels have not been specified for the regression layer " + getIdentifier());
+        "Labels have not been specified for the regression layer " + getName());
 
     super.validate();
   }
@@ -43,6 +45,11 @@ abstract class AbstractVectorLossLayer<R, S extends AbstractVectorLossLayer<R, S
      */
     public Producer<? extends Vector> getLabelVectorProducer() {
       return _supervisionProvider;
+    }
+
+    @Override
+    public List<? extends Producer<?>> getExampleInputProducers() {
+      return Collections.singletonList(_supervisionProvider);
     }
   }
 }

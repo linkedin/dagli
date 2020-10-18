@@ -42,8 +42,7 @@ import com.linkedin.dagli.util.cloneable.AbstractCloneable;
   </@compress>
 </#macro>
 
-<#macro WithOutputsMethods placeholderArity preparedDAG>
-  <#list 1..c.maxArity as outputArity>
+<#macro WithOutputsMethod placeholderArity outputArity preparedDAG forceSingular=false>
     /**
      * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
      *
@@ -53,7 +52,7 @@ import com.linkedin.dagli.util.cloneable.AbstractCloneable;
      <@c.Indent 2><@c.GenericResultTypesJavadoc outputArity /></@c.Indent>
      * @return a completed DAG with ${placeholderArity} input<@c.s placeholderArity /> (placeholders) and ${outputArity} output<@c.s outputArity /> (outputs).
      */
-    public <<@c.ResultGenericArguments outputArity />> <#if preparedDAG><@c.PreparedDAG placeholderArity outputArity /><#else><@c.DAG placeholderArity outputArity /></#if> withOutput<@c.s outputArity />(<@OutputProducerArguments outputArity "output" />) {
+    public <<@c.ResultGenericArguments outputArity />> <#if preparedDAG><@c.PreparedDAG placeholderArity outputArity /><#else><@c.DAG placeholderArity outputArity /></#if> withOutput<#if !forceSingular>s</#if>(<@OutputProducerArguments outputArity "output" />) {
       <#list 1..outputArity as index>
       Objects.requireNonNull(output${c.InputSuffix(index)}, "Output ${c.InputSuffix(index)} may not be null");
       </#list>
@@ -70,7 +69,14 @@ import com.linkedin.dagli.util.cloneable.AbstractCloneable;
       return ((<#if preparedDAG><@c.PreparedDAGClassName placeholderArity outputArity /><#else><@c.DAGClassName placeholderArity outputArity /></#if>)
         DAGUtil.create<#if preparedDAG>Prepared<#else>Preparable</#if>DAG(Arrays.asList(<@c.InputSuffixedList "_placeholder" placeholderArity />), Arrays.asList(<@c.InputSuffixedList "output" outputArity />)<#if preparedDAG></#if>).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
     }
-  </#list>
+    <#-- Add singular "withOutput(...) method, too --->
+    <#if outputArity == 1 && !forceSingular><@WithOutputsMethod placeholderArity outputArity preparedDAG true /></#if>
+</#macro>
+
+<#macro WithOutputsMethods placeholderArity preparedDAG>
+<#list 1..c.maxArity as outputArity>
+<@WithOutputsMethod placeholderArity outputArity preparedDAG />
+</#list>
 </#macro>
 
 <#macro WithPlaceholdersClassJavadoc placeholderArity>

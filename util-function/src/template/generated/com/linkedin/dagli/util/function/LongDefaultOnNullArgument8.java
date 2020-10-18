@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,8 @@ import java.util.Objects;
  * A function class implementing LongFunction8.Serializable<A, B, C, D, E, F, G, H> that returns 0 if any of
  * the function's inputs are null.
  */
-class LongDefaultOnNullArgument8<A, B, C, D, E, F, G, H> implements LongFunction8.Serializable<A, B, C, D, E, F, G, H> {
+class LongDefaultOnNullArgument8<A, B, C, D, E, F, G, H> implements LongFunction8.Serializable<A, B, C, D, E, F, G, H>,
+    Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = LongDefaultOnNullArgument8.class.hashCode();
   private final LongFunction8<A, B, C, D, E, F, G, H> _wrapped;
@@ -49,5 +51,15 @@ class LongDefaultOnNullArgument8<A, B, C, D, E, F, G, H> implements LongFunction
       return this._wrapped.equals(((LongDefaultOnNullArgument8) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? 0 : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? 0 : " + Named.getShortName(_wrapped);
   }
 }

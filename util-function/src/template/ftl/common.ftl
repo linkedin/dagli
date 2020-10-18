@@ -338,3 +338,13 @@ public <#if prepared><@PreparedDAGClassName arity-1 resultArity /><#else><@DAGCl
 }
 </#list></#if></#macro>
 
+<#-- Gets indentation whitespace for a specified level.  This returned string will have 2 * indentLevel spaces. -->
+<#function Indentation level>
+  <#return ''?left_pad(level * 2, ' ') />
+</#function>
+
+<#-- Indents each line of whatever this macro contains through a necessarily convoluted scheme -->
+<#macro Indent level=1>
+<#assign nestedString><#nested /></#assign>
+<#assign indentedNestedString = Indentation(level) + nestedString?replace("\n", "\n" + Indentation(level)) />
+${indentedNestedString?keep_before_last(Indentation(level))}</#macro> <#-- remove extra indent added to end of the input -->

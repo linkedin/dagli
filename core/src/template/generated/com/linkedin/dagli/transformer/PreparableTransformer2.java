@@ -2,9 +2,12 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.transformer;
 
+import com.linkedin.dagli.dag.DAG;
+import com.linkedin.dagli.dag.DAG2x1;
 import com.linkedin.dagli.dag.SimpleDAGExecutor;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResultMixed;
+import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.transformer.internal.PreparableTransformer2InternalAPI;
 import com.linkedin.dagli.util.collection.Iterables;
 
@@ -70,5 +73,28 @@ public interface PreparableTransformer2<A, B, R, N extends PreparedTransformer2<
     return (PreparerResultMixed<PreparedTransformer2<A, B, R>, N>) preparable.internalAPI().prepare(
         PreparerContext.builder(Iterables.size64(values1)).setExecutor(new SimpleDAGExecutor()).build(), values1,
         values2);
+  }
+
+  /**
+   * Creates a trivial DAG that wraps the provided transformer, with the DAG retaining the transformer's existing
+   * inputs or, if the transformer is already a DAG, simply returns it unaltered.
+   *
+   * @param transformer the transformer to wrap
+   * @param <A> the type of transformer input #1
+   * @param <B> the type of transformer input #2
+   * @param <R> the type of result produced by the transformer
+   * @return a trivial DAG that wraps the provided transformer, or the transformer itself if it is already a DAG
+   */
+  @SuppressWarnings("unchecked")
+  static <A, B, R> DAG2x1<A, B, R> toDAG(PreparableTransformer2<A, B, R, ?> transformer) {
+    if (transformer instanceof DAG2x1) {
+      return (DAG2x1<A, B, R>) transformer;
+    }
+
+    Placeholder<A> placeholder1 = new Placeholder<>("Input #1");
+    Placeholder<B> placeholder2 = new Placeholder<>("Input #2");
+    return DAG.withPlaceholders(placeholder1, placeholder2).withNoReduction()
+        .withOutput(transformer.internalAPI().withInputs(placeholder1, placeholder2))
+        .withAllInputs(transformer.internalAPI().getInput1(), transformer.internalAPI().getInput2());
   }
 }

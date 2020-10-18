@@ -2,13 +2,13 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.function;
 
-import com.linkedin.dagli.annotation.equality.IgnoredByValueEquality;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.transformer.AbstractPreparedTransformer10;
 import com.linkedin.dagli.producer.MissingInput;
 import com.linkedin.dagli.util.function.Function1;
 import com.linkedin.dagli.util.function.Function10;
+import com.linkedin.dagli.util.named.Named;
 
 
 /**
@@ -41,10 +41,7 @@ public class FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> extends
     AbstractPreparedTransformer10<A, B, C, D, E, F, G, H, I, J, R, FunctionResult10<A, B, C, D, E, F, G, H, I, J, R>> {
   private static final long serialVersionUID = 1;
 
-  private Function10.Serializable<A, B, C, D, E, F, G, H, I, J, R> _originalFunction = null;
-  @IgnoredByValueEquality
   private Function10.Serializable<A, B, C, D, E, F, G, H, I, J, R> _function = null;
-  private boolean _nullOnNullInput = false;
 
   /**
    * Creates a new instance with no function and missing inputs.  These must be set via the withFunction(...) and
@@ -65,18 +62,7 @@ public class FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> extends
    */
   public FunctionResult10(Function10.Serializable<A, B, C, D, E, F, G, H, I, J, R> func) {
     this();
-    setFunction(func.safelySerializable());
-  }
-
-  /**
-   * Sets the function used by this instance.  As transformers are semantically immutable, this method must only be
-   * called on <b>new</b> instances, before they are returned to the caller!
-   *
-   * @param func the function to be used by this instance
-   */
-  private void setFunction(Function10.Serializable<A, B, C, D, E, F, G, H, I, J, R> func) {
-    _originalFunction = func;
-    _function = _nullOnNullInput ? func.returnNullOnNullArgument() : func;
+    _function = func.safelySerializable();
   }
 
   /**
@@ -87,10 +73,7 @@ public class FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> extends
    * @return a copy of this transformer that will produce a null value if any of the input values is null.
    */
   public FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> withNullResultOnNullInput() {
-    return clone(c -> {
-      c._nullOnNullInput = true;
-      c.setFunction(_originalFunction);
-    });
+    return clone(c -> c._function = _function.returnNullOnNullArgument());
   }
 
   public FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> withInputs(Producer<? extends A> input1,
@@ -110,7 +93,7 @@ public class FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> extends
    */
   public FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> withFunction(
       Function10.Serializable<A, B, C, D, E, F, G, H, I, J, R> func) {
-    return clone(c -> c.setFunction(func.safelySerializable()));
+    return clone(c -> c._function = func.safelySerializable());
   }
 
   /**
@@ -124,9 +107,9 @@ public class FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> extends
       Function10.Serializable<A, B, C, D, E, F, G, H, I, J, R> func) {
     return clone(c -> {
       try {
-        c.setFunction(func.safelySerializable());
+        c._function = func.safelySerializable();
       } catch (RuntimeException e) {
-        c.setFunction(func);
+        c._function = func; // force use of non-safely-serializable method
       }
     });
   }
@@ -154,7 +137,22 @@ public class FunctionResult10<A, B, C, D, E, F, G, H, I, J, R> extends
   @SuppressWarnings("unchecked")
   public <Q> FunctionResult10<A, B, C, D, E, F, G, H, I, J, Q> andThen(
       Function1.Serializable<? super R, ? extends Q> mapper) {
-    return (FunctionResult10<A, B, C, D, E, F, G, H, I, J, Q>) clone(c -> ((FunctionResult10<A, B, C, D, E, F, G, H, I, J, Q>) c)
-        .setFunction(_originalFunction.andThen(mapper.safelySerializable())));
+    return (FunctionResult10<A, B, C, D, E, F, G, H, I, J, Q>) clone(c -> ((FunctionResult10<A, B, C, D, E, F, G, H, I, J, Q>) c)._function =
+        _function.andThen(mapper.safelySerializable()));
+  }
+
+  @Override
+  public String toString() {
+    return "FunctionResult10(" + _function.toString() + ")";
+  }
+
+  @Override
+  protected String getDefaultName() {
+    return Named.getName(_function);
+  }
+
+  @Override
+  protected String getDefaultShortName() {
+    return Named.getShortName(_function);
   }
 }

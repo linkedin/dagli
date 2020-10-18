@@ -236,7 +236,8 @@ public abstract class CharLSTMExample {
     // The ordering of the tokens (and their embeddings) is, of course, important.  We can capture this with two LSTM
     // layers: one forward, one backward.  An explanation of LSTMs is beyond the scope of this example, but please see
     // https://en.wikipedia.org/wiki/Long_short-term_memory to learn more.
-    NNLSTMLayer lstmLayer = new NNLSTMLayer().withUnitCount(32)
+    NNLSTMLayer lstmLayer = new NNLSTMLayer()
+        .withUnitCount(32)
         .withInput(sequenceEmbeddingLayer)
         .withBidirectionality(Bidirectionality.CONCATENATED).stack(32, 32);
 

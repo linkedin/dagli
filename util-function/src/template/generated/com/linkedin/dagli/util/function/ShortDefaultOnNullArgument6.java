@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * A function class implementing ShortFunction6.Serializable<A, B, C, D, E, F> that returns 0 if any of
  * the function's inputs are null.
  */
-class ShortDefaultOnNullArgument6<A, B, C, D, E, F> implements ShortFunction6.Serializable<A, B, C, D, E, F> {
+class ShortDefaultOnNullArgument6<A, B, C, D, E, F> implements ShortFunction6.Serializable<A, B, C, D, E, F>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = ShortDefaultOnNullArgument6.class.hashCode();
   private final ShortFunction6<A, B, C, D, E, F> _wrapped;
@@ -48,5 +49,15 @@ class ShortDefaultOnNullArgument6<A, B, C, D, E, F> implements ShortFunction6.Se
       return this._wrapped.equals(((ShortDefaultOnNullArgument6) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? 0 : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? 0 : " + Named.getShortName(_wrapped);
   }
 }

@@ -1,5 +1,6 @@
 package com.linkedin.dagli.producer;
 
+import com.linkedin.dagli.dag.Graph;
 import com.linkedin.dagli.handle.ProducerHandle;
 import com.linkedin.dagli.producer.internal.ProducerInternalAPI;
 import com.linkedin.dagli.reducer.ClassReducerTable;
@@ -37,6 +38,11 @@ enum MissingInputInstance implements MissingInput<Object> {
         @Override
         public ProducerHandle<MissingInputInstance> getHandle() {
           return (ProducerHandle<com.linkedin.dagli.producer.MissingInputInstance>) MY_HANDLE;
+        }
+
+        @Override
+        public Graph<Object> subgraph() {
+          return null;
         }
       };
 

@@ -3,6 +3,7 @@
 package com.linkedin.dagli.util.function;
 
 import java.util.Objects;
+import com.linkedin.dagli.util.named.Named;
 
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
  * {@link CharacterFunction2} with a {@link Function1}.  The function is only <strong>actually</strong> serializable
  * if its constituent composed functions are serializable, of course.
  */
-class CharacterComposedFunction2<A, B, Q> implements CharacterFunction2.Serializable<A, B> {
+class CharacterComposedFunction2<A, B, Q> implements CharacterFunction2.Serializable<A, B>, Named {
   private static final long serialVersionUID = 1;
 
   private final Function2<A, B, Q> _first;
@@ -52,5 +53,15 @@ class CharacterComposedFunction2<A, B, Q> implements CharacterFunction2.Serializ
           && this._andThen.equals(((CharacterComposedFunction2) obj)._andThen);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return Named.getShortName(_andThen) + "(" + Named.getShortName(_first) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return Named.getShortName(_andThen) + "(...)";
   }
 }

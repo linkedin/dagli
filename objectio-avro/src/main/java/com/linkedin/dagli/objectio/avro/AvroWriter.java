@@ -213,6 +213,7 @@ public class AvroWriter<T extends GenericRecord> implements ObjectWriter<T> {
    * @param path the Avro file that will be written.  If the file exists, it will be appended to.
    * @param <T> the type of the Avro record
    */
+  @SuppressWarnings("unchecked")
   public static <T extends GenericRecord> void toAvroFile(ObjectReader<T> records, Path path) {
     try (ObjectIterator<T> iterator = records.iterator()) {
       if (iterator.hasNext()) {

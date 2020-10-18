@@ -27,8 +27,6 @@ public class Placeholder<R>
     implements ProducerType<R, Placeholder<R>> {
   private static final long serialVersionUID = 1;
 
-  private final String _name;
-
   /**
    * Creates a new {@link Placeholder} with the specified name.  This will be the name returned by the getName() method;
    * if null is provided, a default name will be returned by {@link #getName()} instead.
@@ -36,19 +34,14 @@ public class Placeholder<R>
    * @param name a name to use for this {@link Placeholder}.
    */
   public Placeholder(String name) {
-    _name = name;
+    super(name);
   }
 
   /**
    * Create a new {@link Placeholder}.
    */
   public Placeholder() {
-    _name = null;
-  }
-
-  @Override
-  public String getName() {
-    return _name == null ? super.getName() : _name;
+    this(null);
   }
 
   @Override
@@ -59,15 +52,6 @@ public class Placeholder<R>
   protected class InternalAPI
       extends AbstractRootProducer<R, PlaceholderInternalAPI<R, Placeholder<R>>, Placeholder<R>>.InternalAPI
       implements PlaceholderInternalAPI<R, Placeholder<R>> { }
-
-  @Override
-  public String toString() {
-    if (_name == null) {
-      return "Anonymous (" + System.identityHashCode(this) + ") Placeholder";
-    } else {
-      return _name + " Placeholder";
-    }
-  }
 
   // We use handle equality (equivalent to applying the @HandleEquality annotation), but we override the
   // computeEqualsUnsafe/computeHashCode methods so any subclasses will also use handle equality by default.

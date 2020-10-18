@@ -3,6 +3,7 @@
 package com.linkedin.dagli.util.function;
 
 import java.util.Objects;
+import com.linkedin.dagli.util.named.Named;
 
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
  * {@link FloatFunction5} with a {@link Function1}.  The function is only <strong>actually</strong> serializable
  * if its constituent composed functions are serializable, of course.
  */
-class FloatComposedFunction5<A, B, C, D, E, Q> implements FloatFunction5.Serializable<A, B, C, D, E> {
+class FloatComposedFunction5<A, B, C, D, E, Q> implements FloatFunction5.Serializable<A, B, C, D, E>, Named {
   private static final long serialVersionUID = 1;
 
   private final Function5<A, B, C, D, E, Q> _first;
@@ -52,5 +53,15 @@ class FloatComposedFunction5<A, B, C, D, E, Q> implements FloatFunction5.Seriali
           && this._andThen.equals(((FloatComposedFunction5) obj)._andThen);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return Named.getShortName(_andThen) + "(" + Named.getShortName(_first) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return Named.getShortName(_andThen) + "(...)";
   }
 }

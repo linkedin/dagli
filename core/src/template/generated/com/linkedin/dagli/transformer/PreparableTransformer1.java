@@ -2,9 +2,12 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.transformer;
 
+import com.linkedin.dagli.dag.DAG;
+import com.linkedin.dagli.dag.DAG1x1;
 import com.linkedin.dagli.dag.SimpleDAGExecutor;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResultMixed;
+import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.transformer.internal.PreparableTransformer1InternalAPI;
 import com.linkedin.dagli.util.collection.Iterables;
 
@@ -65,5 +68,26 @@ public interface PreparableTransformer1<A, R, N extends PreparedTransformer1<A, 
       PreparableTransformer1<A, R, N> preparable, Iterable<? extends A> values1) {
     return (PreparerResultMixed<PreparedTransformer1<A, R>, N>) preparable.internalAPI().prepare(
         PreparerContext.builder(Iterables.size64(values1)).setExecutor(new SimpleDAGExecutor()).build(), values1);
+  }
+
+  /**
+   * Creates a trivial DAG that wraps the provided transformer, with the DAG retaining the transformer's existing
+   * inputs or, if the transformer is already a DAG, simply returns it unaltered.
+   *
+   * @param transformer the transformer to wrap
+   * @param <A> the type of transformer input #1
+   * @param <R> the type of result produced by the transformer
+   * @return a trivial DAG that wraps the provided transformer, or the transformer itself if it is already a DAG
+   */
+  @SuppressWarnings("unchecked")
+  static <A, R> DAG1x1<A, R> toDAG(PreparableTransformer1<A, R, ?> transformer) {
+    if (transformer instanceof DAG1x1) {
+      return (DAG1x1<A, R>) transformer;
+    }
+
+    Placeholder<A> placeholder1 = new Placeholder<>("Input #1");
+    return DAG.withPlaceholders(placeholder1).withNoReduction()
+        .withOutput(transformer.internalAPI().withInputs(placeholder1))
+        .withAllInputs(transformer.internalAPI().getInput1());
   }
 }

@@ -30,7 +30,7 @@ public class SimpleRegressionModelTest {
     NNDenseLayer denseLayer1A = new NNDenseLayer().withUnitCount(16).withInputFromTruncatedVector(3, vec1);
     NNDenseLayer denseLayer2A = new NNDenseLayer().withUnitCount(16).withInputFromTruncatedVector(3, vec2);
 
-    NNDenseLayer denseLayerB = new NNDenseLayer().withInputFromConcatenatedLayers(denseLayer1A, denseLayer2A);
+    NNDenseLayer denseLayerB = new NNDenseLayer().withInputs(denseLayer1A, denseLayer2A);
     NNDenseLayer denseLayerC = new NNDenseLayer().withUnitCount(3).withInput(denseLayerB);
 
     NNRegression normalizedSum = new NNRegression().withPredictionInput(denseLayerC).withLabelInput(label);

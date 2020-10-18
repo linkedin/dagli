@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * A function class implementing ByteFunction2.Serializable<A, B> that returns 0 if any of
  * the function's inputs are null.
  */
-class ByteDefaultOnNullArgument2<A, B> implements ByteFunction2.Serializable<A, B> {
+class ByteDefaultOnNullArgument2<A, B> implements ByteFunction2.Serializable<A, B>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = ByteDefaultOnNullArgument2.class.hashCode();
   private final ByteFunction2<A, B> _wrapped;
@@ -47,5 +48,15 @@ class ByteDefaultOnNullArgument2<A, B> implements ByteFunction2.Serializable<A, 
       return this._wrapped.equals(((ByteDefaultOnNullArgument2) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? 0 : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? 0 : " + Named.getShortName(_wrapped);
   }
 }

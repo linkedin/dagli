@@ -5,8 +5,11 @@ package com.linkedin.dagli.transformer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.linkedin.dagli.dag.DAG;
+import com.linkedin.dagli.dag.DAG4x1;
 import com.linkedin.dagli.objectio.biglist.BigListWriter;
 import com.linkedin.dagli.objectio.ObjectReader;
+import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.transformer.internal.PreparedTransformer4InternalAPI;
 import com.linkedin.dagli.util.collection.Iterables;
 
@@ -76,5 +79,34 @@ public interface PreparedTransformer4<A, B, C, D, R> extends Transformer4<A, B, 
       PreparedTransformer4<? super A, ? super B, ? super C, ? super D, ? extends R> prepared) {
     // safe due to semantics of prepared transformers:
     return (PreparedTransformer4<A, B, C, D, R>) prepared;
+  }
+
+  /**
+   * Creates a trivial DAG that wraps the provided transformer, with the DAG retaining the transformer's existing
+   * inputs or, if the transformer is already a DAG, simply returns it unaltered.
+   *
+   * @param transformer the transformer to wrap
+   * @param <A> the type of transformer input #1
+   * @param <B> the type of transformer input #2
+   * @param <C> the type of transformer input #3
+   * @param <D> the type of transformer input #4
+   * @param <R> the type of result produced by the transformer
+   * @return a trivial DAG that wraps the provided transformer, or the transformer itself if it is already a DAG
+   */
+  static <A, B, C, D, R> DAG4x1.Prepared<A, B, C, D, R> toDAG(PreparedTransformer4<A, B, C, D, R> transformer) {
+    if (transformer instanceof DAG4x1.Prepared) {
+      return (DAG4x1.Prepared<A, B, C, D, R>) transformer;
+    }
+
+    Placeholder<A> placeholder1 = new Placeholder<>("Input #1");
+    Placeholder<B> placeholder2 = new Placeholder<>("Input #2");
+    Placeholder<C> placeholder3 = new Placeholder<>("Input #3");
+    Placeholder<D> placeholder4 = new Placeholder<>("Input #4");
+    return DAG.Prepared
+        .withPlaceholders(placeholder1, placeholder2, placeholder3, placeholder4)
+        .withNoReduction()
+        .withOutput(transformer.internalAPI().withInputs(placeholder1, placeholder2, placeholder3, placeholder4))
+        .withAllInputs(transformer.internalAPI().getInput1(), transformer.internalAPI().getInput2(),
+            transformer.internalAPI().getInput3(), transformer.internalAPI().getInput4());
   }
 }

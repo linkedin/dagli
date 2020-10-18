@@ -21,7 +21,7 @@ public class NullFilteredTest {
     DAG1x1.Prepared<Integer, java.util.List<Integer>> dag = DAG.Prepared.withPlaceholder(input1)
         .withOutput(new NullFiltered.Prepared<>(new VariadicList<Integer>().withInputs(input1, input2)));
 
-    Assertions.assertEquals(2, dag.graph().getParentToChildrenMap().size());
+    Assertions.assertEquals(2, dag.graph().nodes().size());
     Assertions.assertNull(dag.apply(42));
   }
 

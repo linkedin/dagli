@@ -4,6 +4,7 @@ import com.linkedin.dagli.handle.ProducerHandle;
 import com.linkedin.dagli.producer.internal.AncestorSpliterator;
 import com.linkedin.dagli.producer.internal.ProducerInternalAPI;
 import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.named.Named;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -26,11 +27,12 @@ import java.util.stream.StreamSupport;
  *
  * @param <R> the type of result produced by the producer
  */
-public interface Producer<R> extends Serializable {
+public interface Producer<R> extends Serializable, Named {
   /**
-   * Gets a name for this producer.  This name is intended for human consumption and should not be relied upon as a
-   * unique or consistent identifier.  In particular, names may differ even for instances for which
-   * {@link Object#equals(Object)} returns true.
+   * Gets a name for this producer.  This name is intended for human consumption and <strong>must not be relied upon as
+   * a unique or consistent identifier</strong>.  In particular, names may differ even for instances for which
+   * {@link Object#equals(Object)} returns true, and deserialized instances' names may not match those of their
+   * original progenitors.
    *
    * Generally the name of a producer should not include the names of its input producers' {@link #getName()}s as this
    * may create arbitrarily long names; instead, use the inputs' {@link #getShortName()}s.
@@ -41,13 +43,14 @@ public interface Producer<R> extends Serializable {
    *
    * @return a human-readable(ish) name for this producer.
    */
+  @Override
   default String getName() {
     return this.getClass().getSimpleName() + " " + Integer.toHexString(System.identityHashCode(this));
   }
 
   /**
    * Gets a short name for this producer.  This name is intended for human consumption and should not be relied upon as
-   * a unique or consistent identifier.  The default implementation simply returns {@link #getName()}.
+   * a unique or consistent identifier.  The default implementation simply returns the instance's class name.
    *
    * This method should be overridden when {@link #getName()} returns a name that includes this producer's inputs; such
    * recursively nested names can become quite long.  A short name should not depend on the names of the inputs (those
@@ -55,8 +58,9 @@ public interface Producer<R> extends Serializable {
    *
    * @return a human-readable(ish) name for this producer.
    */
+  @Override
   default String getShortName() {
-    return getName();
+    return this.getClass().getSimpleName();
   }
 
   /**

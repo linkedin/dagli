@@ -58,7 +58,8 @@ public class LiblinearClassifierTest {
 
   @Test
   public void testBasic() {
-    LiblinearClassification.Prepared prepared = trainAndCheck(getTrinaryExamples(200), getTrinaryExamples(100));
+    LiblinearClassification.Prepared<Integer> prepared =
+        trainAndCheck(getTrinaryExamples(200), getTrinaryExamples(100));
 
     for (int i = 0; i < 3; i++) {
       assertTrue(prepared.getBiasForLabel(i) < -0.1);
@@ -78,7 +79,7 @@ public class LiblinearClassifierTest {
     assertTrue(prepared.getBiasForLabel(0) > 0);
   }
 
-  public LiblinearClassification.Prepared trainAndCheck(List<Tuple2<Integer, DenseFloatArrayVector>> trainingData,
+  public LiblinearClassification.Prepared<Integer> trainAndCheck(List<Tuple2<Integer, DenseFloatArrayVector>> trainingData,
       List<Tuple2<Integer, DenseFloatArrayVector>> evalData) {
     Placeholder<Integer> intPlaceholder = new Placeholder<>("Integer");
     Placeholder<DenseFloatArrayVector> vecPlaceholder = new Placeholder<>("Vector");

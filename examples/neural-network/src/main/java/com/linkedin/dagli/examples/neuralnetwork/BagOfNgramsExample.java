@@ -219,10 +219,10 @@ public abstract class BagOfNgramsExample {
         new NNSequentialEmbeddingLayer().withEmbeddingSize(64).withInputFromNumberSequence(tokenIndices);
 
     // Next, pool our bag of ngram embeddings into a single vector repreentation of the dialog:
-    NNMaxPoolingLayer meanPoolingLayer = new NNMaxPoolingLayer().withInput(ngramEmbeddingLayer);
+    NNMaxPoolingLayer maxPoolingLayer = new NNMaxPoolingLayer().withInput(ngramEmbeddingLayer);
 
     // And transformer the vector with some dense layers:
-    NNDenseLayer denseLayers = new NNDenseLayer().withInput(meanPoolingLayer).stack(64, 64);
+    NNDenseLayer denseLayers = new NNDenseLayer().withInput(maxPoolingLayer).stack(64, 64);
 
     // We're ready to classify; NNClassification is actually a "loss layer", which means it's output will be optimized
     // (along with those of any other loss layers) by the neural network during training.

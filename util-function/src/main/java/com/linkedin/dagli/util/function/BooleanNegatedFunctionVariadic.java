@@ -1,5 +1,6 @@
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Objects;
  *
  * @param <A> the type of the (variadic) parameters for this function
  */
-class BooleanNegatedFunctionVariadic<A> implements BooleanFunctionVariadic<A> {
+class BooleanNegatedFunctionVariadic<A> implements BooleanFunctionVariadic<A>, Named {
   private static final int CLASS_HASH = BooleanNegatedFunctionVariadic.class.hashCode();
 
   private final BooleanFunctionVariadic<A> _function;
@@ -59,6 +60,16 @@ class BooleanNegatedFunctionVariadic<A> implements BooleanFunctionVariadic<A> {
       return this._function.equals(((BooleanNegatedFunctionVariadic) obj)._function);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "!(" + Named.getShortName(_function) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return "!(" + Named.getShortName(_function) + ")";
   }
 
   static class Serializable<A> extends BooleanNegatedFunctionVariadic<A>

@@ -4,6 +4,7 @@
 package com.linkedin.dagli.util.function;
 
 import java.util.Objects;
+import com.linkedin.dagli.util.named.Named;
 
 <#-- the class name of the function interface we're going to define -->
 <#macro NakedFunctionName>${f.Prefix(typeIndex)}Function${arity}</#macro>
@@ -21,7 +22,7 @@ import java.util.Objects;
  * {@link <@NakedFunctionName />} with a {@link Function1}.  The function is only <strong>actually</strong> serializable
  * if its constituent composed functions are serializable, of course.
  */
-class <@ClassName /> implements <@SerializableFunctionName /> {
+class <@ClassName /> implements <@SerializableFunctionName />, Named {
   private static final long serialVersionUID = 1;
 
   private final <@FirstFunctionName false /> _first;
@@ -61,5 +62,15 @@ class <@ClassName /> implements <@SerializableFunctionName /> {
       return this._first.equals(((<@NakedClassName />) obj)._first) && this._andThen.equals(((<@NakedClassName />) obj)._andThen);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return Named.getShortName(_andThen) + "(" + Named.getShortName(_first) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return Named.getShortName(_andThen) + "(...)";
   }
 }

@@ -17,12 +17,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +36,7 @@ import java.util.stream.Stream;
  * @param <R> the type of result produced by this DAG.  For result arity greater than 1, this will be a tuple.  For a
  *            DAG1x2, for example, this would be a Tuple2.
  */
-class DAGStructure<R> implements Serializable, Graph {
+class DAGStructure<R> implements Serializable, Graph<Producer<?>> {
   private static final long serialVersionUID = 1;
 
   // used to indicate that a node is not present/missing when storing a node index
@@ -363,8 +363,20 @@ class DAGStructure<R> implements Serializable, Graph {
   }
 
   @Override
-  public Map<Producer<?>, ? extends List<ChildProducer<?>>> getParentToChildrenMap() {
-    return _childrenMap;
+  public Set<Producer<?>> nodes() {
+    return _childrenMap.keySet();
+  }
+
+  @Override
+  public List<? extends ChildProducer<?>> children(Producer<?> vertex) {
+    return _childrenMap.get(vertex);
+  }
+
+  @Override
+  public List<? extends Producer<?>> parents(Producer<?> vertex) {
+    assert _childrenMap.containsKey(vertex);
+    return vertex instanceof ChildProducer ? ((ChildProducer<?>) vertex).internalAPI().getInputList()
+        : Collections.emptyList();
   }
 
   /**

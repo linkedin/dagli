@@ -26,7 +26,7 @@ regression classifier:
     DAG2x1.Prepared<String, LabelType, DiscreteDistribution<String>> trainedModel = 
         DAG.withPlaceholders(text, label).withOutput(prediction).prepare(textList, labelList);
     
-    LabelType prediction = trainedModel.apply("Some text for which to predict a label", null);
+    LabelType predictedLabel = trainedModel.apply("Some text for which to predict a label", null);
     // trainedModel now can be serialized and later loaded on a server, in a CLI app, in a Hive UDF...
 
 This code is fairly minimal; Dagli also provides mechanisms to more elegantly encapsulate example data 

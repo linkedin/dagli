@@ -16,6 +16,6 @@ public class AsciiVisualizationTest {
     FunctionResult2<String, String, String> concatenation =
         new FunctionResult2<>(String::concat).withInputs(prefix, placeholder);
     DAG1x1.Prepared<String, String> dag = DAG.Prepared.withPlaceholder(placeholder).withOutput(concatenation);
-    System.err.println(AsciiVisualization.render(dag.graph()));
+    new AsciiVisualization().render(dag.graph());
   }
 }

@@ -488,3 +488,31 @@ public <#if prepared><@PreparedDAGClassName arity-1 resultArity /><#else><@DAGCl
 }
 </#list></#if></#macro>
 
+<#-- common method of PreparableTransformerX and PreparedTransformerX classes -->
+<#macro WrapTransformerAsDAGMethod arity prepared>
+  /**
+   * Creates a trivial DAG that wraps the provided transformer, with the DAG retaining the transformer's existing
+   * inputs or, if the transformer is already a DAG, simply returns it unaltered.
+   *
+   * @param transformer the transformer to wrap
+<#list 1..arity as index>   * @param <${c.InputGenericArgument(index)}> the type of transformer input #${index}
+</#list>
+   * @param <R> the type of result produced by the transformer
+   * @return a trivial DAG that wraps the provided transformer, or the transformer itself if it is already a DAG
+   */
+  <#if !prepared>@SuppressWarnings("unchecked")
+  </#if>static <<@c.InputGenericArguments arity />, R> DAG${arity}x1<#if prepared>.Prepared</#if><<@c.InputGenericArguments arity />, R> toDAG(<#if prepared><@PreparedTransformer arity /><#else><@PreparableTransformer arity "?" /></#if> transformer) {
+    if (transformer instanceof DAG${arity}x1<#if prepared>.Prepared</#if>) {
+      return (DAG${arity}x1<#if prepared>.Prepared</#if><<@c.InputGenericArguments arity />, R>) transformer;
+    }
+
+    <#list 1..arity as index>
+    Placeholder<${c.InputGenericArgument(index)}> placeholder${index} = new Placeholder<>("Input #${index}");
+    </#list>
+    return DAG<#if prepared>.Prepared</#if>
+      .withPlaceholders(<#list 1..arity as index>placeholder${index}<#sep>, </#list>)
+      .withNoReduction()
+      .withOutput(transformer.internalAPI().withInputs(<#list 1..arity as index>placeholder${index}<#sep>, </#list>))
+      .withAllInputs(<#list 1..arity as index>transformer.internalAPI().getInput${index}()<#sep>, </#list>);
+  }
+</#macro>

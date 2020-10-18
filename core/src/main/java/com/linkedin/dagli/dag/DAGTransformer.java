@@ -87,7 +87,7 @@ public interface DAGTransformer<R, S extends DAGTransformer<R, S>> extends Trans
    *
    * @return a {@link Graph} object that describes the graph structure of this instance.
    */
-  default Graph graph() {
+  default Graph<Producer<?>> graph() {
     return internalAPI().getDAGStructure();
   }
 

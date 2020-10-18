@@ -3,6 +3,7 @@
 package com.linkedin.dagli.util.function;
 
 import java.util.Objects;
+import com.linkedin.dagli.util.named.Named;
 
 
 /**
@@ -11,7 +12,7 @@ import java.util.Objects;
  * if its constituent composed functions are serializable, of course.
  */
 class ByteComposedFunction11<A, B, C, D, E, F, G, H, I, J, K, Q> implements
-    ByteFunction11.Serializable<A, B, C, D, E, F, G, H, I, J, K> {
+    ByteFunction11.Serializable<A, B, C, D, E, F, G, H, I, J, K>, Named {
   private static final long serialVersionUID = 1;
 
   private final Function11<A, B, C, D, E, F, G, H, I, J, K, Q> _first;
@@ -56,5 +57,15 @@ class ByteComposedFunction11<A, B, C, D, E, F, G, H, I, J, K, Q> implements
           && this._andThen.equals(((ByteComposedFunction11) obj)._andThen);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return Named.getShortName(_andThen) + "(" + Named.getShortName(_first) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return Named.getShortName(_andThen) + "(...)";
   }
 }

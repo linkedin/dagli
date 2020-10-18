@@ -153,9 +153,9 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
   @Override
   void validate() {
     Objects.requireNonNull(_supervisionProvider,
-        "Labels have not been specified for the classification layer " + getIdentifier());
+        "Labels have not been specified for the classification layer " + getName());
     Objects.requireNonNull(_nominalInput,
-        "An input layer has not been specified for the classification layer " + getIdentifier());
+        "An input layer has not been specified for the classification layer " + getName());
 
     super.validate();
   }
@@ -317,7 +317,7 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
    * @return a copy of this layer that will accept the specified layer's activations/outputs as inputs
    */
   @SafeVarargs
-  public final NNClassification<L> withFeaturesInputFromConcatenatedLayers(
+  public final NNClassification<L> withFeaturesInputs(
       NNLayer<DenseVector, ? extends NonTerminalLayer>... layers) {
     return withInput(new NNVectorConcatenationLayer().withAdditionalInputs(layers));
   }

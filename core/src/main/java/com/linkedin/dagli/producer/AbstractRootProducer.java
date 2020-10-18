@@ -16,19 +16,22 @@ public abstract class AbstractRootProducer<R, I extends RootProducerInternalAPI<
 
   /**
    * Creates a new root with a random UUID
+   *
+   * @param name a human-friendly name for the producer (may be null, in which case the default name will be used)
    */
-  public AbstractRootProducer() {
-    super();
+  public AbstractRootProducer(String name) {
+    super(name);
   }
 
   /**
    * Creates a new root with the specified UUID
    *
+   * @param name a human-friendly name for the producer (may be null, in which case the default name will be used)
    * @param uuidMostSignificantBits most significant 64 bits of the UUID
    * @param uuidLeastSignificantBits least significant 64 bits of the UUID
    */
-  public AbstractRootProducer(long uuidMostSignificantBits, long uuidLeastSignificantBits) {
-    super(uuidMostSignificantBits, uuidLeastSignificantBits);
+  public AbstractRootProducer(String name, long uuidMostSignificantBits, long uuidLeastSignificantBits) {
+    super(name, uuidMostSignificantBits, uuidLeastSignificantBits);
   }
 
   protected abstract class InternalAPI extends AbstractProducer<R, I, S>.InternalAPI

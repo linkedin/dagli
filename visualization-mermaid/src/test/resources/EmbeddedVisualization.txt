@@ -1,0 +1,36 @@
+graph TD
+MaxNonZeroVectorElementIndex-0("MaxNonZeroVectorElementIndex")
+FunctionResult1-1("arg == null ? null : ArraysEx::toLongsLossy(...)")
+Placeholder-2[("label")]
+Constant-3(["false"])
+IndexedCountView-4[/"IndexedCountView"/]
+Max-5["Max"]
+Index-6["Index"]
+Constant-7(["-1"])
+VariadicList-8("VariadicList")
+ManyHotVector-9("ManyHotVector")
+Placeholder-10[("features")]
+subgraph NeuralNetwork-11-Subgraph[" "]
+NeuralNetwork-11["NeuralNetwork"]
+NeuralNetwork-11-0[["NNClassification"]]
+NeuralNetwork-11-1[["NNDenseLayer"]]
+NeuralNetwork-11-2[["NNDenseLayer"]]
+NeuralNetwork-11-3[["NNVectorInputLayer"]]
+end
+NeuralNetwork-11-1 --> NeuralNetwork-11-0
+ManyHotVector-9 --> NeuralNetwork-11-0
+NeuralNetwork-11-2 --> NeuralNetwork-11-1
+IndexedCountView-4 --> NeuralNetwork-11-1
+NeuralNetwork-11-0 --> NeuralNetwork-11
+NeuralNetwork-11-3 --> NeuralNetwork-11-2
+Constant-7 --> NeuralNetwork-11-2
+Placeholder-10 --> NeuralNetwork-11-3
+Max-5 --> NeuralNetwork-11-3
+Placeholder-10 --> MaxNonZeroVectorElementIndex-0
+VariadicList-8 --> FunctionResult1-1
+Index-6 --> IndexedCountView-4
+MaxNonZeroVectorElementIndex-0 --> Max-5
+Placeholder-2 --> Index-6
+Index-6 --> VariadicList-8
+FunctionResult1-1 --> ManyHotVector-9
+Constant-3 --> NeuralNetwork-11

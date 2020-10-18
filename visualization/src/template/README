@@ -1,0 +1,8 @@
+The template folder contains the FreeMarker template source files (*.ftl) in the template/ftl directory and the
+generated Java code in the template/generated directory.
+
+Do not modify the files in template/generated directly.  Any such changes will be overwritten.  Instead, modify the
+associated ftl file and then run template/generate.sh.  Generation will take a minute or two, and you will need fmpp
+0.9.16+ in your path (http://fmpp.sourceforge.net).
+
+This script does not run automatically in the normal build process.  You must manually run generate.sh as needed.

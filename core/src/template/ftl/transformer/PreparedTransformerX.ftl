@@ -6,8 +6,11 @@ package com.linkedin.dagli.transformer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.linkedin.dagli.dag.DAG;
+import com.linkedin.dagli.dag.DAG${arity}x1;
 import com.linkedin.dagli.objectio.biglist.BigListWriter;
 import com.linkedin.dagli.objectio.ObjectReader;
+import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.transformer.internal.PreparedTransformer${arity}InternalAPI;
 import com.linkedin.dagli.util.collection.Iterables;
 
@@ -71,4 +74,6 @@ public interface <@c.PreparedTransformer arity /> extends <@c.Transformer arity 
     // safe due to semantics of prepared transformers:
     return (PreparedTransformer${arity}<<@c.InputGenericArguments arity />, R>) prepared;
   }
+
+<@c.WrapTransformerAsDAGMethod arity true />
 }

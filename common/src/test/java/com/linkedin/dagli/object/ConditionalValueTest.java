@@ -32,7 +32,7 @@ public class ConditionalValueTest {
             .withValueIfConditionTrueInput(val1)
             .withValueIfConditionFalseInput(val2));
 
-    Assertions.assertEquals(2, dag.graph().getParentToChildrenMap().size());
+    Assertions.assertEquals(2, dag.graph().nodes().size());
     Assertions.assertEquals(42, dag.apply(123));
   }
 }

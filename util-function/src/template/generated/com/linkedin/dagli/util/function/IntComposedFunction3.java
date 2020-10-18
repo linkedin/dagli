@@ -3,6 +3,7 @@
 package com.linkedin.dagli.util.function;
 
 import java.util.Objects;
+import com.linkedin.dagli.util.named.Named;
 
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
  * {@link IntFunction3} with a {@link Function1}.  The function is only <strong>actually</strong> serializable
  * if its constituent composed functions are serializable, of course.
  */
-class IntComposedFunction3<A, B, C, Q> implements IntFunction3.Serializable<A, B, C> {
+class IntComposedFunction3<A, B, C, Q> implements IntFunction3.Serializable<A, B, C>, Named {
   private static final long serialVersionUID = 1;
 
   private final Function3<A, B, C, Q> _first;
@@ -52,5 +53,15 @@ class IntComposedFunction3<A, B, C, Q> implements IntFunction3.Serializable<A, B
           && this._andThen.equals(((IntComposedFunction3) obj)._andThen);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return Named.getShortName(_andThen) + "(" + Named.getShortName(_first) + ")";
+  }
+
+  @Override
+  public String getShortName() {
+    return Named.getShortName(_andThen) + "(...)";
   }
 }

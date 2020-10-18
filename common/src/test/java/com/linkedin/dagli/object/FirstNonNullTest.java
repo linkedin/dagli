@@ -18,12 +18,12 @@ public class FirstNonNullTest {
     DAG1x1.Prepared<Integer, Integer> dag =
         DAG.Prepared.withPlaceholder(input3).withOutput(new FirstNonNull<Integer>().withInputs(input1, input2, input3));
 
-    Assertions.assertEquals(2, dag.graph().getParentToChildrenMap().size());
+    Assertions.assertEquals(2, dag.graph().nodes().size());
     Assertions.assertEquals(42, dag.apply(123));
 
     DAG1x1.Prepared<Integer, Integer> dag2 =
         DAG.Prepared.withPlaceholder(input3).withOutput(new FirstNonNull<Integer>().withInputs(input1, input3, input2));
 
-    Assertions.assertEquals(4, dag2.graph().getParentToChildrenMap().size());
+    Assertions.assertEquals(4, dag2.graph().nodes().size());
   }
 }

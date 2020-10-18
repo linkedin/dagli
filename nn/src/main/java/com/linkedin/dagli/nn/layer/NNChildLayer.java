@@ -35,7 +35,7 @@ public abstract class NNChildLayer<R, S extends NNChildLayer<R, S>> extends NNLa
 
     /**
      * Non-root layers will accept one or more neural network layers as their inputs, which can be obtained by this
-     * method.  Root layers should return an empty list.
+     * method.
      *
      * @return a list of {@link NNLayer}
      */
@@ -62,7 +62,7 @@ public abstract class NNChildLayer<R, S extends NNChildLayer<R, S>> extends NNLa
 
   /**
    * Non-root layers will accept one or more neural network layers as their inputs, which can be obtained by this
-   * method.  Root layers should return an empty list.
+   * method.
    *
    * @return a list of {@link NNLayer}
    */

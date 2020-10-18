@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -10,7 +11,7 @@ import java.util.Objects;
  * the function's inputs are null.
  */
 class CharacterDefaultOnNullArgument9<A, B, C, D, E, F, G, H, I> implements
-    CharacterFunction9.Serializable<A, B, C, D, E, F, G, H, I> {
+    CharacterFunction9.Serializable<A, B, C, D, E, F, G, H, I>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = CharacterDefaultOnNullArgument9.class.hashCode();
   private final CharacterFunction9<A, B, C, D, E, F, G, H, I> _wrapped;
@@ -50,5 +51,15 @@ class CharacterDefaultOnNullArgument9<A, B, C, D, E, F, G, H, I> implements
       return this._wrapped.equals(((CharacterDefaultOnNullArgument9) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? '\0' : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? '\0' : " + Named.getShortName(_wrapped);
   }
 }

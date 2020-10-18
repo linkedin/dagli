@@ -552,8 +552,8 @@ public class DAGTest {
     Sum sum = new Sum().withInputs(placeholderA, placeholderB);
 
     DAG3x1<Long, Long, Long, Long> dag = DAG.withInputs(placeholderB, placeholderA, unusedSum).withOutput(sum);
-    Assertions.assertTrue(dag.graph().getParentToChildrenMap().containsKey(placeholderA));
-    Assertions.assertTrue(dag.graph().getParentToChildrenMap().containsKey(placeholderB));
+    Assertions.assertTrue(dag.graph().nodes().contains(placeholderA));
+    Assertions.assertTrue(dag.graph().nodes().contains(placeholderB));
   }
 
   @Test

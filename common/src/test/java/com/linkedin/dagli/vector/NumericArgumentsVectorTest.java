@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 
 public class NumericArgumentsVectorTest {
   @Test
+  @SuppressWarnings("unchecked")
   public void integerTest() {
     ArrayList<Number> values = new ArrayList<>();
-    values.add(new Integer(Integer.MAX_VALUE));
-    values.add(new Integer(Integer.MIN_VALUE));
+    values.add(Integer.MAX_VALUE);
+    values.add(Integer.MIN_VALUE);
     values.add(3);
     values.add(4.5f);
     values.add(4.5d);

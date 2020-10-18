@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * A function class implementing BooleanFunction2.Serializable<A, B> that returns false if any of
  * the function's inputs are null.
  */
-class BooleanDefaultOnNullArgument2<A, B> implements BooleanFunction2.Serializable<A, B> {
+class BooleanDefaultOnNullArgument2<A, B> implements BooleanFunction2.Serializable<A, B>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = BooleanDefaultOnNullArgument2.class.hashCode();
   private final BooleanFunction2<A, B> _wrapped;
@@ -47,5 +48,15 @@ class BooleanDefaultOnNullArgument2<A, B> implements BooleanFunction2.Serializab
       return this._wrapped.equals(((BooleanDefaultOnNullArgument2) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? false : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? false : " + Named.getShortName(_wrapped);
   }
 }

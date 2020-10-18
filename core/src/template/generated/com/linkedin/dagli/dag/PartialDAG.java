@@ -1158,6 +1158,27 @@ public class PartialDAG {
      * @param <RA> the type of the first result
      * @return a completed DAG with 1 input (placeholders) and 1 output (outputs).
      */
+    public <RA> DAG1x1<A, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping = DAGUtil.createInputMap(_input1, _placeholder1);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1);
+
+      return ((DAG1x1) DAGUtil.createPreparableDAG(Arrays.asList(_placeholder1), Arrays.asList(output1)).internalAPI()
+          .withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 1 input (placeholders) and 1 output (outputs).
+     */
     public <RA> DAG1x1<A, RA> withOutput(Producer<? extends RA> output1) {
       Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -1606,6 +1627,28 @@ public class PartialDAG {
     WithPlaceholders2(Placeholder<? extends A> placeholder1, Placeholder<? extends B> placeholder2,
         Producer<? extends A> input1, Producer<? extends B> input2) {
       super(placeholder1, placeholder2, input1, input2);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 2 inputs (placeholders) and 1 output (outputs).
+     */
+    public <RA> DAG2x1<A, B, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2);
+
+      return ((DAG2x1) DAGUtil.createPreparableDAG(Arrays.asList(_placeholder1, _placeholder2), Arrays.asList(output1))
+          .internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
     }
 
     /**
@@ -2091,6 +2134,29 @@ public class PartialDAG {
      * @param <RA> the type of the first result
      * @return a completed DAG with 3 inputs (placeholders) and 1 output (outputs).
      */
+    public <RA> DAG3x1<A, B, C, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3);
+
+      return ((DAG3x1) DAGUtil
+          .createPreparableDAG(Arrays.asList(_placeholder1, _placeholder2, _placeholder3), Arrays.asList(output1))
+          .internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 3 inputs (placeholders) and 1 output (outputs).
+     */
     public <RA> DAG3x1<A, B, C, RA> withOutput(Producer<? extends RA> output1) {
       Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -2566,6 +2632,30 @@ public class PartialDAG {
         Placeholder<? extends C> placeholder3, Placeholder<? extends D> placeholder4, Producer<? extends A> input1,
         Producer<? extends B> input2, Producer<? extends C> input3, Producer<? extends D> input4) {
       super(placeholder1, placeholder2, placeholder3, placeholder4, input1, input2, input3, input4);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 4 inputs (placeholders) and 1 output (outputs).
+     */
+    public <RA> DAG4x1<A, B, C, D, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4);
+
+      return ((DAG4x1) DAGUtil
+          .createPreparableDAG(Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4),
+              Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
     }
 
     /**
@@ -3068,6 +3158,31 @@ public class PartialDAG {
         Producer<? extends C> input3, Producer<? extends D> input4, Producer<? extends E> input5) {
       super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, input1, input2, input3, input4,
           input5);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 5 inputs (placeholders) and 1 output (outputs).
+     */
+    public <RA> DAG5x1<A, B, C, D, E, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4, _input5, _placeholder5);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5);
+
+      return ((DAG5x1) DAGUtil
+          .createPreparableDAG(
+              Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5),
+              Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
     }
 
     /**
@@ -3585,6 +3700,31 @@ public class PartialDAG {
         Producer<? extends E> input5, Producer<? extends F> input6) {
       super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6, input1, input2, input3,
           input4, input5, input6);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 6 inputs (placeholders) and 1 output (outputs).
+     */
+    public <RA> DAG6x1<A, B, C, D, E, F, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4, _input5, _placeholder5, _input6, _placeholder6);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6);
+
+      return ((DAG6x1) DAGUtil
+          .createPreparableDAG(
+              Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6),
+              Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
     }
 
     /**
@@ -4117,6 +4257,32 @@ public class PartialDAG {
      * @param <RA> the type of the first result
      * @return a completed DAG with 7 inputs (placeholders) and 1 output (outputs).
      */
+    public <RA> DAG7x1<A, B, C, D, E, F, G, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7);
+
+      return ((DAG7x1) DAGUtil
+          .createPreparableDAG(
+              Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                  _placeholder7), Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs))
+          .withReduction(_minimumReducerLevel);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 7 inputs (placeholders) and 1 output (outputs).
+     */
     public <RA> DAG7x1<A, B, C, D, E, F, G, RA> withOutput(Producer<? extends RA> output1) {
       Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -4640,6 +4806,33 @@ public class PartialDAG {
         Producer<? extends H> input8) {
       super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6, placeholder7,
           placeholder8, input1, input2, input3, input4, input5, input6, input7, input8);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 8 inputs (placeholders) and 1 output (outputs).
+     */
+    public <RA> DAG8x1<A, B, C, D, E, F, G, H, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7, _input8,
+                _placeholder8);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7, _input8);
+
+      return ((DAG8x1) DAGUtil
+          .createPreparableDAG(
+              Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                  _placeholder7, _placeholder8), Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs))
+          .withReduction(_minimumReducerLevel);
     }
 
     /**
@@ -5190,6 +5383,34 @@ public class PartialDAG {
         Producer<? extends I> input9) {
       super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6, placeholder7,
           placeholder8, placeholder9, input1, input2, input3, input4, input5, input6, input7, input8, input9);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 9 inputs (placeholders) and 1 output (outputs).
+     */
+    public <RA> DAG9x1<A, B, C, D, E, F, G, H, I, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7, _input8,
+                _placeholder8, _input9, _placeholder9);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs =
+          Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7, _input8, _input9);
+
+      return ((DAG9x1) DAGUtil
+          .createPreparableDAG(
+              Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                  _placeholder7, _placeholder8, _placeholder9), Arrays.asList(output1)).internalAPI()
+          .withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
     }
 
     /**
@@ -5767,6 +5988,34 @@ public class PartialDAG {
      * @param <RA> the type of the first result
      * @return a completed DAG with 10 inputs (placeholders) and 1 output (outputs).
      */
+    public <RA> DAG10x1<A, B, C, D, E, F, G, H, I, J, RA> withOutputs(Producer<? extends RA> output1) {
+      Objects.requireNonNull(output1, "Output 1 may not be null");
+
+      if (_shouldRemapInputs) {
+        Map<Producer<?>, Producer<?>> inputMapping =
+            DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7, _input8,
+                _placeholder8, _input9, _placeholder9, _input10, _placeholder10);
+        output1 = DAGUtil.replaceInputs(output1, inputMapping);
+      }
+
+      List<Producer<?>> inputs =
+          Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7, _input8, _input9, _input10);
+
+      return ((DAG10x1) DAGUtil
+          .createPreparableDAG(
+              Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                  _placeholder7, _placeholder8, _placeholder9, _placeholder10), Arrays.asList(output1)).internalAPI()
+          .withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+    }
+
+    /**
+     * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+     *
+     * @param output1 the first output (output) of the DAG
+     * @param <RA> the type of the first result
+     * @return a completed DAG with 10 inputs (placeholders) and 1 output (outputs).
+     */
     public <RA> DAG10x1<A, B, C, D, E, F, G, H, I, J, RA> withOutput(Producer<? extends RA> output1) {
       Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -6294,6 +6543,27 @@ public class PartialDAG {
        * @param <RA> the type of the first result
        * @return a completed DAG with 1 input (placeholders) and 1 output (outputs).
        */
+      public <RA> DAG1x1.Prepared<A, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping = DAGUtil.createInputMap(_input1, _placeholder1);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1);
+
+        return ((DAG1x1.Prepared) DAGUtil.createPreparedDAG(Arrays.asList(_placeholder1), Arrays.asList(output1))
+            .internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 1 input (placeholders) and 1 output (outputs).
+       */
       public <RA> DAG1x1.Prepared<A, RA> withOutput(Producer<? extends RA> output1) {
         Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -6746,6 +7016,29 @@ public class PartialDAG {
       WithPlaceholders2(Placeholder<? extends A> placeholder1, Placeholder<? extends B> placeholder2,
           Producer<? extends A> input1, Producer<? extends B> input2) {
         super(placeholder1, placeholder2, input1, input2);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 2 inputs (placeholders) and 1 output (outputs).
+       */
+      public <RA> DAG2x1.Prepared<A, B, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1, _input2);
+
+        return ((DAG2x1.Prepared) DAGUtil
+            .createPreparedDAG(Arrays.asList(_placeholder1, _placeholder2), Arrays.asList(output1)).internalAPI()
+            .withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
       }
 
       /**
@@ -7236,6 +7529,29 @@ public class PartialDAG {
        * @param <RA> the type of the first result
        * @return a completed DAG with 3 inputs (placeholders) and 1 output (outputs).
        */
+      public <RA> DAG3x1.Prepared<A, B, C, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3);
+
+        return ((DAG3x1.Prepared) DAGUtil
+            .createPreparedDAG(Arrays.asList(_placeholder1, _placeholder2, _placeholder3), Arrays.asList(output1))
+            .internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 3 inputs (placeholders) and 1 output (outputs).
+       */
       public <RA> DAG3x1.Prepared<A, B, C, RA> withOutput(Producer<? extends RA> output1) {
         Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -7714,6 +8030,30 @@ public class PartialDAG {
           Placeholder<? extends C> placeholder3, Placeholder<? extends D> placeholder4, Producer<? extends A> input1,
           Producer<? extends B> input2, Producer<? extends C> input3, Producer<? extends D> input4) {
         super(placeholder1, placeholder2, placeholder3, placeholder4, input1, input2, input3, input4);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 4 inputs (placeholders) and 1 output (outputs).
+       */
+      public <RA> DAG4x1.Prepared<A, B, C, D, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4);
+
+        return ((DAG4x1.Prepared) DAGUtil
+            .createPreparedDAG(Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4),
+                Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
       }
 
       /**
@@ -8218,6 +8558,31 @@ public class PartialDAG {
           Producer<? extends C> input3, Producer<? extends D> input4, Producer<? extends E> input5) {
         super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, input1, input2, input3, input4,
             input5);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 5 inputs (placeholders) and 1 output (outputs).
+       */
+      public <RA> DAG5x1.Prepared<A, B, C, D, E, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4, _input5, _placeholder5);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5);
+
+        return ((DAG5x1.Prepared) DAGUtil
+            .createPreparedDAG(
+                Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5),
+                Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
       }
 
       /**
@@ -8746,6 +9111,31 @@ public class PartialDAG {
        * @param <RA> the type of the first result
        * @return a completed DAG with 6 inputs (placeholders) and 1 output (outputs).
        */
+      public <RA> DAG6x1.Prepared<A, B, C, D, E, F, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4, _input5, _placeholder5, _input6, _placeholder6);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6);
+
+        return ((DAG6x1.Prepared) DAGUtil
+            .createPreparedDAG(
+                Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6),
+                Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 6 inputs (placeholders) and 1 output (outputs).
+       */
       public <RA> DAG6x1.Prepared<A, B, C, D, E, F, RA> withOutput(Producer<? extends RA> output1) {
         Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -9262,6 +9652,32 @@ public class PartialDAG {
           Producer<? extends F> input6, Producer<? extends G> input7) {
         super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6, placeholder7, input1,
             input2, input3, input4, input5, input6, input7);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 7 inputs (placeholders) and 1 output (outputs).
+       */
+      public <RA> DAG7x1.Prepared<A, B, C, D, E, F, G, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs = Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7);
+
+        return ((DAG7x1.Prepared) DAGUtil
+            .createPreparedDAG(
+                Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                    _placeholder7), Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs))
+            .withReduction(_minimumReducerLevel);
       }
 
       /**
@@ -9797,6 +10213,34 @@ public class PartialDAG {
           Producer<? extends H> input8) {
         super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6, placeholder7,
             placeholder8, input1, input2, input3, input4, input5, input6, input7, input8);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 8 inputs (placeholders) and 1 output (outputs).
+       */
+      public <RA> DAG8x1.Prepared<A, B, C, D, E, F, G, H, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7, _input8,
+                  _placeholder8);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs =
+            Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7, _input8);
+
+        return ((DAG8x1.Prepared) DAGUtil
+            .createPreparedDAG(
+                Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                    _placeholder7, _placeholder8), Arrays.asList(output1)).internalAPI().withInputsUnsafe(inputs))
+            .withReduction(_minimumReducerLevel);
       }
 
       /**
@@ -10368,6 +10812,34 @@ public class PartialDAG {
        * @param <RA> the type of the first result
        * @return a completed DAG with 9 inputs (placeholders) and 1 output (outputs).
        */
+      public <RA> DAG9x1.Prepared<A, B, C, D, E, F, G, H, I, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7, _input8,
+                  _placeholder8, _input9, _placeholder9);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs =
+            Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7, _input8, _input9);
+
+        return ((DAG9x1.Prepared) DAGUtil
+            .createPreparedDAG(
+                Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                    _placeholder7, _placeholder8, _placeholder9), Arrays.asList(output1)).internalAPI()
+            .withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 9 inputs (placeholders) and 1 output (outputs).
+       */
       public <RA> DAG9x1.Prepared<A, B, C, D, E, F, G, H, I, RA> withOutput(Producer<? extends RA> output1) {
         Objects.requireNonNull(output1, "Output 1 may not be null");
 
@@ -10928,6 +11400,34 @@ public class PartialDAG {
         super(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6, placeholder7,
             placeholder8, placeholder9, placeholder10, input1, input2, input3, input4, input5, input6, input7, input8,
             input9, input10);
+      }
+
+      /**
+       * Creates a completed DAG by supplying this partial DAG with its outputs (outputs).
+       *
+       * @param output1 the first output (output) of the DAG
+       * @param <RA> the type of the first result
+       * @return a completed DAG with 10 inputs (placeholders) and 1 output (outputs).
+       */
+      public <RA> DAG10x1.Prepared<A, B, C, D, E, F, G, H, I, J, RA> withOutputs(Producer<? extends RA> output1) {
+        Objects.requireNonNull(output1, "Output 1 may not be null");
+
+        if (_shouldRemapInputs) {
+          Map<Producer<?>, Producer<?>> inputMapping =
+              DAGUtil.createInputMap(_input1, _placeholder1, _input2, _placeholder2, _input3, _placeholder3, _input4,
+                  _placeholder4, _input5, _placeholder5, _input6, _placeholder6, _input7, _placeholder7, _input8,
+                  _placeholder8, _input9, _placeholder9, _input10, _placeholder10);
+          output1 = DAGUtil.replaceInputs(output1, inputMapping);
+        }
+
+        List<Producer<?>> inputs =
+            Arrays.asList(_input1, _input2, _input3, _input4, _input5, _input6, _input7, _input8, _input9, _input10);
+
+        return ((DAG10x1.Prepared) DAGUtil
+            .createPreparedDAG(
+                Arrays.asList(_placeholder1, _placeholder2, _placeholder3, _placeholder4, _placeholder5, _placeholder6,
+                    _placeholder7, _placeholder8, _placeholder9, _placeholder10), Arrays.asList(output1)).internalAPI()
+            .withInputsUnsafe(inputs)).withReduction(_minimumReducerLevel);
       }
 
       /**

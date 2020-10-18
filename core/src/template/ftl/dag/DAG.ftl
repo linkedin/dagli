@@ -22,7 +22,7 @@ import com.linkedin.dagli.producer.Producer;
   </@compress>
 </#macro>
 
-<#macro WithPlaceholdersMethod isPrepared arity>
+<#macro WithPlaceholdersMethod isPrepared arity forceSingular=false>
 /**
  * Creates a (partial) DAG with the provided {@link Placeholder}s.  The partial DAG will become a completed DAG once the
  * withOutputs(...) method is then called on it to specify the outputs.
@@ -38,9 +38,11 @@ import com.linkedin.dagli.producer.Producer;
 </#list>
  * @return a partial DAG rooted at the provided placeholders
  */
-public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Prepared.</#if><@WithPlaceholders arity /> withPlaceholder<@c.s arity />(<@c.ValuesArguments "Placeholder" arity "placeholder" />) {
+public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Prepared.</#if><@WithPlaceholders arity /> withPlaceholder<#if !forceSingular>s</#if>(<@c.ValuesArguments "Placeholder" arity "placeholder" />) {
   return new PartialDAG.<#if isPrepared>Prepared.</#if><@WithPlaceholders arity />(<#list 1..arity as index>placeholder${c.InputSuffix(index)}<#sep>, </#list>);
 }
+<#-- Add singular "withPlaceholder(...) method, too --->
+<#if arity == 1 && !forceSingular><@WithPlaceholdersMethod isPrepared arity true /></#if>
 </#macro>
 
 <#macro WithPlaceholdersMethods isPrepared>
@@ -49,7 +51,7 @@ public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Pr
   </#list>
 </#macro>
 
-<#macro WithInputsMethod isPrepared arity>
+<#macro WithInputsMethod isPrepared arity forceSingular=false>
 /**
  * Creates a (partial) DAG that will have the specified inputs.  The partial DAG will become a completed DAG once the
  * withOutputs(...) method is then called on it to specify the outputs.
@@ -93,9 +95,11 @@ public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Pr
 </#list>
  * @return a partial DAG configured to use the provided producers as roots
  */
-public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Prepared.</#if><@WithPlaceholders arity /> withInput<@c.s arity />(<@c.InputProducerList arity />) {
+public static <<@c.InputGenericArguments arity />> PartialDAG.<#if isPrepared>Prepared.</#if><@WithPlaceholders arity /> withInput<#if !forceSingular>s</#if>(<@c.InputProducerList arity />) {
   return new PartialDAG.<#if isPrepared>Prepared.</#if><@WithPlaceholders arity />(<#list 1..arity as index>input${c.InputSuffix(index)} instanceof Placeholder ? (Placeholder) input${c.InputSuffix(index)} : new Placeholder<>()<#sep>, </#list>, <@c.InputSuffixedList "input" arity />);
 }
+<#-- Add singular "withInput(...) method, too --->
+<#if arity == 1 && !forceSingular><@WithInputsMethod isPrepared arity true /></#if>
 </#macro>
 
 <#macro WithInputsMethods isPrepared>

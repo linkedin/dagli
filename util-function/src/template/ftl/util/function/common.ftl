@@ -1,6 +1,6 @@
 <#-- common methods for functions -->
 
-<#assign GenericFunctionIndex = 0 />
+<#assign ObjectFunctionIndex = 0 />
 <#assign VoidFunctionIndex = 1 />
 <#assign BooleanFunctionIndex = 2 />
 

@@ -6,7 +6,7 @@ package com.linkedin.dagli.util.function;
 import com.linkedin.dagli.util.exception.Exceptions;
 
 <#-- the class name of the function interface we're going to define -->
-<#macro GenericArgsUnclosed><A<#if typeIndex == f.GenericFunctionIndex>, R</#if></#macro>
+<#macro GenericArgsUnclosed><A<#if typeIndex == f.ObjectFunctionIndex>, R</#if></#macro>
 <#macro ClassName>${f.Prefix(typeIndex)}FunctionVariadic<@GenericArgsUnclosed />></#macro>
 
 @FunctionalInterface

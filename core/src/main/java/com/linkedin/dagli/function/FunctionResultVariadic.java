@@ -3,6 +3,7 @@ package com.linkedin.dagli.function;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.transformer.AbstractPreparedTransformerVariadic;
 import com.linkedin.dagli.util.function.Function1;
+import com.linkedin.dagli.util.named.Named;
 import java.util.List;
 
 
@@ -89,5 +90,20 @@ public class FunctionResultVariadic<V, R> extends AbstractPreparedTransformerVar
   @Override
   public R apply(List<? extends V> values) {
     return _function.apply(values);
+  }
+
+  @Override
+  public String toString() {
+    return "FunctionResultVariadic(" + _function.toString() + ")";
+  }
+
+  @Override
+  protected String getDefaultName() {
+    return Named.getName(_function);
+  }
+
+  @Override
+  protected String getDefaultShortName() {
+    return Named.getShortName(_function);
   }
 }

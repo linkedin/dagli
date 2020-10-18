@@ -2,9 +2,12 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.transformer;
 
+import com.linkedin.dagli.dag.DAG;
+import com.linkedin.dagli.dag.DAG6x1;
 import com.linkedin.dagli.dag.SimpleDAGExecutor;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResultMixed;
+import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.transformer.internal.PreparableTransformer6InternalAPI;
 import com.linkedin.dagli.util.collection.Iterables;
 
@@ -88,5 +91,43 @@ public interface PreparableTransformer6<A, B, C, D, E, F, R, N extends PreparedT
     return (PreparerResultMixed<PreparedTransformer6<A, B, C, D, E, F, R>, N>) preparable.internalAPI().prepare(
         PreparerContext.builder(Iterables.size64(values1)).setExecutor(new SimpleDAGExecutor()).build(), values1,
         values2, values3, values4, values5, values6);
+  }
+
+  /**
+   * Creates a trivial DAG that wraps the provided transformer, with the DAG retaining the transformer's existing
+   * inputs or, if the transformer is already a DAG, simply returns it unaltered.
+   *
+   * @param transformer the transformer to wrap
+   * @param <A> the type of transformer input #1
+   * @param <B> the type of transformer input #2
+   * @param <C> the type of transformer input #3
+   * @param <D> the type of transformer input #4
+   * @param <E> the type of transformer input #5
+   * @param <F> the type of transformer input #6
+   * @param <R> the type of result produced by the transformer
+   * @return a trivial DAG that wraps the provided transformer, or the transformer itself if it is already a DAG
+   */
+  @SuppressWarnings("unchecked")
+  static <A, B, C, D, E, F, R> DAG6x1<A, B, C, D, E, F, R> toDAG(
+      PreparableTransformer6<A, B, C, D, E, F, R, ?> transformer) {
+    if (transformer instanceof DAG6x1) {
+      return (DAG6x1<A, B, C, D, E, F, R>) transformer;
+    }
+
+    Placeholder<A> placeholder1 = new Placeholder<>("Input #1");
+    Placeholder<B> placeholder2 = new Placeholder<>("Input #2");
+    Placeholder<C> placeholder3 = new Placeholder<>("Input #3");
+    Placeholder<D> placeholder4 = new Placeholder<>("Input #4");
+    Placeholder<E> placeholder5 = new Placeholder<>("Input #5");
+    Placeholder<F> placeholder6 = new Placeholder<>("Input #6");
+    return DAG
+        .withPlaceholders(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5, placeholder6)
+        .withNoReduction()
+        .withOutput(
+            transformer.internalAPI().withInputs(placeholder1, placeholder2, placeholder3, placeholder4, placeholder5,
+                placeholder6))
+        .withAllInputs(transformer.internalAPI().getInput1(), transformer.internalAPI().getInput2(),
+            transformer.internalAPI().getInput3(), transformer.internalAPI().getInput4(),
+            transformer.internalAPI().getInput5(), transformer.internalAPI().getInput6());
   }
 }

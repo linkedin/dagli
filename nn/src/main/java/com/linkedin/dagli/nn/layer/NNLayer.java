@@ -5,6 +5,7 @@ import com.linkedin.dagli.producer.MissingInput;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.transformer.DynamicInputs;
 import com.linkedin.dagli.util.cloneable.AbstractCloneable;
+import com.linkedin.dagli.util.named.Named;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.Map;
  * @param <S> the ultimate (most derived) type deriving from this class
  */
 @Versioned
-public abstract class NNLayer<R, S extends NNLayer<R, S>> extends AbstractCloneable<S> implements Serializable {
+public abstract class NNLayer<R, S extends NNLayer<R, S>> extends AbstractCloneable<S> implements Serializable, Named {
   private static final long serialVersionUID = 1;
 
   private String _name = null;
@@ -65,6 +66,13 @@ public abstract class NNLayer<R, S extends NNLayer<R, S>> extends AbstractClonea
     InternalAPI() { }
 
     /**
+     * @return true iff a (non-null) name has been explicitly set for this layer, e.g. via {@link #withName(String)}
+     */
+    public boolean hasName() {
+      return NNLayer.this._name != null;
+    }
+
+    /**
      * Asserts that this layer has a logically complete and correct configuration, throwing an exception if this is not
      * the case.  This allows prima facie errors to be caught early, before the DAG containing the neural network is
      * executed and before the neural network is materialized in the "native format" of the underlying implementation.
@@ -97,6 +105,19 @@ public abstract class NNLayer<R, S extends NNLayer<R, S>> extends AbstractClonea
     public DynamicLayerConfig getDynamicConfig(Map<NNLayer<?, ?>, DynamicLayerConfig> ancestorConfigs,
         DynamicInputs dynamicInputs, DynamicInputs.ConstantInputs constantInputs) {
       return NNLayer.this.getDynamicConfig(ancestorConfigs, dynamicInputs, constantInputs);
+    }
+
+    /**
+     * Returns the list of {@link Producer}s providing input values for each example to this node.
+     *
+     * Placeholder layers and loss layers accept values from producers in the encapsulating DAG as inputs.
+     * <strong>These are distinct from the producers providing dynamic configuration values</strong> because these
+     * inputs are not constant-value and may be different for each example.
+     *
+     * @return the (possibly empty) list of {@link Producer}s providing input values to this layer
+     */
+    public List<? extends Producer<?>> getExampleInputProducers() {
+      return Collections.emptyList();
     }
   }
 
@@ -148,24 +169,36 @@ public abstract class NNLayer<R, S extends NNLayer<R, S>> extends AbstractClonea
     return _name == null ? this.getClass().getSimpleName() : _name;
   }
 
-  /**
-   * @return the name of this layer, or null if no name has been set
-   */
-  public final String getName() {
-    return _name;
+  @Override
+  public String getName() {
+    return _name == null ? getDefaultName() : _name;
+  }
+
+  @Override
+  public String getShortName() {
+    return _name == null ? getDefaultShortName() : _name;
   }
 
   /**
-   * @return the layer's name if it has one; otherwise a non-ambiguous identifier for this instance
+   * @return the default name for this layer when the client has not explicitly set a name with
+   *         {@link #withName(String)}
    */
-  String getIdentifier() {
-    return _name == null ? super.toString() : _name;
+  protected String getDefaultName() {
+    return Named.super.getName();
+  }
+
+  /**
+   * @return the default short name for this layer when the client has not explicitly set a name with
+   *         {@link #withName(String)}
+   */
+  protected String getDefaultShortName() {
+    return this.getClass().getSimpleName();
   }
 
   /**
    * Returns a copy of this instance that will have the specified name.  Names may be useful for debugging or other
-   * introspection into the network but do not affect its semantics.  Setting a name is optional.  By default the name
-   * is <code>null</code>, denoting that no name has been assigned.
+   * introspection into the network but do not affect its semantics.  Setting a name is optional; if no name is
+   * explicitly set, a default name will be used.
    *
    * @param name the name for this layer
    * @return a copy of this instance that will assume the specified name

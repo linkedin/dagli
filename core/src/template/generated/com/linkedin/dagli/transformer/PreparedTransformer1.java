@@ -5,8 +5,11 @@ package com.linkedin.dagli.transformer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.linkedin.dagli.dag.DAG;
+import com.linkedin.dagli.dag.DAG1x1;
 import com.linkedin.dagli.objectio.biglist.BigListWriter;
 import com.linkedin.dagli.objectio.ObjectReader;
+import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.transformer.internal.PreparedTransformer1InternalAPI;
 import com.linkedin.dagli.util.collection.Iterables;
 
@@ -64,5 +67,25 @@ public interface PreparedTransformer1<A, R> extends Transformer1<A, R>, Prepared
   static <A, R> PreparedTransformer1<A, R> cast(PreparedTransformer1<? super A, ? extends R> prepared) {
     // safe due to semantics of prepared transformers:
     return (PreparedTransformer1<A, R>) prepared;
+  }
+
+  /**
+   * Creates a trivial DAG that wraps the provided transformer, with the DAG retaining the transformer's existing
+   * inputs or, if the transformer is already a DAG, simply returns it unaltered.
+   *
+   * @param transformer the transformer to wrap
+   * @param <A> the type of transformer input #1
+   * @param <R> the type of result produced by the transformer
+   * @return a trivial DAG that wraps the provided transformer, or the transformer itself if it is already a DAG
+   */
+  static <A, R> DAG1x1.Prepared<A, R> toDAG(PreparedTransformer1<A, R> transformer) {
+    if (transformer instanceof DAG1x1.Prepared) {
+      return (DAG1x1.Prepared<A, R>) transformer;
+    }
+
+    Placeholder<A> placeholder1 = new Placeholder<>("Input #1");
+    return DAG.Prepared.withPlaceholders(placeholder1).withNoReduction()
+        .withOutput(transformer.internalAPI().withInputs(placeholder1))
+        .withAllInputs(transformer.internalAPI().getInput1());
   }
 }

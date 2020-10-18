@@ -2,6 +2,8 @@ package com.linkedin.dagli.nn.layer;
 
 import com.linkedin.dagli.producer.MissingInput;
 import com.linkedin.dagli.producer.Producer;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -31,12 +33,17 @@ abstract class AbstractPlaceholderLayer<A, R, S extends AbstractPlaceholderLayer
    *
    * Client code should not use these methods as they are subject to change at any time.
    */
-  public class InternalAPI extends NNLayer<R, S>.InternalAPI {
+  public class InternalAPI extends NNRootLayer<R, S>.InternalAPI {
     /**
      * @return the (sole) input to this layer from the encapsulating DAG.
      */
     public Producer<? extends A> getInputProducer() {
       return AbstractPlaceholderLayer.this.getInputProducer();
+    }
+
+    @Override
+    public List<? extends Producer<?>> getExampleInputProducers() {
+      return Collections.singletonList(getInputProducer());
     }
   }
 

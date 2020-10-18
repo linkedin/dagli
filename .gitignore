@@ -18,3 +18,4 @@ fasttext/generated/
 embedding-classification/generated/
 nn/generated/
 text-tokenization-jflex/src/main/jflexGeneratedSrc/
+visualization-mermaid/generated/

@@ -1,9 +1,10 @@
 package com.linkedin.dagli.producer.internal;
 
+import com.linkedin.dagli.dag.Graph;
 import com.linkedin.dagli.handle.ProducerHandle;
+import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.reducer.ClassReducerTable;
 import com.linkedin.dagli.reducer.Reducer;
-import com.linkedin.dagli.producer.Producer;
 import java.util.Collection;
 
 
@@ -89,4 +90,29 @@ public interface ProducerInternalAPI<R, S extends Producer<R>> {
    * @return the handle for this producer
    */
   ProducerHandle<S> getHandle();
+
+  /**
+   * Gets a "subgraph" that describes this producer as a {@link Graph} of arbitrary nodes.  This subgraph should provide
+   * a human-interpretable graph (e.g. to be rendered by a visualizer) representing this producer's architecture.
+   *
+   * Although some complex producers can benefit greatly by providing a subgraph (e.g. neural networks), it is not
+   * required and, moreover, inappropriate for most producer implementations; these will simply return {@code null}.
+   *
+   * Guidelines:
+   * (1) The <i>parents</i> of subgraph nodes can be either be within the subgraph or among the ancestors of this
+   *     producer in the encapsulating DAG.  Subgraph nodes must not have children outside the subgraph.
+   * (2) A producer's subgraph nodes should contain that producer, with edges pointing to other nodes in the subgraph
+   *     indicating how the final result output by that producer is derived.
+   * (3) The types of the vertices in the subgraph may be any arbitrary objects, but it should not include any producer
+   *     that is also present in the encapsulating DAG (except for the {@link Producer} which this subgraph represents.)
+   * (4) Subgraphs may contain loops.
+   *
+   * Subgraphs are <strong>not</strong> guaranteed to be consistent, even across producers that compare as
+   * {@link Object#equals(Object)}.  In particular, a deserialized object need not have the same subgraph as its
+   * progenitor.
+   *
+   * @return a human-interpretable description of this producer as a (sub)graph, or {@code null} when no graph is
+   *         available
+   */
+  Graph<Object> subgraph();
 }

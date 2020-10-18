@@ -87,7 +87,6 @@ public class LiblinearClassification<L>
 
     @Override
     public void process(L valueA, Vector valueB) {
-      Long2IntMap m;
       Feature[] features;
       if (_owner.getBias() >= 0) {
         features = new Feature[Math.toIntExact(valueB.size64()) + 1];
@@ -289,7 +288,7 @@ public class LiblinearClassification<L>
       return _featureIDMap;
     }
 
-    @SuppressWarnings("unhecked")
+    @SuppressWarnings("unchecked")
     Prepared(double bias, Model model, Object2IntOpenHashMap<L> labelIDMap,
         Long2IntOpenHashMap featureIDMap) {
       super(bias, model, featureIDMap);

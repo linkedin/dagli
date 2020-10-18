@@ -1,6 +1,7 @@
 package com.linkedin.dagli.util.function;
 
 import com.linkedin.dagli.util.invariant.Arguments;
+import com.linkedin.dagli.util.named.Named;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandleInfo;
@@ -10,6 +11,7 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -29,7 +31,7 @@ import java.util.Objects;
  * You should never serialize a method reference directly, as they, like all lambdas, are extremely tricky to
  * serialize correctly when the serializing and deserializing programs are different.
  */
-class MethodReference implements Serializable {
+class MethodReference implements Serializable, Named {
   private static final long serialVersionUID = 1;
 
   private static final String LAMBDA_PREFIX = "lambda$";
@@ -182,5 +184,30 @@ class MethodReference implements Serializable {
   public String toString() {
     return _class + "::" + _methodName + _methodSignature + " [Object instance: " + _instance
         + ", Method type: " + MethodHandleInfo.referenceKindToString(_methodKind) + "]";
+  }
+
+  @Override
+  public String getName() {
+    try {
+      Class<?> cls = Class.forName(_class);
+      MethodType type = MethodType.fromMethodDescriptorString(_methodSignature, cls.getClassLoader());
+      return cls.getSimpleName() + "::" + _methodName + "(" + type.parameterList()
+          .stream()
+          .map(Class::getSimpleName)
+          .collect(Collectors.joining(", ")) + ")";
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public String getShortName() {
+    try {
+      Class<?> cls = Class.forName(_class);
+      MethodType type = MethodType.fromMethodDescriptorString(_methodSignature, cls.getClassLoader());
+      return cls.getSimpleName() + "::" + _methodName + "(" + (type.parameterCount() > 0 ? "..." : "") + ")";
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

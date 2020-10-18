@@ -2,6 +2,7 @@
 // See the README in the module's src/template directory for details.
 package com.linkedin.dagli.util.function;
 
+import com.linkedin.dagli.util.named.Named;
 import java.util.Objects;
 
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * A function class implementing Function2.Serializable<A, B, R> that returns null if any of
  * the function's inputs are null.
  */
-class DefaultOnNullArgument2<A, B, R> implements Function2.Serializable<A, B, R> {
+class DefaultOnNullArgument2<A, B, R> implements Function2.Serializable<A, B, R>, Named {
   private static final long serialVersionUID = 1;
   private static final int CLASS_HASH = DefaultOnNullArgument2.class.hashCode();
   private final Function2<A, B, R> _wrapped;
@@ -47,5 +48,15 @@ class DefaultOnNullArgument2<A, B, R> implements Function2.Serializable<A, B, R>
       return this._wrapped.equals(((DefaultOnNullArgument2) obj)._wrapped);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "arg == null ? null : " + Named.getName(_wrapped);
+  }
+
+  @Override
+  public String getShortName() {
+    return "arg == null ? null : " + Named.getShortName(_wrapped);
   }
 }

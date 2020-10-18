@@ -1,0 +1,9 @@
+dependencies {
+  api project(':core')
+  api project(':visualization')
+
+  annotationProcessor project(':annotation-processor')
+  compileOnly project(':annotation-processor')
+
+  testImplementation project(':nn-dl4j')
+}

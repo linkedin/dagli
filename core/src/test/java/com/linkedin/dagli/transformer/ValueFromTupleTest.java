@@ -21,7 +21,7 @@ public class ValueFromTupleTest {
     DAG2x3.Prepared<Integer, String, Integer, String, Integer> dag =
         DAG.Prepared.withPlaceholders(placeholder1, placeholder2).withOutputs(val1, val2, val3);
 
-    Assertions.assertEquals(2, dag.graph().getParentToChildrenMap().size());
+    Assertions.assertEquals(2, dag.graph().nodes().size());
     Assertions.assertEquals(Tuple3.of(42, "a", 42), dag.apply(42, "a"));
   }
 }

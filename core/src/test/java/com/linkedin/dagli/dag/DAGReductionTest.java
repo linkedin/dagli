@@ -31,17 +31,15 @@ public class DAGReductionTest {
     DAG1x2<Integer, Long, DAG1x1.Prepared<Long, Long>> dag =
         DAG.withPlaceholder(placeholder).withOutputs(l484, preparedDAGView);
 
-    Assertions.assertEquals(3, dag.graph().getParentToChildrenMap().size());
+    Assertions.assertEquals(3, dag.graph().nodes().size());
     Assertions.assertTrue(dag.graph()
-        .getParentToChildrenMap()
-        .keySet()
+        .nodes()
         .stream()
         .filter(producer -> producer instanceof Constant)
         .anyMatch(producer -> ((Constant<?>) producer).getValue().equals(484L)));
 
     Assertions.assertTrue(dag.graph()
-        .getParentToChildrenMap()
-        .keySet()
+        .nodes()
         .stream()
         .filter(producer -> producer instanceof Constant)
         .anyMatch(producer -> ((Constant<?>) producer).getValue() instanceof DAG1x1.Prepared));
