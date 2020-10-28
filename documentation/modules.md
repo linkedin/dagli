@@ -7,8 +7,8 @@ Defines annotations (like `@Struct` or `@ValueEquality`) used by Dagli.  Normall
 # `annotation-processor`
 Used to process some Dagli annotations such as `@Struct` and `@VisitedBy` to perform correctness checks or generate code.  If you're using a recent version of Gradle, you'll need to add these lines to your `dependency` section:
 
-    annotationProcessor 'com.linkedin.dagli:annotation-processor:14.0.0'
-    compileOnly 'com.linkedin.dagli:annotation-processor:14.0.0'
+    annotationProcessor 'com.linkedin.dagli:annotation-processor:[version]'
+    compileOnly 'com.linkedin.dagli:annotation-processor:[version]'
     
 # `avro`
 Contains the `AvroField` transformer, which extracts the value of a specified field from an inputted Avro object.
