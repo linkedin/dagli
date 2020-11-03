@@ -3,6 +3,7 @@ package com.linkedin.dagli.math.hashing;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -243,5 +244,23 @@ public class InsecureAESHasher implements StatelessRNG {
   @Override
   public InsecureAESHasher withSeed(long seed) {
     return new InsecureAESHasher(seed);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    InsecureAESHasher that = (InsecureAESHasher) o;
+    return _initialValue1 == that._initialValue1 && _initialValue2 == that._initialValue2 && Objects.equals(_key,
+        that._key);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(_key, _initialValue1, _initialValue2);
   }
 }

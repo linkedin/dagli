@@ -320,6 +320,14 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
     testNonEqualityForEach(_testSubject, _nonEquivalents);
 
     testReduction();
+
+    // check for invalid names
+    assertTrue(!isNullOrEmpty(_testSubject.getShortName()), "A producer's short name must not be null or empty");
+    assertTrue(!isNullOrEmpty(_testSubject.getName()), "A producer's name must not be null or empty");
+  }
+
+  private static boolean isNullOrEmpty(String str) {
+    return str == null || str.isEmpty();
   }
 
   void testReduction() {

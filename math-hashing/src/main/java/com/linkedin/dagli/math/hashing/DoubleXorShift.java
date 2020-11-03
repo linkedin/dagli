@@ -86,4 +86,21 @@ public class DoubleXorShift implements StatelessRNG {
   public StatelessRNG withSeed(long seed) {
     return new DoubleXorShift(seed);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    return _seed == ((DoubleXorShift) o)._seed;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(_seed);
+  }
 }

@@ -94,7 +94,7 @@ public final class Constant<R> extends AbstractGenerator<R, Constant<R>> impleme
 
   private String valueAsString() {
     // add quotes around strings to avoid possible confusion for human readers
-    return _value instanceof CharSequence ? "\"" + _value + "\"" : _value.toString();
+    return _value instanceof CharSequence ? "\"" + _value + "\"" : Objects.toString(_value);
   }
 
   @Override
