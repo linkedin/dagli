@@ -30,7 +30,6 @@ public class BatchedKryoStreamTest {
     tempFile = Files.createTempFile("BatchedKryoStreamTest", ".tmp");
     KryoFileWriter.Config config = new KryoFileWriter.Config();
     config.setCacheHorizon(2);
-    config.setUnsafeIO(true);
     try (KryoFileWriter<Integer> ba = new KryoFileWriter<>(tempFile, config)) {
       for (int i = 0; i < 50; i++) {
         ba.write(i);

@@ -42,7 +42,7 @@ public class Cryptography {
     }
 
     try {
-      return (CryptographyProvider) Class.forName(providerName).newInstance();
+      return (CryptographyProvider) Class.forName(providerName).getConstructor().newInstance();
     } catch (Exception e) {
       return new CryptographyProvider() {
         @Override

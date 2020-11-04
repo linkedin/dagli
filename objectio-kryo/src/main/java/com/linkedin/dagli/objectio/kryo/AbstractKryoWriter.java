@@ -1,8 +1,8 @@
 package com.linkedin.dagli.objectio.kryo;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.io.UnsafeOutput;
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.kryo.kryo5.io.Output;
+import com.esotericsoftware.kryo.kryo5.unsafe.UnsafeOutput;
 import com.linkedin.dagli.objectio.ObjectWriter;
 import java.io.FilterOutputStream;
 import java.io.IOException;

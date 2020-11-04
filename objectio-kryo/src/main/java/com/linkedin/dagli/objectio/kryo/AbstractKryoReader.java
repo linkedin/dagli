@@ -1,8 +1,8 @@
 package com.linkedin.dagli.objectio.kryo;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.UnsafeInput;
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.kryo.kryo5.io.Input;
+import com.esotericsoftware.kryo.kryo5.unsafe.UnsafeInput;
 import com.linkedin.dagli.objectio.ObjectIterator;
 import com.linkedin.dagli.objectio.ObjectReader;
 import java.io.InputStream;
@@ -161,6 +161,7 @@ abstract class AbstractKryoReader<T> implements ObjectReader<T> {
 
       _kryo = new Kryo();
       _kryo.setRegistrationRequired(false);
+      _kryo.setReferences(true);
       _kryo.setAutoReset(false);
     }
 

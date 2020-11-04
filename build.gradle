@@ -78,7 +78,7 @@ subprojects {
       "jflex": "de.jflex:jflex:1.6.1",
       "junit": "org.junit.jupiter:junit-jupiter-engine:5.6.2",
       "junit-params": "org.junit.jupiter:junit-jupiter-params:5.6.2",
-      "kryo": "com.esotericsoftware:kryo:4.0.2",
+      "kryo": "com.esotericsoftware.kryo:kryo5:5.0.0",
       "liblinear": "com.jeffreypasternack:liblinear:2.21",
       "libphonenumber": "com.googlecode.libphonenumber:libphonenumber:8.9.5",
       "log4j2-api": "org.apache.logging.log4j:log4j-api:2.13.3",
