@@ -19,3 +19,6 @@ embedding-classification/generated/
 nn/generated/
 text-tokenization-jflex/src/main/jflexGeneratedSrc/
 visualization-mermaid/generated/
+examples/assorted/generated/
+examples/**/generated/
+examples/**/generated_tests/
