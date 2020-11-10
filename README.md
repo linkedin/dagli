@@ -140,7 +140,7 @@ custom UDFs that train, evaluate or apply Dagli models.
 [Further discussion comparing extant pipelined and joint modeling wth Dagli](documentation/comparison.md).
 
 
-## Version History
+# Version History
 - `15.0.0-beta3`: *11/9/20*: Input Configurators and `MermaidVisualization`
     - This is a major version increment and may not be compatible with models from 14.*
     - Input configurators for more convenient, readable configuring of transformer inputs; e.g., 
@@ -151,7 +151,7 @@ custom UDFs that train, evaluate or apply Dagli models.
   transitively leaking into the client's classpath  
 - `14.0.0-beta1`: initial public release
 
-# Versioning Policy
+## Versioning Policy
 Dagli's current public release is designated as "beta" due to extensive changes relative to previous 
 (LinkedIn-internal) releases and the greater diversity of applications entailed by a public release. 
 
