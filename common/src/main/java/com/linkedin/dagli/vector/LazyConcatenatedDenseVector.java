@@ -44,15 +44,25 @@ public class LazyConcatenatedDenseVector
    */
   @SafeVarargs
   public final LazyConcatenatedDenseVector withInputs(Producer<? extends DenseVector>... denseVectors) {
-    Arguments.check(denseVectors.length > 0, "At least one input must be provided");
+    return withInputs(Arrays.asList(denseVectors));
+  }
+
+  /**
+   * Returns a copy of this instance that will concatenate the given input {@link DenseVector}s.
+   *
+   * @param denseVectors the inputs that will provide the vectors to concatenate
+   * @return a copy of this instance that will concatenate the given input {@link DenseVector}s
+   */
+  public LazyConcatenatedDenseVector withInputs(List<? extends Producer<? extends DenseVector>> denseVectors) {
+    Arguments.check(!denseVectors.isEmpty(), "At least one input must be provided");
     return clone(c -> {
       // add the given producers as inputs, and automatically also create Max(MaxNonZeroVectorElementIndex) parents that
       // will give us the highest non-zero vector element indices for each of our inputs.
-      ArrayList<Producer<?>> inputs = new ArrayList<>(denseVectors.length * 2);
-      Arrays.stream(denseVectors)
+      ArrayList<Producer<?>> inputs = new ArrayList<>(denseVectors.size() * 2);
+      denseVectors.stream()
           .map(p -> new Max<Long>().withInput(new MaxNonZeroVectorElementIndex().withInput(p)))
           .forEach(inputs::add);
-      inputs.addAll(Arrays.asList(denseVectors));
+      inputs.addAll(denseVectors);
       c._inputs = inputs;
     });
   }

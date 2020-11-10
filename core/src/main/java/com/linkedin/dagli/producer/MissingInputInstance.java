@@ -44,6 +44,11 @@ enum MissingInputInstance implements MissingInput<Object> {
         public Graph<Object> subgraph() {
           return null;
         }
+
+        @Override
+        public Class<?> getResultSupertype() {
+          return Object.class;
+        }
       };
 
   @Override

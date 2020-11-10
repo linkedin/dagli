@@ -1,0 +1,25 @@
+dependencies {
+  api project(':core')
+  api project(':common')
+
+  api project(':math-distribution')
+  api project(':math-vector')
+
+  compileOnly project.ext.dependencies.xgboost4j
+  testImplementation project.ext.dependencies.xgboost4j
+
+  annotationProcessor project(':annotation-processor')
+  compileOnly project(':annotation-processor')
+}
+
+task testSerialization(type: JavaExec) {
+  classpath = sourceSets.test.runtimeClasspath
+
+  main = 'com.linkedin.dagli.tester.TransformerBackwardCompatibilityTester'
+
+  // arguments to pass to the application
+  args '-package', 'com.linkedin.dagli.xgboost', '-methods',
+      'XGBoostClassifierTest.getTrainedModel', '-dir',
+      sourceSets.test.resources.srcDirs[0].toString() + '/serialized'
+}
+test.dependsOn testSerialization

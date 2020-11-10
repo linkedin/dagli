@@ -24,12 +24,12 @@ import com.linkedin.dagli.transformer.PreparedTransformer;
 import com.linkedin.dagli.transformer.PreparedTransformerDynamic;
 import com.linkedin.dagli.transformer.Transformer;
 import com.linkedin.dagli.tuple.Tuple2;
-import com.linkedin.dagli.util.invariant.Arguments;
 import com.linkedin.dagli.util.collection.Iterables;
-import com.linkedin.dagli.util.collection.LinkedStack;
+import com.linkedin.dagli.util.invariant.Arguments;
 import com.linkedin.dagli.view.AbstractTransformerView;
 import com.linkedin.dagli.view.PreparedTransformerView;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -135,7 +135,7 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
 
   // the use of LinkedStack here is suboptimal because it prevents two BestModel instances from being equals() if the
   // same candidates were added in different orders; in the future it can be replaced by a "LinkedSet".
-  private LinkedStack<PreparableTransformer<? extends R, ?>> _candidates = new LinkedStack<>();
+  private List<PreparableTransformer<? extends R, ?>> _candidates = new ArrayList<>();
   private long _seed = 0;
 
   // not @IgnoredByValueEquality because, although our inputs will be compared commutatively, the groupInput is always
@@ -198,13 +198,8 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
     List<PreparableTransformer<? extends R, ?>> remappedCandidateList =
         _candidates.stream().map(candidate -> remapInputs(candidate, mapping)).collect(Collectors.toList());
 
-    // iteration order of a LinkedStack (which is what _candidates is) is the reverse of insertion order; reverse our
-    // list so that when we add these back into a LinkedStack instance we get the original order again
-    Collections.reverse(remappedCandidateList);
-
     return clone(c -> {
-      c._candidates = new LinkedStack<>();
-      c._candidates.addAll(remappedCandidateList);
+      c._candidates = remappedCandidateList;
       c._evaluator = remapInputs(this._evaluator, mapping);
       c._groupInput = mapping.get(c._groupInput);
     });
@@ -295,7 +290,7 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
 
     // check if the evaluator has intermediate producers between it and our placeholder:
     if (ChildProducer.ancestors(evaluator, Integer.MAX_VALUE)
-        .anyMatch(path -> path.getItem() == predictedLabelInput && path.size64() > 2)) {
+        .anyMatch(path -> path.peek() == predictedLabelInput && path.size64() > 2)) {
       // we need an evaluator that accepts our placeholder as a *direct* input only, so we must create a transformer
       // that does so:
       evaluator = DynamicDAG.fromMinimalInputBoundedSubgraph(evaluator, predictedLabelInput);
@@ -325,48 +320,43 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
   }
 
   /**
-   * Returns a copy of this instance with the specified candidate models added to the existing candidates; the copy
-   * has all the candidates of this original instance plus those passed to this method.  No candidates are removed.
+   * Returns a copy of this instance that will use the specified candidate models; any existing candidates previously
+   * provided are ignored.
    *
    * The inputs of candidate models become the inputs to the BestModel, so all inputs to the candidate models must
-   * be specified (i.e. no MissingInput inputs) before passing them; an exception will be thrown if this is not the case.
+   * be specified (i.e. no MissingInput inputs) before passing them; an exception will be thrown otherwise.
    *
    * @param candidateModels the candidate models to add for consideration as the possible best model
    * @return a copy of this instance with the specified candidate models added
    */
   @SafeVarargs
   public final BestModel<R> withCandidates(PreparableTransformer<? extends R, ?>... candidateModels) {
-    return clone(c -> {
-      c._candidates = c._candidates.clone();
-
-      for (PreparableTransformer<? extends R, ?> candidate : candidateModels) {
-        c._candidates.add(candidate);
-
-        // while we're here, check the candidate for missing inputs
-        for (Producer<?> input : candidate.internalAPI().getInputList()) {
-          if (input instanceof MissingInput) {
-            throw new IllegalArgumentException(
-                "A provided candidate model has at least one unspecified input (that is, one of its inputs is an "
-                    + "MissingInput instance).  All the inputs of the candidates must be specified prior to calling "
-                    + "withCandidates(...).");
-          }
-        }
-      }
-    });
+    return withCandidates(Arrays.asList(candidateModels));
   }
 
   /**
-   * Returns a copy of this instance with the specified candidate model added to the existing candidates; the copy
-   * has all the candidates of this original instance plus the one passed to this method.  No candidates are removed.
+   * Returns a copy of this instance that will use the specified candidate models; any existing candidates previously
+   * provided are ignored.
    *
    * The inputs of candidate models become the inputs to the BestModel, so all inputs to the candidate models must
-   * be specified (i.e. no MissingInput inputs) before passing them; an exception will be thrown if this is not the case.
+   * be specified (i.e. no MissingInput inputs) before passing them; an exception will be thrown otherwise.
    *
-   * @param candidateModel the candidate model to add for consideration as the possible best model
-   * @return a copy of this instance with the specified candidate model added
+   * @param candidateModels the candidate models to add for consideration as the possible best model
+   * @return a copy of this instance with the specified candidate models added
    */
-  public final BestModel<R> withCandidate(PreparableTransformer<? extends R, ?> candidateModel) {
-    return withCandidates(candidateModel);
+  public final BestModel<R> withCandidates(Iterable<PreparableTransformer<? extends R, ?>> candidateModels) {
+    ArrayList<PreparableTransformer<? extends R, ?>> candidateList = Iterables.newArrayList(candidateModels);
+
+    // check each candidate for missing inputs
+    if (candidateList.stream()
+        .flatMap(candidate -> candidate.internalAPI().getInputList().stream())
+        .anyMatch(input -> input instanceof MissingInput)) {
+        throw new IllegalArgumentException(
+            "A provided candidate model has at least one unspecified input (that is, one of its inputs is an "
+                + "MissingInput instance).  All the inputs of the candidates must be specified prior to calling "
+                + "withCandidates(...).");
+    }
+    return clone(c -> c._candidates = candidateList);
   }
 
   /**
@@ -397,8 +387,8 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
       throw new NoSuchElementException(
           "Attempting to prepare BestModel, but no candidates are available.  You may have forgotten to add "
               + "candidates with the withCandidate(...) method.  Remember that transformers are immutable; calls to "
-              + "withCandidate() should look like 'bestModel = bestModel.withCandidate(...)'.  If you just call "
-              + "'bestModel.withCandidate(...)' without storing the result, the new copy of BestModel with the added "
+              + "withCandidates() should look like 'bestModel = bestModel.withCandidates(...)'.  If you just call "
+              + "'bestModel.withCandidates(...)' without storing the result, the new copy of BestModel with the added "
               + "candidate will be discarded!");
     }
     return new Preparer<>(this, context);
@@ -505,9 +495,8 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
     private int[][] getCandidateInputIndices(IdentityHashMap<Producer<?>, Integer> ownerInputToIndexMap) {
       // figure out the indices of each candidate's inputs
       int[][] candidateInputs = new int[_owner._candidates.size()][];
-      java.util.Iterator<PreparableTransformer<? extends R, ?>> candidateIterator = _owner._candidates.iterator();
       for (int i = 0; i < _owner._candidates.size(); i++) {
-        candidateInputs[i] = getProducerInputToGlobalInputIndexMap(ownerInputToIndexMap, candidateIterator.next());
+        candidateInputs[i] = getProducerInputToGlobalInputIndexMap(ownerInputToIndexMap, _owner._candidates.get(i));
       }
 
       return candidateInputs;
@@ -528,9 +517,6 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
       // and for the evaluator, too
       int[] evaluatorInputMap = getProducerInputToGlobalInputIndexMap(ownerInputToIndexMap, _owner._evaluator);
 
-      // get an array list of candidates for fast indexed access
-      ArrayList<PreparableTransformer<? extends R, ?>> candidateList = new ArrayList<>(_owner._candidates);
-
       Placeholder<Object[]> inputArrayPlaceholder = new Placeholder<>();
 
       // get transformers that can pull out each element of the input array
@@ -539,8 +525,10 @@ public class BestModel<R> extends AbstractPreparableTransformerDynamic<R, Prepar
           .collect(Collectors.toList());
 
       // now hook up each candidate to our array-element-ified inputs
-      List<PreparableTransformer<? extends R, ?>> hookedUpCandidateList = IntStream.range(0, candidateList.size())
-          .mapToObj(i -> candidateList.get(i).internalAPI().withInputsUnsafe(mapInputs(candidateInputs[i], arrayElements, null)))
+      List<PreparableTransformer<? extends R, ?>> hookedUpCandidateList = IntStream.range(0, _owner._candidates.size())
+          .mapToObj(i -> _owner._candidates.get(i)
+              .internalAPI()
+              .withInputsUnsafe(mapInputs(candidateInputs[i], arrayElements, null)))
           .collect(Collectors.toList());
 
       // now we can get the cross-trainers for each candidate

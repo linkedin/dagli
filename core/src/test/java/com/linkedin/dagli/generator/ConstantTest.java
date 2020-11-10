@@ -11,6 +11,6 @@ public class ConstantTest {
   @Test
   public void test() {
     Tester.of(new Constant<>(null)).output(null).test();
-    Tester.of(new Constant<>(6)).output(6).test();
+    Tester.of(new Constant<>(6)).output(6).resultSupertype(Integer.class).test();
   }
 }

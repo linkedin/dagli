@@ -24,7 +24,7 @@ public class BasicTest {
     Placeholder<DenseVector> features = new Placeholder<>();
 
     NNRegression regression = new NNRegression().withPredictionInput(
-        new NNDenseLayer().withActivationFunction(new Identity()).withInputFromDenseVector(features))
+        new NNDenseLayer().withActivationFunction(new Identity()).withInput().fromDenseVectors(features))
         .withLabelInput(labels);
 
     NeuralNetwork nn = new NeuralNetwork().withLossLayers(regression)

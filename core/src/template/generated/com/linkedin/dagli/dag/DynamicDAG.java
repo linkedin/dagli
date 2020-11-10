@@ -30,7 +30,7 @@ import com.linkedin.dagli.tuple.Tuple8;
 import com.linkedin.dagli.tuple.Tuple9;
 import com.linkedin.dagli.tuple.Tuple10;
 import com.linkedin.dagli.util.invariant.Arguments;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -136,9 +136,8 @@ public class DynamicDAG<R> extends AbstractPreparableTransformerDynamic<R, Dynam
     _outputs = outputs;
     if (_placeholders == null) {
       _placeholders =
-          LinkedNode
-              .filterByClass(Producer.subgraphProducers(outputs), (Class<Placeholder<?>>) (Class) Placeholder.class)
-              .map(LinkedNode::getItem).distinct().collect(Collectors.toList());
+          (List) Producer.subgraphProducers(outputs).map(LinkedStack::peek)
+              .filter(node -> node instanceof Placeholder<?>).distinct().collect(Collectors.toList());
     }
     setDAG();
   }
@@ -734,9 +733,8 @@ public class DynamicDAG<R> extends AbstractPreparableTransformerDynamic<R, Dynam
       _outputs = outputs;
       if (_placeholders == null) {
         _placeholders =
-            LinkedNode
-                .filterByClass(Producer.subgraphProducers(outputs), (Class<Placeholder<?>>) (Class) Placeholder.class)
-                .map(LinkedNode::getItem).distinct().collect(Collectors.toList());
+            (List) Producer.subgraphProducers(outputs).map(LinkedStack::peek)
+                .filter(node -> node instanceof Placeholder<?>).distinct().collect(Collectors.toList());
       }
       setDAG();
     }

@@ -10,9 +10,9 @@ import com.linkedin.dagli.reducer.Reducer;
 import com.linkedin.dagli.transformer.PreparableTransformer;
 import com.linkedin.dagli.transformer.PreparedTransformer;
 import com.linkedin.dagli.util.cloneable.AbstractCloneable;
-import com.linkedin.dagli.util.invariant.Arguments;
 import com.linkedin.dagli.util.collection.Iterables;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
+import com.linkedin.dagli.util.invariant.Arguments;
 import com.linkedin.dagli.view.TransformerView;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
@@ -474,13 +474,13 @@ abstract class DAGReducer {
     @Override
     public <T> ReferenceSet<T> getAncestorsByClass(Producer<?> producer, Class<T> producerClass, int maxDepth) {
       ReferenceOpenHashSet<T> result = new ReferenceOpenHashSet<>();
-      ancestors(producer, maxDepth).map(LinkedNode::getItem).filter(producerClass::isInstance)
+      ancestors(producer, maxDepth).map(LinkedStack::peek).filter(producerClass::isInstance)
           .forEach(ancestor -> result.add(producerClass.cast(ancestor)));
       return result;
     }
 
     @Override
-    public Stream<LinkedNode<Producer<?>>> ancestors(Producer<?> producer, int maxDepth) {
+    public Stream<LinkedStack<Producer<?>>> ancestors(Producer<?> producer, int maxDepth) {
       if (!(producer instanceof ChildProducer)) {
         return Stream.empty();
       }

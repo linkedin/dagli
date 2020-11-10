@@ -1,6 +1,7 @@
 package com.linkedin.dagli.generator;
 
 import com.linkedin.dagli.producer.Producer;
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 
@@ -118,5 +119,10 @@ public final class Constant<R> extends AbstractGenerator<R, Constant<R>> impleme
    */
   public static <T> T tryGetValue(Producer<T> maybeConstant) {
     return maybeConstant instanceof Constant ? ((Constant<T>) maybeConstant).getValue() : null;
+  }
+
+  @Override
+  protected Type getResultSupertype() {
+    return _value == null ? super.getResultSupertype() : _value.getClass();
   }
 }

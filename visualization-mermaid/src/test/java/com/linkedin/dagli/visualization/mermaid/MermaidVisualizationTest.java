@@ -74,7 +74,7 @@ public class MermaidVisualizationTest {
     Placeholder<DenseVector> features = new Placeholder<>("features");
     Placeholder<String> label = new Placeholder<>("label");
 
-    NNDenseLayer denseLayer = new NNDenseLayer().withInputFromDenseVector(features);
+    NNDenseLayer denseLayer = new NNDenseLayer().withInput().fromDenseVectors(features);
     NNClassification<String> classification =
         new NNClassification<String>().withFeaturesInput(denseLayer).withMultinomialLabelInput(label);
 

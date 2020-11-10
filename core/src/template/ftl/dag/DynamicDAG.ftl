@@ -23,7 +23,7 @@ import com.linkedin.dagli.tuple.Tuple;
 <#list 2..c.maxArity as index>import com.linkedin.dagli.tuple.Tuple${index};
 </#list>
 import com.linkedin.dagli.util.invariant.Arguments;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -110,8 +110,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
   private void setOutputs(List<Producer<?>> outputs) {
     _outputs = outputs;
     if (_placeholders == null) {
-      _placeholders = LinkedNode.filterByClass(Producer.subgraphProducers(outputs), (Class<Placeholder<?>>) (Class) Placeholder.class)
-        .map(LinkedNode::getItem).distinct().collect(Collectors.toList());
+      _placeholders = (List)
+          Producer.subgraphProducers(outputs).map(LinkedStack::peek).filter(node -> node instanceof Placeholder<?>)
+              .distinct().collect(Collectors.toList());
     }
     setDAG();
   }

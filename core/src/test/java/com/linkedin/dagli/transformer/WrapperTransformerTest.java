@@ -6,7 +6,6 @@ import com.linkedin.dagli.function.FunctionResult2;
 import com.linkedin.dagli.placeholder.Placeholder;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.tester.Tester;
-import com.linkedin.dagli.util.collection.LinkedNode;
 import org.junit.jupiter.api.Test;
 
 public class WrapperTransformerTest {
@@ -40,13 +39,13 @@ public class WrapperTransformerTest {
     Tester.of(new Function2Wrapper(in1, in2))
         .input(3, 4)
         .output(7)
-        .reductionTest(stream -> LinkedNode.filterByClass(stream, Function2Wrapper.class).count() == 0)
+        .reductionTest(stream -> stream.noneMatch(path -> path.peek() instanceof Function2Wrapper))
         .test();
 
     Tester.of(new PreparableFunction2Wrapper(in1, in2))
         .input(3, 4)
         .output(7)
-        .reductionTest(stream -> LinkedNode.filterByClass(stream, PreparableFunction2Wrapper.class).count() == 0)
+        .reductionTest(stream -> stream.noneMatch(path -> path.peek() instanceof PreparableFunction2Wrapper))
         .test();
   }
 }

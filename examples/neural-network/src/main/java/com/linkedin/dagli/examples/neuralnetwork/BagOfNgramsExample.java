@@ -21,7 +21,6 @@ import com.linkedin.dagli.text.LowerCased;
 import com.linkedin.dagli.text.token.Tokens;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,7 +69,7 @@ public abstract class BagOfNgramsExample {
    * @param arguments empty array, or a single-element array with the path to which to write the model.  If this file
    *                  already exists the program will immediately terminate rather than overwrite it.
    */
-  public static void main(String[] arguments) throws IOException, URISyntaxException {
+  public static void main(String[] arguments) throws IOException {
     Configurator.setRootLevel(Level.INFO); // set the log level so we'll see progress updates as the NN trains
 
     // Get the model path, verify that it doesn't exist yet, and create the model file:

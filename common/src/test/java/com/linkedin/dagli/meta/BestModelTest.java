@@ -2,6 +2,7 @@ package com.linkedin.dagli.meta;
 
 import com.linkedin.dagli.dag.DAG;
 import com.linkedin.dagli.dag.DAG3x1;
+import com.linkedin.dagli.dag.SimpleDAGExecutor;
 import com.linkedin.dagli.evaluation.MultinomialEvaluation;
 import com.linkedin.dagli.function.FunctionResult1;
 import com.linkedin.dagli.function.FunctionResult2;
@@ -52,15 +53,15 @@ public class BestModelTest {
         .withSeed(1337)
         .withPreparationDataInferenceMode(preparationDataInferenceMode)
         .withEvaluator(new MultinomialEvaluation().withActualLabelInput(sr)::withPredictedLabelInput)
-        .withCandidate(new TriviallyPreparable<>(
-            new FunctionResult2<Integer, Integer, Integer>().withFunction(BestModelTest::xorFunction).withInputs(sa, sb)))
-        .withCandidate(new TriviallyPreparable<>(
+        .withCandidates(new TriviallyPreparable<>(
+            new FunctionResult2<Integer, Integer, Integer>().withFunction(BestModelTest::xorFunction)
+                .withInputs(sa, sb)), new TriviallyPreparable<>(
             new FunctionResult1<Integer, Integer>().withFunction(Function1.identity()).withInput(sa)));
 
     // basic tests of the naked preparable
     Tester.of(bestModel).keepOriginalParents().test();
 
-    DAG3x1<Integer, Integer, Integer, Integer> dag = DAG.withPlaceholders(sa, sb, sr).withOutput(bestModel);
+    DAG3x1<Integer, Integer, Integer, Integer> dag = DAG.withPlaceholders(sa, sb, sr).withOutput(bestModel).withExecutor(new SimpleDAGExecutor());
 
     Tester.of(dag)
         .allParallelInputs(a, b, r)

@@ -1,0 +1,26 @@
+dependencies {
+  api project(':annotation')
+  api project(':avro')
+  api project(':calibration')
+  api project(':clustering')
+  api project(':common')
+  api project(':core')
+  api project(':data')
+  api project(':embedding-classification')
+  api project(':fasttext')
+  api project(':liblinear')
+  api project(':math-all')
+  api project(':nn-dl4j') // pulls in nn, too
+  api project(':objectio-all')
+  api project(':text')
+  api project(':text-phone')
+  api project(':text-tokenization')
+  api project(':tuple')
+  api project(':util')
+  api project(':visualization-ascii') // pulls in visualization, too
+  api project(':visualization-mermaid') // pulls in visualization, too
+  api project(':word2vec')
+  api project(':xgboost')
+
+  // annotation-processor not included (not possible to make annotation processor dependencies transitive)
+}

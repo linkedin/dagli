@@ -1,6 +1,7 @@
 package com.linkedin.dagli.vector;
 
 import com.linkedin.dagli.annotation.equality.ValueEquality;
+import com.linkedin.dagli.input.SparseFeatureVectorInput;
 import com.linkedin.dagli.math.vector.SparseFloatMapVector;
 import com.linkedin.dagli.math.vector.Vector;
 import com.linkedin.dagli.math.vector.VectorElement;
@@ -32,6 +33,13 @@ public class TopVectorElementsByValue
    */
   public TopVectorElementsByValue withMaxElementsToKeep(int maxElementsToKeep) {
     return clone(c -> c._maxElementsToKeep = maxElementsToKeep);
+  }
+
+  /**
+   * @return an input configurator for the vector input of this transformer
+   */
+  public SparseFeatureVectorInput<TopVectorElementsByValue> withInput() {
+    return new SparseFeatureVectorInput<>(this::withInput);
   }
 
   private static class Preparer extends AbstractStreamPreparer1<Vector, Vector, LazyFilteredVector> {

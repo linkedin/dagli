@@ -208,7 +208,7 @@ public abstract class XGBoostAndLiblinear {
     // for now, we'll just accept the additional risk of overfitting and use the same examples to train both XGBoost and
     // the downstream logistic regression model.
     XGBoostClassification<String> xgboostClassifier = new XGBoostClassification<String>()
-        .withFeatureInput(denseUnigramFeatures)
+        .withFeaturesInput(denseUnigramFeatures)
         .withLabelInput(example.asCharacter())
         .withRounds(10); // the number trees learned will be the number of rounds times the number of labels
 
@@ -239,7 +239,7 @@ public abstract class XGBoostAndLiblinear {
 
     // And feed to our logistic regression classifier:
     LiblinearClassification<String> lrClassifier =
-        new LiblinearClassification<String>().withFeatureInput(allFeatures).withLabelInput(example.asCharacter());
+        new LiblinearClassification<String>().withFeaturesInput(allFeatures).withLabelInput(example.asCharacter());
 
     // Finally, get the most likely label:
     MostLikelyLabelFromDistribution<String> predictedLabel =

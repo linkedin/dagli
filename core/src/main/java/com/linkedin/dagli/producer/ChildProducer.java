@@ -2,7 +2,7 @@ package com.linkedin.dagli.producer;
 
 import com.linkedin.dagli.producer.internal.AncestorSpliterator;
 import com.linkedin.dagli.producer.internal.ChildProducerInternalAPI;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -58,15 +58,15 @@ public interface ChildProducer<R> extends Producer<R> {
    * reference-equality, so it is possible for two enumerated ancestors to be
    * {@link java.util.Objects#equals(Object, Object)} with each other.
    *
-   * The enumerated {@link LinkedNode}'s contain the ancestor ({@link LinkedNode#getItem()} as well as the path
-   * through its descendents ending with the provided {@code producer} (via {@link LinkedNode#getPreviousNode()}).
+   * The enumerated {@link LinkedStack}s contain the ancestor ({@link LinkedStack#peek()} as well as the path
+   * through its descendents ending with the provided {@code producer} (the preceding elements in the stack).
    *
    * @param producer the producer whose ancestors are to be streamed
    * @param maxDepth how many generations of parents should be visited; immediate parents == 1, up to grandparents
    *                 == 2, great-grandparents == 3, etc.  Pass {@link Integer#MAX_VALUE} to visit all ancestors.
    * @return a stream containing a shortest path from the producer to each ancestor
    */
-  static Stream<LinkedNode<Producer<?>>> ancestors(ChildProducer<?> producer, int maxDepth) {
+  static Stream<LinkedStack<Producer<?>>> ancestors(ChildProducer<?> producer, int maxDepth) {
     return StreamSupport.stream(new AncestorSpliterator(producer, maxDepth, ChildProducer::getParents), false);
   }
 }

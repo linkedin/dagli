@@ -1,9 +1,8 @@
 # Planned Improvements
 ## Near-Term
-- Continue to expand the written documentation
-- Add HTML tags to Javadoc to faciliate more readable generated HTML 
+- Further expand documentation 
 - More comprehensive logging
-- Improved visualization and debugging tools
+- ~~Improved visualization~~ (added in v15) and debugging tools
 - Persistent caching of the intermediate results of DAG nodes to avoid recomputation of unchanged parts of the DAG when a modified DAG is executed with the same input data.
 - New layer types for neural networks
 

@@ -1,6 +1,6 @@
 package com.linkedin.dagli.vector;
 
-import com.linkedin.dagli.distribution.DenseVectorizedDistribution;
+import com.linkedin.dagli.distribution.DenseVectorFromDistribution;
 import com.linkedin.dagli.math.distribution.ArrayDiscreteDistribution;
 import com.linkedin.dagli.math.distribution.LabelProbability;
 import com.linkedin.dagli.math.vector.DenseFloatArrayVector;
@@ -20,8 +20,8 @@ public class DenseVectorizedDistributionTest {
             new LabelProbability<String>("Five", 0.5)));
 
     Placeholder<ArrayDiscreteDistribution<String>> placeholder = new Placeholder<>("Distribution");
-    DenseVectorizedDistribution.Prepared<String> densifier =
-        new DenseVectorizedDistribution.Prepared<>(Arrays.asList("One", "Two", "Three", "Four", "Five")).withInput(
+    DenseVectorFromDistribution.Prepared<String> densifier =
+        new DenseVectorFromDistribution.Prepared<>(Arrays.asList("One", "Two", "Three", "Four", "Five")).withInput(
             placeholder);
 
     Tester.of(densifier)

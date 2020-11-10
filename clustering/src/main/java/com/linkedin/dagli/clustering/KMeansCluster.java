@@ -1,15 +1,16 @@
 package com.linkedin.dagli.clustering;
 
 import com.linkedin.dagli.annotation.equality.ValueEquality;
-import com.linkedin.dagli.math.vector.Vector;
+import com.linkedin.dagli.input.DenseFeatureVectorInput;
+import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.preparer.AbstractStreamPreparer1;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResult;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.transformer.AbstractPreparableTransformer1;
 import com.linkedin.dagli.util.invariant.Arguments;
+import com.linkedin.dagli.vector.DoubleArrayFromVector;
 import com.linkedin.dagli.vector.ScoredVector;
-import com.linkedin.dagli.vector.VectorAsDoubleArray;
 import it.unimi.dsi.fastutil.objects.ObjectBigArrayBigList;
 import it.unimi.dsi.fastutil.objects.ObjectBigList;
 import java.util.Random;
@@ -40,19 +41,21 @@ public class KMeansCluster extends AbstractPreparableTransformer1<double[], Scor
   }
 
   /**
-   * Creates a copy of this instance that will obtain {@link Vector} inputs from the specified {@link Producer}.  These
-   * vectors will be converted to (dense) arrays and so must not have non-zero elements with negative indices nor
-   * should they be too "sparse", since the size of the arrays created will be equal to the highest non-zero element
-   * index of any input vector + 1.
+   * Creates a copy of this instance that will obtain {@link DenseVector} inputs from the specified {@link Producer}.
+   * The highest non-zero element index must be less than {@link Integer#MAX_VALUE}.
    *
-   * If you do have "sparse" vectors (or vectors with negative non-zero element indices),
-   * {@link com.linkedin.dagli.vector.DensifiedVector} may be used to make them suitable inputs for this transformer.
-   *
-   * @param vectorInput a producer that will provide {@link Vector} inputs to this transformer
+   * @param vectorInput a producer that will provide {@link DenseVector} inputs to this transformer
    * @return a copy of this instance that will get its inputs from the specified {@link Producer}
    */
-  public KMeansCluster withVectorInput(Producer<? extends Vector> vectorInput) {
-    return withInput1(new VectorAsDoubleArray().withInput(vectorInput).withConsistentArrayLength());
+  public KMeansCluster withInput(Producer<? extends DenseVector> vectorInput) {
+    return withInput1(new DoubleArrayFromVector().withInput(vectorInput).withConsistentArrayLength());
+  }
+
+  /**
+   * @return a configurator for specifying the input(s) comprising the vector to be clustered
+   */
+  public DenseFeatureVectorInput<KMeansCluster> withInput() {
+    return new DenseFeatureVectorInput<>(this::withInput);
   }
 
   /**
@@ -61,7 +64,7 @@ public class KMeansCluster extends AbstractPreparableTransformer1<double[], Scor
    * @param arrayInput a producer that will provide double[] inputs to this transformer
    * @return a copy of this instance that will get its inputs from the specified {@link Producer}
    */
-  public KMeansCluster withArrayInput(Producer<? extends double[]> arrayInput) {
+  public KMeansCluster withInputArray(Producer<? extends double[]> arrayInput) {
     return withInput1(arrayInput);
   }
 
@@ -117,7 +120,6 @@ public class KMeansCluster extends AbstractPreparableTransformer1<double[], Scor
 
     //private final ObjectBigList<DoublePoint> _vectors;
     private final ObjectBigList<DoublePoint> _vectors;
-    private int maxVectorIndex = -1;
 
     /**
      * Creates a new Preparer.

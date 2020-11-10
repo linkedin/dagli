@@ -8,8 +8,7 @@ import com.linkedin.dagli.transformer.internal.TransformerDynamicInternalAPI;
  *
  * @param <R> the type of the result
  */
-public interface TransformerDynamic<R> extends Transformer<R> {
-
+public interface TransformerDynamic<R> extends Transformer<R>, TransformerWithInputBound<Object, R> {
   @Override
   TransformerDynamicInternalAPI<R, ? extends TransformerDynamic<R>> internalAPI();
 }

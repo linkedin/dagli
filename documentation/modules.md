@@ -1,6 +1,10 @@
 # Dagli Module Overview
 Dagli has a large number of modules; this overview is intended to help you find the class you're looking for (or the required JAR) when using Dagli.
 
+# `all`
+Includes all the other modules so clients can add a single Dagli dependency (at the cost of a somewhat bloated 
+classpath!)
+
 # `annotation`
 Defines annotations (like `@Struct` or `@ValueEquality`) used by Dagli.  Normally you do not need to explicitly depend on this module as it is transitively included by the `core` module.
 
@@ -25,6 +29,8 @@ Most transformers included with Dagli live here, and this is first place to look
 - `com.linkedin.dagli.array`: transformers for arrays
 - `com.linkedin.dagli.distribution`: transformers for `DiscreteDistribution`s
 - `com.linkedin.dagli.evaluation`: transformers that evaluate the performance of a model by comparing the predicted value(s) with the true value(s) (e.g. `MultinomialEvaluation`)
+- `com.linkedin.dagli.input`: "input configurators" that provide transformers a standardized, convenient way to 
+   configure their inputs 
 - `com.linkedin.dagli.list`: transformers for lists and, more generally, `Iterable`s
 - `com.linkedin.dagli.map`: transformers for `Map`s and multisets
 - `com.linkedin.dagli.meta`: "meta" transformers that typically wrap one or more other transformers, e.g. `BestModel` (finds the best model via cross-validation), `KFoldCrossTrained` (cross-trains a preparable transformer), `NullFiltered` (prepares a transformer with only sets of inputs containing no nulls), etc.
@@ -45,6 +51,9 @@ Provides the FastText text classification model as the `FastTextClassification` 
 
 # `liblinear`
 Provides a logistic regression classifier backed by a Java port of the liblinear library.  Logistic regression is a staple of ML toolboxes and has a long history of successful use in industry.
+
+# `math-all`
+Includes all the other `math` modules for more convenient declaration of dependencies. 
 
 # `math-distribution`
 Dagli's sublibrary for discrete distributions (as defined by the `DiscreteDistribution` interface).  Discrete distributions are commonly used to represent the result of classification for both multinomial and multilabel classifiers (the probabilities of the events in the distribution can sum to more than 1).  Concrete implementations of distributiosn include `ArrayDiscreteDistribution` and `BinaryDistribution`; the sublibrary also incldes `AliasSampler` for asymptotically optimal sampling from distributions with replacement.
@@ -67,6 +76,9 @@ Normally, clients will not include this module directly and will instead include
 A concrete implementation of Dagli's neural network abstraction (`NeuralNetwork`) backed by the DeepLearning4Java (DL4J) library.  There is also support (`CustomNeuralNetwork`) for arbitrary DL4J computational graphs not yet supported by Dagli's abstraction layer.
 
 DL4J requires additional, platform-specific dependencies for ND4J (DL4J's accompanying linear algebra library); please see the [DeepLearning4Java website](https://deeplearning4j.org/) for more information, or `dagli/examples/neural-network` for examples using the basic CPU dependencies.  If you have a suitable GPU, the GPU-backed dependencies are a strongly recommended alternative to accelerate training and inference.
+
+# `objectio-all`
+Includes all the `objectio` modules for more convenient declaration of dependencies.
 
 # `objectio-avro`
 `ObjectReader` and `ObjectWriter` implementations for Avro-serialized objects: `AvroReader` and `AvroWriter`.  These will allow your Dagli pipelines to read Avro data and write Avro results. 
@@ -138,7 +150,12 @@ Dagli's sublibrary of functional interfaces.  Functions with up to 10 typed para
 A major feature of this module is the focus on `Serializable` functions; every functional interface has a corresponding `Serializable` variant, e.g. `Function2.Serializable`.  Functions created from method references are not necessarily reliably serializable, but a *safely-serializable* copy of such functions can be made via their `safelySerializable()` method, e.g. `Function2.Serializable::safelySerializable()`.
 
 # `visualization-ascii`
-`AsciiVisualization` "draws" a DAG as ASCII art.  Please note that this module presently requires a Scala 2.10 dependency.
+`AsciiVisualization` "draws" a DAG as ASCII art (works best for for smaller graphs).  *This module uses a Scala 2.10 dependency.*
+
+# `visualization-mermaid`
+`MermaidVisualization` "draws" a DAG as [Mermaid markdown](https://mermaid-js.github.io/), which can then be rendered
+into a flowchart (e.g. using the [Mermaid live editor](https://mermaid-js.github.io/mermaid-live-editor)).  We recommend
+this over the ASCII visualizer for both the better aesthetics and more comprehensive information.
 
 # `word2vec`
 Provides the `Word2VecEmbedding` transformer that, given **pretrained** Word2Vec embeddings, embeds text provided as a list of tokens.  Pre-trained embeddings can be [downloaded here](https://code.google.com/archive/p/word2vec/) (in the section titled "Pre-trained word and phrase vectors").
@@ -147,4 +164,11 @@ Provides the `Word2VecEmbedding` transformer that, given **pretrained** Word2Vec
 Provides the `XGBoostClassification` and `XGBoostRegression` transformers that train gradient boosted decision tree classification and regression models, respectively.  Decision tree models like XGBoost have important practical advantages:
 - They effectively find interesting non-linear conjunctions of the raw features (a common architecture is to use XGBoost to generate conjunctive features which are then fed to another, downstream model)
 - They can naturally handle real-valued and ordinal features by finding good split points
-- Forests of "decision stumps" (very low-depth trees) are resistant to overfitting     
+- Forests of "decision stumps" (very low-depth trees) are resistant to overfitting
+
+This module transitively includes the "official" XGBoost4J release, which presently supports Linux and OSX (but without 
+multithreading support on OSX) 
+
+# `xgboost-core`
+Same as the `xgboost` module, but does **not** include an XGBoost4J dependency.  This allows a Windows or 
+OSX-with-multithreading version to be used.

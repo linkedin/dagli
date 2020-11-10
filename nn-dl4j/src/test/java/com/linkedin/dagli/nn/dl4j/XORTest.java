@@ -54,7 +54,7 @@ public class XORTest {
     // output neuron predicting true iff the first activation is high and the second is low), but it requires a
     // well-tuned learning rate (and/or a very high number of iterations) relative to using 3+ neurons.  An arguably
     // interesting example of a simpler model being harder to learn despite sufficient expressiveness.
-    NNDenseLayer hidden = new NNDenseLayer().withUnitCount(2).withInputFromDenseVector(features);
+    NNDenseLayer hidden = new NNDenseLayer().withUnitCount(2).withInput().fromDenseVectors(features);
     NNClassification<Boolean> classification =
         new NNClassification<Boolean>().withFeaturesInput(hidden);
     classification = useBinaryLabelInput ? classification.withBinaryLabelInput(label)
@@ -90,7 +90,7 @@ public class XORTest {
     Placeholder<Boolean> label = new Placeholder<>("Label");
 
     NNSplitVectorSequenceLayer featureSequence =
-        new NNSplitVectorSequenceLayer().withInputFromDenseVector(features).withSplitSize(1);
+        new NNSplitVectorSequenceLayer().withInput().fromDenseVectors(features).withSplitSize(1);
 
     NNLSTMLayer lstmLayer = new NNLSTMLayer().withUnitCount(2).withInput(featureSequence);
 

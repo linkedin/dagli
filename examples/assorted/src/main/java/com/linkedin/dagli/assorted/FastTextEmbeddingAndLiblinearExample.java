@@ -73,7 +73,7 @@ public class FastTextEmbeddingAndLiblinearExample {
     // currently this is not supported).
     LiblinearClassification<String> classification = new LiblinearClassification<String>()
         .withLabelInput(example.asCharacter())
-        .withFeatureInput(fastTextEmbedding);
+        .withFeaturesInput(fastTextEmbedding);
 
 
 

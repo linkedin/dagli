@@ -9,12 +9,6 @@ if (osdetector.os == "osx") {
 }
 
 dependencies {
-  implementation project(':common')
-  implementation project(':data')
-  implementation project(':nn-dl4j')
-  implementation project(':text')
-  implementation project(':text-tokenization')
-
   // DeepLearning4J (our neural network backend in this example) has a number of dependencies, which will vary depending
   // on whether you want to use your CPU, GPU, CPU with AVX2 instructions, etc.  Please see https://deeplearning4j.org/
   // for more information; here we use the most generic (and typically slowest) CPU-oriented dependencies.
@@ -26,18 +20,24 @@ dependencies {
   // Needed by ND4J for OpenBLAS linear algebra on the CPU:
   implementation project.ext.dependencies.javacpp
 
+  // explicitly importing the exact libraries needed by DL4J/ND4J for the platform seems to be necessary due to a
+  // "feature" of Gradle that prevents it from importing transitive dependencies when directed by a JAR's pom.xml:
+  implementation "org.bytedeco:javacpp:1.5.3:$platform"
+  implementation "org.nd4j:nd4j-native:1.0.0-beta7:$platform"
+  implementation "org.bytedeco:openblas:0.3.9-1.5.3:$platform"
+
+  implementation project(':common')
+  implementation project(':data')
+  implementation project(':nn-dl4j')
+  implementation project(':text')
+  implementation project(':text-tokenization')
+
   // DL4J uses SLF4J, but Dagli uses Log4j2. log4j2-slf4j-impl provides a bridge between these such that DL4J's log
   // messages are passed to the Log4j2 API:
   implementation project.ext.dependencies.'log4j2-slf4j-impl'
 
   // Logging implementation that will allow Log4j2 to print everything onto the console
   implementation project.ext.dependencies.'log4j2-core'
-
-  // explicitly importing the exact libraries needed for the platform seems to be necessary due to a "feature" of Gradle
-  // that prevents it from importing transitive dependencies when directed by a JAR's pom.xml
-  implementation "org.bytedeco:javacpp:1.5.3:$platform"
-  implementation "org.nd4j:nd4j-native:1.0.0-beta7:$platform"
-  implementation "org.bytedeco:openblas:0.3.9-1.5.3:$platform"
 
   // without the annotation processor, we can't build our CharacterDialogStruct:
   annotationProcessor project(':annotation-processor')

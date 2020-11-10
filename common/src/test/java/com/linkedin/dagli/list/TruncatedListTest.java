@@ -25,7 +25,7 @@ public class TruncatedListTest {
 
     Assertions.assertEquals(1, dag.producers(TruncatedList.class).count());
     Assertions.assertEquals(4, Constant.tryGetValue((Producer<Integer>)
-        dag.producers(TruncatedList.class).findFirst().get().getItem().internalAPI().getInputList().get(1)));
+        dag.producers(TruncatedList.class).findFirst().get().peek().internalAPI().getInputList().get(1)));
   }
 
   @Test

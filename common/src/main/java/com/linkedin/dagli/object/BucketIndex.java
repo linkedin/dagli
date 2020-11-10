@@ -11,7 +11,7 @@ import com.linkedin.dagli.transformer.AbstractPreparedTransformer1;
 import com.linkedin.dagli.transformer.PreparedTransformer1;
 import com.linkedin.dagli.tuple.Tuple2;
 import com.linkedin.dagli.util.collection.Iterables;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.util.invariant.Arguments;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
@@ -90,10 +90,10 @@ public class BucketIndex extends
       _total++;
     }
 
-    private Tuple2<LinkedNode<T>, Double> findOptimalBuckets(
+    private Tuple2<LinkedStack<T>, Double> findOptimalBuckets(
         List<Object2LongMap.Entry<T>> items, long targetBucketSize, int firstRemainingItemIndex,
-        int bucketsRemaining, Tuple2<LinkedNode<T>, Double>[][] cache) {
-      Tuple2<LinkedNode<T>, Double> result;
+        int bucketsRemaining, Tuple2<LinkedStack<T>, Double>[][] cache) {
+      Tuple2<LinkedStack<T>, Double> result;
 
       if (firstRemainingItemIndex == items.size()) { // no more items, no more error
         return Tuple2.of(null, 0.0);
@@ -110,7 +110,7 @@ public class BucketIndex extends
         double bestError = Double.POSITIVE_INFINITY;
         result = null;
         for (int i = firstRemainingItemIndex; i < items.size(); i++) {
-          final Tuple2<LinkedNode<T>, Double> remainder =
+          final Tuple2<LinkedStack<T>, Double> remainder =
               findOptimalBuckets(items, targetBucketSize, i + 1, bucketsRemaining - 1, cache);
 
           countSoFar += items.get(i).getLongValue();
@@ -118,7 +118,7 @@ public class BucketIndex extends
 
           if (totalError <= bestError) {
             T curItem = items.get(i).getKey();
-            result = Tuple2.of(remainder.get0() == null ? new LinkedNode<>(curItem) : remainder.get0().add(curItem),
+            result = Tuple2.of(remainder.get0() == null ? LinkedStack.of(curItem) : remainder.get0().push(curItem),
                 totalError);
             bestError = totalError;
           }
@@ -138,7 +138,7 @@ public class BucketIndex extends
           .sorted(Map.Entry.comparingByKey())
           .collect(Collectors.toList());
 
-      Tuple2<LinkedNode<T>, Double> bestBucketization =
+      Tuple2<LinkedStack<T>, Double> bestBucketization =
           findOptimalBuckets(sortedEntries, (_total + _bucketCount - 1) / _bucketCount, 0, _bucketCount,
               new Tuple2[_bucketCount][sortedEntries.size()]);
 
@@ -146,7 +146,7 @@ public class BucketIndex extends
       if (bestBucketization.get0() == null) {
         bucketBounds = Collections.emptyList();
       } else {
-        bucketBounds = bestBucketization.get0().toArrayList();
+        bucketBounds = bestBucketization.get0().toList();
         Collections.reverse(bucketBounds);
       }
       return new PreparerResult<>(new Prepared<T>().withBucketBounds(bucketBounds));

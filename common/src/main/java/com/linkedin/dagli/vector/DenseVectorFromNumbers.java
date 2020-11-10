@@ -4,9 +4,11 @@ import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.list.VariadicList;
 import com.linkedin.dagli.math.vector.DenseFloatArrayVector;
 import com.linkedin.dagli.producer.Producer;
-import com.linkedin.dagli.transformer.AbstractPreparedTransformer1WithInput;
+import com.linkedin.dagli.transformer.AbstractPreparedTransformer1;
 import com.linkedin.dagli.util.closeable.Closeables;
 import com.linkedin.dagli.util.collection.Iterables;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -16,7 +18,7 @@ import com.linkedin.dagli.util.collection.Iterables;
  */
 @ValueEquality
 public class DenseVectorFromNumbers extends
-    AbstractPreparedTransformer1WithInput<Iterable<? extends Number>, DenseFloatArrayVector, DenseVectorFromNumbers> {
+    AbstractPreparedTransformer1<Iterable<? extends Number>, DenseFloatArrayVector, DenseVectorFromNumbers> {
   private static final long serialVersionUID = 1;
 
   @Override
@@ -36,14 +38,35 @@ public class DenseVectorFromNumbers extends
   }
 
   /**
+   * Returns a copy of this instance that will accept a list of numbers to vectorize from the given input.
+   *
+   * @param input the input providing a list of numbers that should be combined into a dense vector
+   * @return a copy of this instance that will combine the numbers provided by the given producer into a dense vector
+   */
+  public DenseVectorFromNumbers withInputList(Producer<? extends Iterable<? extends Number>> input) {
+    return withInput1(input);
+  }
+
+  /**
    * Convenience method that accepts inputs as a variadic list of {@link Number} {@link Producer}s.  This is equivalent
-   * to {@code denseVectorFromNumbers.withInput(new VariadicList<Number>().withInputs(inputs))}}.
+   * to {@code denseVectorFromNumbers.withInputList(new VariadicList<Number>().withInputs(inputs))}}.
    *
    * @param inputs the inputs that should be combined into a dense vector
-   * @return a copy of this instance that will combine the numbers provided by the given producers into dense vectors
+   * @return a copy of this instance that will combine the numbers provided by the given producers into a dense vector
    */
   @SafeVarargs
   public final DenseVectorFromNumbers withInputs(Producer<? extends Number>... inputs) {
-    return withInput(new VariadicList<Number>().withInputs(inputs));
+    return withInputs(Arrays.asList(inputs));
+  }
+
+  /**
+   * Convenience method that accepts inputs as a variadic list of {@link Number} {@link Producer}s.  This is equivalent
+   * to {@code denseVectorFromNumbers.withInputList(new VariadicList<Number>().withInputs(inputs))}}.
+   *
+   * @param inputs the inputs that should be combined into a dense vector
+   * @return a copy of this instance that will combine the numbers provided by the given producers into a dense vector
+   */
+  public DenseVectorFromNumbers withInputs(List<? extends Producer<? extends Number>> inputs) {
+    return withInputList(new VariadicList<Number>().withInputs(inputs));
   }
 }

@@ -7,6 +7,8 @@ import com.linkedin.dagli.math.vector.Vector;
 import com.linkedin.dagli.object.Convert;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.transformer.AbstractPreparedTransformer1;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -32,15 +34,15 @@ public class ManyHotVector extends AbstractPreparedTransformer1<long[], Vector, 
   }
 
   /**
-   * Convenience method that may be used instead of {@link #withLongArrayAsInput(Producer)} for the common case where
+   * Convenience method that may be used instead of {@link #withInputArray(Producer)} for the common case where
    * you want to create a many-hot vector from an {@link Iterable} of {@link Number}s rather than an array of longs.
    *
    * @param numbersInput an {@link Iterable} of {@link Number}s that will be taken as the "hot" indices in the produced
    *                     vector
    * @return a copy of this instance that will use the specified input
    */
-  public ManyHotVector withNumberCollectionAsInput(Producer<? extends Iterable<? extends Number>> numbersInput) {
-    return withLongArrayAsInput(Convert.Numbers.toLongArray(numbersInput));
+  public ManyHotVector withInputList(Producer<? extends Iterable<? extends Number>> numbersInput) {
+    return withInputArray(Convert.Numbers.toLongArray(numbersInput));
   }
 
   /**
@@ -50,12 +52,12 @@ public class ManyHotVector extends AbstractPreparedTransformer1<long[], Vector, 
    * @param numbersInput an array of longs
    * @return a copy of this instance that will use the specified input
    */
-  public ManyHotVector withLongArrayAsInput(Producer<? extends long[]> numbersInput) {
+  public ManyHotVector withInputArray(Producer<? extends long[]> numbersInput) {
     return super.withInput1(numbersInput);
   }
 
   /**
-   * Convenience method that may be used instead of {@link #withLongArrayAsInput(Producer)} for the common case where
+   * Convenience method that may be used instead of {@link #withInputArray(Producer)} for the common case where
    * you want to create a many-hot vector from one or more {@link Number} inputs rather than an array of longs.
    *
    * @param numberInputs one or more inputs providing {@link Number}s that will be taken as the "hot" indices in the
@@ -63,8 +65,20 @@ public class ManyHotVector extends AbstractPreparedTransformer1<long[], Vector, 
    * @return a copy of this instance that will use the specified input
    */
   @SafeVarargs
-  public final ManyHotVector withNumbersAsInput(Producer<? extends Number>... numberInputs) {
-    return withNumberCollectionAsInput(new VariadicList<Number>().withInputs(numberInputs));
+  public final ManyHotVector withInputs(Producer<? extends Number>... numberInputs) {
+    return withInputs(Arrays.asList(numberInputs));
+  }
+
+  /**
+   * Convenience method that may be used instead of {@link #withInputArray(Producer)} for the common case where
+   * you want to create a many-hot vector from one or more {@link Number} inputs rather than an array of longs.
+   *
+   * @param numberInputs one or more inputs providing {@link Number}s that will be taken as the "hot" indices in the
+   *                     produced vector
+   * @return a copy of this instance that will use the specified input
+   */
+  public ManyHotVector withInputs(List<? extends Producer<? extends Number>> numberInputs) {
+    return withInputList(new VariadicList<Number>().withInputs(numberInputs));
   }
 
   @Override

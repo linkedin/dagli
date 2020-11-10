@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 /**
- * Reduces the situation where a child is the inverse operation of its sole parent with respect to one of the parent's
+ * Reduces the case where a child is the inverse operation of its sole parent with respect to one of the parent's
  * inputs, allowing the child to be replaced by that grandparent.
  *
  * For example, {@link com.linkedin.dagli.transformer.Value1FromTuple} is the inverse of

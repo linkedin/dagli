@@ -21,7 +21,6 @@ import com.linkedin.dagli.object.Indices;
 import com.linkedin.dagli.object.UnknownItemPolicy;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.transformer.DynamicInputs;
-import com.linkedin.dagli.vector.DensifiedVector;
 import com.linkedin.dagli.vector.ManyHotVector;
 import com.linkedin.dagli.vector.VectorElementAtIndex;
 import java.util.Map;
@@ -207,7 +206,7 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
       // used later in the prepared DAG when new values could be encountered.
       Index<L> labelIndex =
           new Index<L>().withUnknownItemPolicy(UnknownItemPolicy.MOST_FREQUENT).withInput(labelInput);
-      c._supervisionProvider = new ManyHotVector().withNumbersAsInput(labelIndex);
+      c._supervisionProvider = new ManyHotVector().withInputs(labelIndex);
       c._widthProvider = labelIndex.asIndexedCount();
       c._vectorToDistributionTransformer =
           new DistributionFromVector<L>().withIndexToLabelMapInput(labelIndex.asLongIndexToObjectMap());
@@ -249,7 +248,7 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
       // used later in the prepared DAG when new values could be encountered.
       Indices<L> labelIndices =
           new Indices<L>().withUnknownItemPolicy(UnknownItemPolicy.MOST_FREQUENT).withInput(labelInput);
-      c._supervisionProvider = new ManyHotVector().withNumberCollectionAsInput(labelIndices);
+      c._supervisionProvider = new ManyHotVector().withInputList(labelIndices);
       c._widthProvider = labelIndices.asIndexedCount();
       c._vectorToDistributionTransformer =
           new DistributionFromVector<L>().withIndexToLabelMapInput(labelIndices.asLongIndexToObjectMap());
@@ -287,6 +286,14 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
   }
 
   /**
+   * @return a configurator that will configure the "direct" prediction input to this loss layer with no intervening
+   *         softmax perceptron layer (see {@link #withPredictionInput(NNLayer)} for more information)
+   */
+  public DenseLayerInput<NNClassification<L>> withPredictionInput() {
+    return new DenseLayerInput<>(this::withPredictionInput);
+  }
+
+  /**
    * @return the loss function used by this layer
    */
   public LossFunction getLossFunction() {
@@ -306,77 +313,7 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
   }
 
   /**
-   * Returns a copy of this layer that will accept the inputs from the activations/output values of a list of
-   * other layers (their outputs will be concatenated before being passed to this layer).
-   *
-   * These values will be passed through an automatically-created dense layer whose number of outputs will match the
-   * number of labels (except if {@link #withBinaryLabelInput(Producer)} is used to create a binary classifier, in which
-   * case the automatically-created layer will have a single output value).
-   *
-   * @param layers the input layers whose activations/outputs will serve as inputs to this layer
-   * @return a copy of this layer that will accept the specified layer's activations/outputs as inputs
-   */
-  @SafeVarargs
-  public final NNClassification<L> withFeaturesInputs(
-      NNLayer<DenseVector, ? extends NonTerminalLayer>... layers) {
-    return withInput(new NNVectorConcatenationLayer().withAdditionalInputs(layers));
-  }
-
-  /**
-   * Returns a copy of this layer that will accept as its input a vector of values that are assumed to be "dense-like".
-   *
-   * Specifically, <strong>vector elements with indices less than 0 or {@code >= maxLength} will be silently ignored by
-   * the neural network.</strong>
-   *
-   * If the input vectors have negative or very high indices, use
-   * {@link #withFeaturesInputFromDensifiedVectors(Producer[])} instead, which will "densify" them and ensure that no
-   * values are truncated.  This method is intended for vectors that are already dense-like (e.g. one/multi-hot vectors
-   * for labels).
-   *
-   * These inputted values will be passed through an automatically-created dense layer whose number of outputs will
-   * match the number of labels (except if {@link #withBinaryLabelInput(Producer)} is used to create a binary
-   * classifier, in which case the automatically-created layer will have a single output value).
-   *
-   * @param input a {@link Producer} that will provide a vector input to this layer
-   * @param maxLength any vector elements with indices equal or greater to this value will be ignored
-   * @return a copy of this layer that will accept the provided input
-   */
-  public NNClassification<L> withFeaturesInputFromTruncatedVector(long maxLength, Producer<? extends Vector> input) {
-    return withInput(new NNVectorInputLayer().withMaxWidth(maxLength).withInput(input));
-  }
-
-  /**
-   * Returns a copy of this layer that will accept as its input the provided dense vector.
-   *
-   * These inputted values will be passed through an automatically-created dense layer whose number of outputs will
-   * match the number of labels (except if {@link #withBinaryLabelInput(Producer)} is used to create a binary
-   * classifier, in which case the automatically-created layer will have a single output value).
-   *
-   * @param inputs a list of {@link Producer}s that will provide the vectors serving as input to this layer
-   * @return a copy of this layer that will accept the provided inputs
-   */
-  public NNClassification<L> withFeaturesInputFromDenseVector(Producer<? extends DenseVector> inputs) {
-    return withFeaturesInputFromTruncatedVector(Long.MAX_VALUE, inputs);
-  }
-
-  /**
-   * Returns a copy of this layer that will accept as its input a "densification" of the provided vectors, which is
-   * automatically accomplished via the {@link DensifiedVector} transformer.
-   *
-   * These inputted values will be passed through an automatically-created dense layer whose number of outputs will
-   * match the number of labels (except if {@link #withBinaryLabelInput(Producer)} is used to create a binary
-   * classifier, in which case the automatically-created layer will have a single output value).
-   *
-   * @param inputs a list of {@link Producer}s that will provide the vectors serving as input to this layer
-   * @return a copy of this layer that will accept the provided inputs
-   */
-  @SafeVarargs
-  public final NNClassification<L> withFeaturesInputFromDensifiedVectors(Producer<? extends Vector>... inputs) {
-    return withFeaturesInputFromDenseVector(new DensifiedVector().withInputs(inputs));
-  }
-
-  /**
-   * Returns a copy of this layer that will accept the provided layer as its input.
+   * Returns a copy of this layer that will accept the output of the provided layer as its input.
    *
    * The input values will be passed through an automatically-created dense layer whose number of outputs will
    * match the number of labels (except if {@link #withBinaryLabelInput(Producer)} is used to create a binary
@@ -387,5 +324,12 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
    */
   public NNClassification<L> withFeaturesInput(NNLayer<DenseVector, ? extends NonTerminalLayer> inputLayer) {
     return withInput(inputLayer);
+  }
+
+  /**
+   * @return a configurator that will configure the features input to this layer
+   */
+  public DenseLayerInput<NNClassification<L>> withFeaturesInput() {
+    return new DenseLayerInput<>(this::withFeaturesInput);
   }
 }

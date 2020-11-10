@@ -115,7 +115,7 @@ public class FastTextClassifierTest {
         .producers(Embedded.Labels.class)
         .findFirst()
         .get()
-        .getItem()
+        .peek()
         .withLabelsInput(labelsToEmbedPlaceholder);
 
     DAG1x1.Prepared<List<String>, List<DenseFloatArrayVector>> labelEmbeddings =

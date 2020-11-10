@@ -8,7 +8,7 @@ import com.linkedin.dagli.reducer.Reducer;
 import com.linkedin.dagli.transformer.PreparableTransformer;
 import com.linkedin.dagli.transformer.Transformer;
 import com.linkedin.dagli.transformer.internal.TransformerInternalAPI;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,12 +115,16 @@ public interface DAGTransformer<R, S extends DAGTransformer<R, S>> extends Trans
    * Returns a stream of the producers in the DAG as discovered by a breadth-first search starting from the outputs
    * (producers with a lower distance to the outputs will be returned first).
    *
-   * The producers are provided as {@link LinkedNode}s, each representing a shortest-path from that producer to one of
-   *  the DAG's outputs.  Each producer (and path to that producer) will be enumerated only once.
+   * The producers are provided as {@link LinkedStack}s, each representing a shortest-path from that producer to one of
+   * the DAG's outputs (with the top of the stack, accessible via {@link LinkedStack#peek()}, being the producer of
+   * interest, and the last/bottom element in the stack being an output node).  Each producer (and path to that
+   * producer) will be enumerated only once, even if multiple shortest-paths exist.
    *
-   * @return a stream of {@link LinkedNode}s representing paths to each connected producer in the DAG
+   * {@link Placeholder}s that are disconnected from the outputs will not be included in the returned stream.
+   *
+   * @return a stream of {@link LinkedStack}s representing paths to each connected producer in the DAG
    */
-  default Stream<LinkedNode<Producer<?>>> producers() {
+  default Stream<LinkedStack<Producer<?>>> producers() {
     return internalAPI().getDAGStructure().producers();
   }
 
@@ -128,15 +132,20 @@ public interface DAGTransformer<R, S extends DAGTransformer<R, S>> extends Trans
    * Returns a stream of the producers in the DAG of a particular class, as discovered by a breadth-first search
    * starting from the outputs (producers with a lower distance to the outputs will be returned first).
    *
-   * The producers are provided as {@link LinkedNode}s, each representing a shortest-path from that producer to one of
-   * the DAG's outputs.  Each producer (and path to that producer) will be enumerated only once.
+   * The producers are provided as {@link LinkedStack}s, each representing a shortest-path from that producer to one of
+   * the DAG's outputs (with the top of the stack, accessible via {@link LinkedStack#peek()}, being the producer of
+   * interest, and the last/bottom element in the stack being an output node).  Each producer (and path to that
+   * producer) will be enumerated only once, even if multiple shortest-paths exist.
+   *
+   * {@link Placeholder}s that are disconnected from the outputs will not be included in the returned stream.
    *
    * @param producerClass the class of producer to be sought
    * @param <T> the type of the producer to be enumerated
-   * @return a stream of {@link LinkedNode}s representing paths to each connected producer in the DAG
+   * @return a stream of {@link LinkedStack}s representing paths to each connected producer in the DAG
    */
-  default <T> Stream<LinkedNode<T>> producers(Class<T> producerClass) {
-    return LinkedNode.filterByClass(internalAPI().getDAGStructure().producers(), producerClass);
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  default <T> Stream<LinkedStack<T>> producers(Class<T> producerClass) {
+    return (Stream) internalAPI().getDAGStructure().producers().filter(stack -> producerClass.isInstance(stack.peek()));
   }
 
   /**
@@ -158,13 +167,13 @@ public interface DAGTransformer<R, S extends DAGTransformer<R, S>> extends Trans
     ChildProducer<R> childProducer = (ChildProducer<R>) producer;
 
     List<Placeholder<?>> placeholders = ChildProducer.ancestors(childProducer, Integer.MAX_VALUE)
-        .filter(p -> p.getItem() instanceof Placeholder)
-        .map(p -> (Placeholder<?>) p.getItem())
+        .filter(p -> p.peek() instanceof Placeholder)
+        .map(p -> (Placeholder<?>) p.peek())
         .collect(Collectors.toList());
 
     boolean prepared =
         !(producer instanceof PreparableTransformer) && ChildProducer.ancestors(childProducer, Integer.MAX_VALUE)
-            .noneMatch(p -> p.getItem() instanceof PreparableTransformer);
+            .noneMatch(p -> p.peek() instanceof PreparableTransformer);
 
     return prepared ? DAGUtil.createPreparedDAG(placeholders, Collections.singletonList(producer))
         : DAGUtil.createPreparableDAG(placeholders, Collections.singletonList(producer));

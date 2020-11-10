@@ -12,15 +12,15 @@ import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.math.distribution.ArrayDiscreteDistribution;
 import com.linkedin.dagli.math.distribution.BinaryDistribution;
 import com.linkedin.dagli.math.distribution.DiscreteDistribution;
-import com.linkedin.dagli.math.vector.SparseDoubleMapVector;
+import com.linkedin.dagli.math.vector.DenseDoubleArrayVector;
+import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.math.vector.Vector;
-import com.linkedin.dagli.preparer.AbstractStreamPreparer2;
+import com.linkedin.dagli.preparer.AbstractStreamPreparer3;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResult;
 import com.linkedin.dagli.util.invariant.Arguments;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +34,7 @@ import java.util.NoSuchElementException;
  * @param <L> the type of label
  */
 @ValueEquality
-public class LiblinearClassification<L>
-    extends
+public class LiblinearClassification<L> extends
     AbstractLiblinearTransformer<L, DiscreteDistribution<L>, LiblinearClassification.Prepared<L>, LiblinearClassification<L>> {
 
   private static final long serialVersionUID = 1;
@@ -58,21 +57,20 @@ public class LiblinearClassification<L>
   }
 
   /* package-private */ static class Preparer<L>
-      extends AbstractStreamPreparer2<L, Vector, DiscreteDistribution<L>, Prepared<L>> {
+      extends AbstractStreamPreparer3<Number, L, DenseVector, DiscreteDistribution<L>, Prepared<L>> {
     private final Problem _problem = new Problem();
     private final Object2IntOpenHashMap<L> _labelIDMap;
-    private final Long2IntOpenHashMap _featureIDMap;
     private final LiblinearClassification<L> _owner;
     private static final FeatureNode BIAS_PLACEHOLDER_FEATURE = new FeatureNode(Integer.MAX_VALUE, 0);
 
     private final List<Feature[]> _exampleFeatures; // will be copied to problem.x
     private final DoubleList _exampleLabels; // will be copied to problem.y
 
+    private int _maxFeatureIndex = 0; // keep track of the highest observed feature index
+
     public Preparer(PreparerContext context, LiblinearClassification<L> owner) {
       _labelIDMap = new Object2IntOpenHashMap<L>();
       _labelIDMap.defaultReturnValue(-1);
-      _featureIDMap = new Long2IntOpenHashMap();
-      _featureIDMap.defaultReturnValue(-1);
 
       // can't accommodate more than ~2 billion examples, but move forward under the assumption that there will be fewer
       // than estimated:
@@ -85,32 +83,31 @@ public class LiblinearClassification<L>
     }
 
     @Override
-    public void process(L valueA, Vector valueB) {
+    public void process(Number weight, L label, DenseVector featureVector) {
       Feature[] features;
+      long featureVectorSize = featureVector.size64();
       if (_owner.getBias() >= 0) {
-        features = new Feature[Math.toIntExact(valueB.size64()) + 1];
+        features = new Feature[Math.toIntExact(featureVectorSize + 1)];
         features[features.length - 1] = BIAS_PLACEHOLDER_FEATURE;
       } else {
-        features = new Feature[Math.toIntExact(valueB.size64())];
+        features = new Feature[Math.toIntExact(featureVectorSize)];
       }
 
       int[] i = new int[1]; // boxed integer
-      valueB.forEach((elementIndex, value) -> {
-        int featureID = _featureIDMap.get(elementIndex);
-        if (featureID < 0) {
-          featureID = _featureIDMap.size() + 1; // liblinear for Java doesn't like 0 index features due to bug
-          _featureIDMap.put(elementIndex, featureID);
-        }
-        features[i[0]++] = new FeatureNode(featureID, value);
+      featureVector.forEach((elementIndex, value) -> {
+        // liblinear for Java doesn't like 0 index features due to bug, hence the "+ 1"
+        features[i[0]++] = new FeatureNode(Math.toIntExact(elementIndex + 1), value);
       });
 
-      int labelID = _labelIDMap.getInt(valueA);
-      if (labelID < 0) { // marker value for "not there"
-        labelID = _labelIDMap.size();
-        _labelIDMap.put(valueA, labelID);
+      if (featureVectorSize > 0) {
+        _maxFeatureIndex = Math.max(_maxFeatureIndex, features[Math.toIntExact(featureVectorSize - 1)].getIndex());
       }
 
-      Arrays.sort(features, (f1, f2) -> f1.getIndex() - f2.getIndex());
+      int labelID = _labelIDMap.getInt(label);
+      if (labelID < 0) { // marker value for "not there"
+        labelID = _labelIDMap.size();
+        _labelIDMap.put(label, labelID);
+      }
 
       _exampleFeatures.add(features);
       _exampleLabels.add(labelID);
@@ -119,13 +116,13 @@ public class LiblinearClassification<L>
     @Override
     public PreparerResult<Prepared<L>> finish() {
       _problem.l = _exampleFeatures.size(); // number of examples
-      _problem.n = _featureIDMap.size() + (_owner.getBias() >= 0 ? 1 : 0);
+      _problem.n = _maxFeatureIndex + (_owner.getBias() >= 0 ? 1 : 0); // note that feature indices are 1-based
 
       _problem.x = _exampleFeatures.toArray(new Feature[0][]);
       _problem.y = _exampleLabels.toDoubleArray();
 
       if (_owner.getBias() >= 0) {
-        Feature biasFeature = new FeatureNode(_featureIDMap.size() + 1, _owner.getBias());
+        Feature biasFeature = new FeatureNode(_maxFeatureIndex + 1, _owner.getBias());
         for (Feature[] features : _problem.x) {
           features[features.length - 1] = biasFeature;
         }
@@ -139,7 +136,7 @@ public class LiblinearClassification<L>
       Linear.setDebugOutput(_owner._silent ? null : System.err);
       Model model = Linear.train(_problem, parameter);
       return new PreparerResult<>(
-          new Prepared<L>(_owner._bias, model, _labelIDMap, _featureIDMap));
+          new Prepared<L>(_owner._bias, model, _labelIDMap, _maxFeatureIndex));
     }
   }
 
@@ -248,14 +245,15 @@ public class LiblinearClassification<L>
      * @return a vector with all the weights corresponding to the label in the model.
      * @throws IndexOutOfBoundsException if the index does not correspond to a label
      */
-    public Vector getWeightsForLabelIndex(int index) {
+    public DenseVector getWeightsForLabelIndex(int index) {
       checkIndex(index);
 
-      SparseDoubleMapVector result = new SparseDoubleMapVector(_featureIDMap.size());
-      _featureIDMap.long2IntEntrySet()
-          .forEach(entry -> result.put(entry.getLongKey(), getWeightForLabel(entry.getIntValue(), index)));
+      double[] weights = new double[_featureCount];
+      for (int i = 0; i < _featureCount; i++) {
+        weights[i] = getWeightForLabel(i + 1, index);
+      }
 
-      return result;
+      return DenseDoubleArrayVector.wrap(weights);
     }
 
     /**
@@ -276,21 +274,17 @@ public class LiblinearClassification<L>
         return 0;
       }
 
-      return _bias * getWeightForLabel(_featureIDMap.size() + 1, index);
+      return _bias * getWeightForLabel(_featureCount + 1, index);
     }
 
     Model getModel() {
       return _model;
     }
 
-    Long2IntOpenHashMap getFeatureIDMap() {
-      return _featureIDMap;
-    }
-
     @SuppressWarnings("unchecked")
     Prepared(double bias, Model model, Object2IntOpenHashMap<L> labelIDMap,
-        Long2IntOpenHashMap featureIDMap) {
-      super(bias, model, featureIDMap);
+        int featureCount) {
+      super(bias, model, featureCount);
 
       _labels = (L[]) new Object[labelIDMap.size()];
       labelIDMap.forEach((label, id) -> _labels[id] = label);
@@ -314,16 +308,16 @@ public class LiblinearClassification<L>
 
     @Override
     @SuppressWarnings("unchecked")
-    public DiscreteDistribution<L> apply(L val1, Vector val2) {
-      ArrayList<Feature> features = new ArrayList<>(Math.toIntExact(val2.size64() + (_bias >= 0 ? 1 : 0)));
-      val2.forEach((elementIndex, value) -> {
-        int featureID = _featureIDMap.get(elementIndex);
-        if (featureID >= 0) {
-          features.add(new FeatureNode(featureID, value));
+    public DiscreteDistribution<L> apply(Number weight, L unused, DenseVector featureVector) {
+      ArrayList<Feature> features = new ArrayList<>(Math.toIntExact(featureVector.size64() + (_bias >= 0 ? 1 : 0)));
+      featureVector.forEach((elementIndex, value) -> {
+        long featureID = elementIndex + 1;
+        if (featureID <= _featureCount) {
+          features.add(new FeatureNode(Math.toIntExact(featureID), value));
         }
       });
       if (_bias >= 0) {
-        features.add(new FeatureNode(_featureIDMap.size() + 1, _bias));
+        features.add(new FeatureNode(_featureCount + 1, _bias));
       }
 
       double[] probabilities = new double[_labels.length];

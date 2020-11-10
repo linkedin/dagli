@@ -1,17 +1,18 @@
 package com.linkedin.dagli.liblinear;
 
+import com.jeffreypasternack.liblinear.Model;
+import com.jeffreypasternack.liblinear.SolverType;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
-import com.linkedin.dagli.preparer.AbstractStreamPreparer2;
+import com.linkedin.dagli.math.vector.DenseVector;
+import com.linkedin.dagli.math.vector.Vector;
+import com.linkedin.dagli.math.vector.VectorElement;
+import com.linkedin.dagli.preparer.AbstractStreamPreparer3;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResult;
 import com.linkedin.dagli.producer.MissingInput;
-import com.linkedin.dagli.transformer.PreparedTransformer2;
+import com.linkedin.dagli.transformer.PreparedTransformer1;
+import com.linkedin.dagli.transformer.PreparedTransformer3;
 import com.linkedin.dagli.vector.LazyFilteredVector;
-import com.jeffreypasternack.liblinear.Model;
-import com.jeffreypasternack.liblinear.SolverType;
-import com.linkedin.dagli.math.vector.Vector;
-import com.linkedin.dagli.math.vector.VectorElement;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.TreeSet;
 
@@ -32,9 +33,11 @@ import java.util.TreeSet;
  * reduction to discard unimportant/irrelevant features from the data.
  */
 @ValueEquality
-public class TopVectorElementsByLiblinearWeight
-    extends
-    AbstractLiblinearTransformer<Object, Vector, PreparedTransformer2<Object, Vector, Vector>, TopVectorElementsByLiblinearWeight> {
+public class TopVectorElementsByLiblinearWeight extends AbstractLiblinearTransformer<
+    Object,
+    Vector,
+    PreparedTransformer3<Number, Object, DenseVector, Vector>,
+    TopVectorElementsByLiblinearWeight> {
 
   private static final long serialVersionUID = 1;
 
@@ -56,7 +59,7 @@ public class TopVectorElementsByLiblinearWeight
   }
 
   private static class Preparer
-      extends AbstractStreamPreparer2<Object, Vector, Vector, PreparedTransformer2<Object, Vector, Vector>> {
+      extends AbstractStreamPreparer3<Number, Object, DenseVector, Vector, PreparedTransformer3<Number, Object, DenseVector, Vector>> {
     private final LiblinearClassification.Preparer<Object> _classifierPreparer;
     private final TopVectorElementsByLiblinearWeight _owner;
 
@@ -67,18 +70,13 @@ public class TopVectorElementsByLiblinearWeight
     }
 
     @Override
-    public PreparerResult<PreparedTransformer2<Object, Vector, Vector>> finish() {
+    public PreparerResult<PreparedTransformer3<Number, Object, DenseVector, Vector>> finish() {
       // train the linear classifier
       PreparerResult<LiblinearClassification.Prepared<Object>> classifierResult = _classifierPreparer.finish();
 
-      // extract the underlying liblinear Model and feature densification map
+      // extract the underlying liblinear Mode
       LiblinearClassification.Prepared<Object> prepared = classifierResult.getPreparedTransformerForNewData();
-      Long2IntOpenHashMap featureIDMap = prepared.getFeatureIDMap();
       Model model = prepared.getModel();
-
-      // invert the feature densification map to get a map from liblinear feature IDs to feature vector element indices
-      long[] featureIDToElementIndexMap = new long[featureIDMap.size()];
-      featureIDMap.forEach((elementIndex, featureID) -> featureIDToElementIndexMap[featureID - 1] = elementIndex);
 
       // Figure out how many *sets* of weights are being used.
       // For some types of models, such as max-entropy models, liblinear uses multiple sets of weights such that each
@@ -103,7 +101,7 @@ public class TopVectorElementsByLiblinearWeight
 
       // get the weights and start looping through them
       double[] weights = model.getFeatureWeights();
-      for (int i = 0; i < featureIDToElementIndexMap.length; i++) {
+      for (int i = 0; i < prepared._featureCount; i++) { // loop through all features
         double sum = 0;
         // sum all the weights for feature #i (recall that the weights are interleaved such that all the weights for a
         // given feature are adjacent)
@@ -118,7 +116,7 @@ public class TopVectorElementsByLiblinearWeight
             top.pollFirst();
           }
 
-          top.add(new VectorElement(featureIDToElementIndexMap[i], sum));
+          top.add(new VectorElement(i, sum));
         }
       }
 
@@ -128,15 +126,21 @@ public class TopVectorElementsByLiblinearWeight
         elementIDs.add(item.getIndex());
       }
 
-      // return the prepared LazyFilteredVector transformer as our result, supplementing its arity to match that of this
-      // transformer
-      return new PreparerResult<>(
-          new LazyFilteredVector().withIndicesToKeep(elementIDs).internalAPI().withPrependedArity2(MissingInput.get()));
+
+      // Cast LazyFilteredVector to accept a DenseVector rather than a Vector
+      PreparedTransformer1<DenseVector, Vector> lazyFiltered =
+          PreparedTransformer1.cast(new LazyFilteredVector().withIndicesToKeep(elementIDs));
+      // Return the prepared LazyFilteredVector transformer as our result, supplementing its arity to match that of this
+      // transformer:
+      return new PreparerResult<>(lazyFiltered.internalAPI()
+          .withPrependedArity2(MissingInput.get())
+          .internalAPI()
+          .withPrependedArity3(MissingInput.get()));
     }
 
     @Override
-    public void process(Object valueA, Vector valueB) {
-      _classifierPreparer.process(valueA, valueB);
+    public void process(Number weight, Object label, DenseVector featureVector) {
+      _classifierPreparer.process(weight, label, featureVector);
     }
   }
 }

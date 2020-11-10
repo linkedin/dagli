@@ -3,13 +3,16 @@ package com.linkedin.dagli.producer;
 import com.linkedin.dagli.handle.ProducerHandle;
 import com.linkedin.dagli.producer.internal.AncestorSpliterator;
 import com.linkedin.dagli.producer.internal.ProducerInternalAPI;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.util.named.Named;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 
 /**
@@ -149,6 +152,29 @@ public interface Producer<R> extends Serializable, Named {
   }
 
   /**
+   * Casts a producer to have the given result type if and only if this type is a supertype of the type returned by
+   * {@link #getResultSupertype(Producer)}, returning the passed producer.  Otherwise, the provided function is called
+   * to create a producer to the required type (typically by chaining a "conversion" transformer to the original
+   * producer); this function may also simply return null.
+   *
+   * Please note that a requested cast to a true supertype of the producer's result type may still not be directly
+   * castable if this supertype is not also a supertype of the type returned by {@link #getResultSupertype(Producer)}.
+   *
+   * @param producer the producer to cast
+   * @param purportedResultType the type of result of the returned producer
+   * @param converter a "converter" method that somehow obtains a producer of the desired type given the original
+   *                  producer; this method is only used if the producer is not directly castable to the desired type
+   * @param <R> the type of result of the returned producer
+   * @return the passed producer if the cast can be proven to be legal, or null otherwise
+   */
+  @SuppressWarnings("unchecked")
+  static <R, S extends Producer<?>> Producer<R> checkedCast(S producer, Class<R> purportedResultType,
+      Function<? super S, ? extends Producer<? extends R>> converter) {
+    return TypeUtils.isAssignable(Producer.getResultSupertype(producer), purportedResultType) ? (Producer<R>) producer
+        : Producer.cast(converter.apply(producer));
+  }
+
+  /**
    * Casts a {@code Producer<? extends Comparable<? extends T>>} to a {@code Producer<T>}.
    *
    * This cast is safe so long as {@code T} (or the relevant subclass) <i>correctly</i> implements {@link Comparable} in
@@ -183,13 +209,15 @@ public interface Producer<R> extends Serializable, Named {
    * are enumerated in the order they are discovered via a breadth-first search starting from the targets; more
    * proximate ancestors to the targets will be returned first.
    *
-   * The producers are provided as {@link LinkedNode}s, each representing a shortest-path from that producer to one of
-   * the targets.  Each producer will be enumerated only once (even if there are multiple unique paths to it).
+   * The producers are provided as {@link LinkedStack}s, each representing a shortest-path from that producer to one of
+   * the targets (with the top of the stack, accessible via {@link LinkedStack#peek()}, being the producer of interest,
+   * and the last/bottom element in the stack being an output node).  Each producer will be enumerated only once, even
+   * if there are multiple unique paths to it.
    *
    * @param targets the target producers that define the subgraph to enumerate
-   * @return a stream of {@link LinkedNode}s representing paths to each target and their ancestors
+   * @return a stream of {@link LinkedStack}s representing paths to each target and their ancestors
    */
-  static Stream<LinkedNode<Producer<?>>> subgraphProducers(Producer<?>... targets) {
+  static Stream<LinkedStack<Producer<?>>> subgraphProducers(Producer<?>... targets) {
     return subgraphProducers(Arrays.asList(targets));
   }
 
@@ -198,13 +226,15 @@ public interface Producer<R> extends Serializable, Named {
    * are enumerated in the order they are discovered via a breadth-first search starting from the targets; more
    * proximate ancestors to the targets will be returned first.
    *
-   * The producers are provided as {@link LinkedNode}s, each representing a shortest-path from that producer to one of
-   * the targets.  Each producer will be enumerated only once (even if there are multiple unique paths to it).
+   * The producers are provided as {@link LinkedStack}s, each representing a shortest-path from that producer to one of
+   * the targets (with the top of the stack, accessible via {@link LinkedStack#peek()}, being the producer of interest,
+   * and the last/bottom element in the stack being an output node).  Each producer will be enumerated only once, even
+   * if there are multiple unique paths to it.
    *
    * @param targets the target producers that define the subgraph to enumerate
-   * @return a stream of {@link LinkedNode}s representing paths to each target and their ancestors
+   * @return a stream of {@link LinkedStack}s representing paths to each target and their ancestors
    */
-  static Stream<LinkedNode<Producer<?>>> subgraphProducers(List<Producer<?>> targets) {
+  static Stream<LinkedStack<Producer<?>>> subgraphProducers(List<Producer<?>> targets) {
     return StreamSupport.stream(new AncestorSpliterator(targets, Integer.MAX_VALUE, ChildProducer::getParents), false);
   }
 
@@ -228,6 +258,31 @@ public interface Producer<R> extends Serializable, Named {
   @SuppressWarnings("unchecked")
   static <T extends Producer<?>> ProducerHandle<T> handle(T producer) {
     return (ProducerHandle<T>) producer.internalAPI().getHandle();
+  }
+
+  /**
+   * Gets a type that is a supertype of all results produced by this producer.
+   *
+   * Dagli provides a default implementation of this method that will attempt to use reflection to find the result type,
+   * but because generics are not (at present) reified in Java, the returned type is only guaranteed to be a supertype
+   * of the result type, quite possibly an {@link Object}, a {@link java.lang.reflect.WildcardType}, or a
+   * {@link java.lang.reflect.TypeVariable} if no more concrete, specific type can be ascertained.
+   *
+   * Overriding the default implementation is generally not necessary, but may be helpful in edge cases where the result
+   * type is generic but the producer has some way of ascertaining that type at run-time (e.g. if it depends on the
+   * input producers' result types).
+   *
+   * A naked type is considered to be a "supertype" of the corresponding parameterized type (e.g. {@code List}
+   * is considered a valid supertype of {@code List<String>}).  Additionally, the supertype of all results may be an
+   * interface, and is not strictly required to be a supertype of R (the generic type parameter that is [also] a
+   * supertype of all result instances): for example, a producer that is declared to have a {@code R = Number} result
+   * but knows that it will always produce {@code Double} instances can return {@code Double} from this method.
+   *
+   * @param producer the producer whose result supertype is sought
+   * @return a supertype of all result objects that may be produced by the given producer
+   */
+  static Type getResultSupertype(Producer<?> producer) {
+    return producer.internalAPI().getResultSupertype();
   }
 }
 

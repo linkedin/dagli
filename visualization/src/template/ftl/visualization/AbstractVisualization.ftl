@@ -3,7 +3,7 @@
 package com.linkedin.dagli.visualization;
 
 import com.linkedin.dagli.util.cloneable.AbstractCloneable;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.util.function.Function1;
 import com.linkedin.dagli.util.named.Named;
 import com.linkedin.dagli.objectio.ObjectReader;
@@ -271,10 +271,10 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
         : PreparedTransformer${arity}.toDAG((<@c.PreparedTransformer arity />) dag);
 
     ProducerToValueMap producerToValueMap = new ProducerToValueMap(
-        dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()), renderExampleValuesPredicate);
+        dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()), renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
-    List<Placeholder<?>> placeholders = dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p).collect(Collectors.toList());
+    List<Placeholder<?>> placeholders = dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p).collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
     @SuppressWarnings("unchecked")

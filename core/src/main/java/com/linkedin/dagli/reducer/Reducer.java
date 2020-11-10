@@ -4,8 +4,9 @@ import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.producer.RootProducer;
 import com.linkedin.dagli.transformer.PreparableTransformer;
 import com.linkedin.dagli.transformer.PreparedTransformer;
+import com.linkedin.dagli.transformer.TransformerWithInputBound;
 import com.linkedin.dagli.util.cloneable.AbstractCloneable;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.view.TransformerView;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.List;
@@ -414,12 +415,35 @@ public interface Reducer<T> {
      * Note that producers are free to determine their parents arbitrarily, and these parents may not be the same as the
      * input producers provided via their public API.  The type and number of a producer's parents should be regarded as
      * an implementation detail and not relied upon for correctness of your reducer, unless you also own the producer's
-     * implementation and can guarantee that it accords with your expectations).
+     * implementation and can guarantee that it accords with your expectations.
      *
      * @param producer the producer whose parents are sought
      * @return a list of parents of the provided producer; this list must not be modified
      */
     List<? extends Producer<?>> getParents(Producer<?> producer);
+
+    /**
+     * Gets the current list of parents (inputs) of a producer in the current DAG reduction's working graph.  This may
+     * include duplicates if the producer accepts the same input at more than one position in its input list.  For
+     * producers that are not {@link com.linkedin.dagli.producer.ChildProducer}s and have no parents, the returned list
+     * will be empty.
+     *
+     * This method may be used to "walk the graph" during reduction; the parents as stored in the producer instances
+     * themselves may be inaccurate and not reflect the current state of the working graph.
+     *
+     * Note that producers are free to determine their parents arbitrarily, and these parents may not be the same as the
+     * input producers provided via their public API.  The type and number of a producer's parents should be regarded as
+     * an implementation detail and not relied upon for correctness of your reducer, unless you also own the producer's
+     * implementation and can guarantee that it accords with your expectations.
+     *
+     * @param transformer the producer whose parents are sought
+     * @return a list of parents of the provided producer; this list must not be modified
+     */
+    @SuppressWarnings("unchecked")
+    default <I> List<? extends Producer<? extends I>> getParents(
+        TransformerWithInputBound<I, ?> transformer) {
+      return (List<? extends Producer<? extends I>>) getParents((Producer<?>) transformer);
+    }
 
     /**
      * Gets the parents of a given producer that are (or derive from) the given class or interface.
@@ -470,15 +494,15 @@ public interface Reducer<T> {
      * before more distal ancestors; e.g. parents before grandparents).  If multiple paths from a producer to an
      * ancestor exist, only one of the shortest paths will be enumerated.
      *
-     * The enumerated {@link LinkedNode}'s contain the ancestor ({@link LinkedNode#getItem()} as well as the path
-     * through its descendents ending with the provided producer (via {@link LinkedNode#getPreviousNode()}).
+     * The enumerated {@link LinkedStack}s contain the ancestor ({@link LinkedStack#peek()} as well as the path
+     * through its descendents ending with the provided producer (the preceding elements in the stack)
      *
      * @param producer the producer whose ancestors are to be streamed
      * @param maxDepth how many generations of parents should be visited; immediate parents == 1, up to grandparents
      *                 == 2, great-grandparents == 3, etc.
      * @return a stream containing the shortest path from the producer to each ancestor
      */
-    Stream<LinkedNode<Producer<?>>> ancestors(Producer<?> producer, int maxDepth);
+    Stream<LinkedStack<Producer<?>>> ancestors(Producer<?> producer, int maxDepth);
   }
 
   /**

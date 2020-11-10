@@ -18,11 +18,14 @@ import com.linkedin.dagli.util.function.BooleanFunction2;
 import com.linkedin.dagli.util.function.IntFunction1;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 
 /**
@@ -550,6 +553,11 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
     public Graph<Object> subgraph() {
       return AbstractProducer.this.subgraph();
     }
+
+    @Override
+    public Type getResultSupertype() {
+      return AbstractProducer.this.getResultSupertype();
+    }
   }
 
   // It's possible this may be dangerous if createInternalAPI() ever did something that actually used fields on children
@@ -603,5 +611,37 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
   @Override
   public String toString() {
     return getName();
+  }
+
+  /**
+   * Gets a type that is a supertype of all results produced by this producer.
+   *
+   * Dagli provides a default implementation of this method that will attempt to use reflection to find the result type,
+   * but because generics are not (at present) reified in Java, the returned type is only guaranteed to be a supertype
+   * of the result type, quite possibly an {@link Object}, a {@link java.lang.reflect.WildcardType}, or a
+   * {@link java.lang.reflect.TypeVariable} if no more concrete, specific type can be ascertained.
+   *
+   * Overriding the default implementation is generally not necessary, but may be helpful in edge cases where the result
+   * type is generic but the producer has some way of ascertaining that type at run-time (e.g. if it depends on the
+   * input producers' result types).
+   *
+   * A naked type is considered to be a "supertype" of the corresponding parameterized type (e.g. {@code List}
+   * is considered a valid supertype of {@code List<String>}).  Additionally, the supertype of all results may be an
+   * interface, and is not strictly required to be a supertype of R (the generic type parameter that is [also] a
+   * supertype of all result instances): for example, a producer that is declared to have a {@code R = Number} result
+   * but knows that it will always produce {@code Double} instances can return {@code Double} from this method.
+   *
+   * @return a supertype of all result objects that may be produced by this producer
+   */
+  protected Type getResultSupertype() {
+    return TypeUtils.getTypeArguments(getClass(), Producer.class).entrySet()
+        .stream()
+        .filter(entry -> entry.getKey().getName().equals("R") && entry.getKey()
+            .getGenericDeclaration()
+            .equals(Producer.class))
+        .map(Map.Entry::getValue)
+        .findAny()
+        .orElseThrow(() -> new IllegalStateException(
+            "Unable to reflect this instance's Producer superinterface; this should never happen."));
   }
 }

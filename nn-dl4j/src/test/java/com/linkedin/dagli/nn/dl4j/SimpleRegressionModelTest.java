@@ -27,10 +27,10 @@ public class SimpleRegressionModelTest {
     Placeholder<Vector> vec2 = new Placeholder<>();
     Placeholder<Vector> label = new Placeholder<>();
 
-    NNDenseLayer denseLayer1A = new NNDenseLayer().withUnitCount(16).withInputFromTruncatedVector(3, vec1);
-    NNDenseLayer denseLayer2A = new NNDenseLayer().withUnitCount(16).withInputFromTruncatedVector(3, vec2);
+    NNDenseLayer denseLayer1A = new NNDenseLayer().withUnitCount(16).withInput().fromVectors(vec1);
+    NNDenseLayer denseLayer2A = new NNDenseLayer().withUnitCount(16).withInput().fromVectors(vec2);
 
-    NNDenseLayer denseLayerB = new NNDenseLayer().withInputs(denseLayer1A, denseLayer2A);
+    NNDenseLayer denseLayerB = new NNDenseLayer().withInput().fromLayers(denseLayer1A, denseLayer2A);
     NNDenseLayer denseLayerC = new NNDenseLayer().withUnitCount(3).withInput(denseLayerB);
 
     NNRegression normalizedSum = new NNRegression().withPredictionInput(denseLayerC).withLabelInput(label);

@@ -11,7 +11,7 @@ import java.util.List;
  * @param <V> the type of the arguments
  * @param <R> the type of the result
  */
-public interface TransformerVariadic<V, R> extends Transformer<R> {
+public interface TransformerVariadic<V, R> extends Transformer<R>, TransformerWithInputBound<V, R> {
 
   @Override
   TransformerVariadicInternalAPI<V, R, ? extends TransformerVariadic<V, R>> internalAPI();

@@ -24,9 +24,9 @@ import org.apache.logging.log4j.Logger;
  * Transformer that logs its inputs to assist with the debugging of a DAG.
  *
  * The result of this transformer is always its first input, unmodified.  Like any transformer, {@link Logged} must be
- * the ancestor of an output for it to be included in the DAG (and thus output anything during execution).
+ * the ancestor of an output for it to be included in the DAG (and thus log anything during execution).
  *
- * By default, the logger logs the values for the first 5 examples only.
+ * By default, only the first 5 examples are logged.
  *
  * @param <R> the type of result of the DAG, which must also be the type of the first input.
  */

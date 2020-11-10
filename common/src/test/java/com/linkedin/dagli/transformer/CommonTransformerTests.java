@@ -1,12 +1,13 @@
 package com.linkedin.dagli.transformer;
 
-import com.linkedin.dagli.distribution.DenseVectorizedDistribution;
-import com.linkedin.dagli.distribution.SparseVectorizedDistribution;
+import com.linkedin.dagli.distribution.DenseVectorFromDistribution;
+import com.linkedin.dagli.distribution.SparseVectorFromDistribution;
 import com.linkedin.dagli.evaluation.MultinomialEvaluation;
 import com.linkedin.dagli.function.FunctionResult1;
 import com.linkedin.dagli.function.FunctionResult2;
 import com.linkedin.dagli.function.FunctionResultVariadic;
 import com.linkedin.dagli.list.NgramVector;
+import com.linkedin.dagli.map.DictionaryValue;
 import com.linkedin.dagli.math.distribution.BinaryDistribution;
 import com.linkedin.dagli.math.vector.DenseDoubleArrayVector;
 import com.linkedin.dagli.math.vector.DenseFloatArrayVector;
@@ -15,7 +16,6 @@ import com.linkedin.dagli.meta.BestModel;
 import com.linkedin.dagli.meta.KFoldCrossTrained;
 import com.linkedin.dagli.meta.NullFiltered;
 import com.linkedin.dagli.meta.PreparedByGroup;
-import com.linkedin.dagli.map.DictionaryValue;
 import com.linkedin.dagli.object.Index;
 import com.linkedin.dagli.object.Max;
 import com.linkedin.dagli.object.Multiplicity;
@@ -24,17 +24,15 @@ import com.linkedin.dagli.producer.MissingInput;
 import com.linkedin.dagli.tester.Tester;
 import com.linkedin.dagli.vector.CategoricalFeatureVector;
 import com.linkedin.dagli.vector.CompositeSparseVector;
-import com.linkedin.dagli.vector.DensifiedVector;
+import com.linkedin.dagli.vector.DenseVectorFromNumbers;
 import com.linkedin.dagli.vector.LazyConcatenatedDenseVector;
 import com.linkedin.dagli.vector.LazyFilteredVector;
 import com.linkedin.dagli.vector.NearestVector;
 import com.linkedin.dagli.vector.ScoredVector;
-import com.linkedin.dagli.vector.DenseVectorFromNumbers;
 import com.linkedin.dagli.vector.TopVectorElementsByMutualInformation;
 import com.linkedin.dagli.vector.TopVectorElementsByPMI;
-import com.linkedin.dagli.vector.VectorAsDoubleArray;
+import com.linkedin.dagli.vector.DoubleArrayFromVector;
 import com.linkedin.dagli.vector.VectorSum;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,14 +60,9 @@ public class CommonTransformerTests {
 
     Tester.of(biFunctionResult).input(0, 0).output(1).test();
 
-    Tester.of(new DenseVectorizedDistribution.Prepared<>(Collections.singletonList(true)))
+    Tester.of(new DenseVectorFromDistribution.Prepared<>(Collections.singletonList(true)))
         .input(new BinaryDistribution(0.7))
         .output(DenseFloatArrayVector.wrap(0.7f))
-        .test();
-
-    Tester.of(new DensifiedVector())
-        .input(DenseFloatArrayVector.wrap(1))
-        .output(DenseFloatArrayVector.wrap(1))
         .test();
 
     Tester.of(new CategoricalFeatureVector())
@@ -92,20 +85,13 @@ public class CommonTransformerTests {
         .skipNonTrivialEqualityCheck() // TriviallyPreparable doesn't implement robust equality
         .test();
 
-    Tester.of(new BestModel<>().withCandidate(
+    Tester.of(new BestModel<>().withCandidates(
         new TriviallyPreparable<>(biFunctionResult.withInputs(new Placeholder<>(), new Placeholder<>())))
         .withEvaluator(new MultinomialEvaluation().withActualLabelInput(new Placeholder<>())::withPredictedLabelInput)
         .withSplitCount(5)
         .withSeed(0))
         .skipNonTrivialEqualityCheck() // TriviallyPreparable doesn't implement robust equality
         .input(2, 3, 4, 5, 6)
-        .test();
-
-    Long2IntOpenHashMap densificationMap = new Long2IntOpenHashMap();
-    densificationMap.defaultReturnValue(-1);
-    Tester.of(new DensifiedVector.Prepared(densificationMap))
-        .input(DenseFloatArrayVector.wrap())
-        .output(DenseFloatArrayVector.wrap())
         .test();
 
     Tester.of(
@@ -117,7 +103,7 @@ public class CommonTransformerTests {
 
     Tester.of(new CompositeSparseVector()).input(DenseFloatArrayVector.wrap(0, 1, 2)).test();
 
-    Tester.of(new SparseVectorizedDistribution()).input(new BinaryDistribution(0.5)).test();
+    Tester.of(new SparseVectorFromDistribution()).input(new BinaryDistribution(0.5)).test();
 
     Tester.of(new PreparedByGroup<>().withTransformer(new TriviallyPreparable<>(new VectorSum())))
         .input(0, DenseFloatArrayVector.wrap(3))
@@ -199,7 +185,7 @@ public class CommonTransformerTests {
         .output(2)
         .test();
 
-    Tester.of(new VectorAsDoubleArray().withIgnoredOutOfBoundsIndices().withConsistentArrayLength())
+    Tester.of(new DoubleArrayFromVector().withIgnoredOutOfBoundsIndices().withConsistentArrayLength())
         .input(new SparseFloatArrayVector(new long[] { -1, 1, 2}, new float[] { -1, 1, 2}), 1L)
         .outputTest(arr -> Arrays.equals(arr, new double[] {0, 1}))
         .test();

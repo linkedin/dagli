@@ -1,5 +1,6 @@
 package com.linkedin.dagli.util.collection;
 
+import it.unimi.dsi.fastutil.BigList;
 import it.unimi.dsi.fastutil.Size64;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
@@ -14,6 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -21,6 +24,23 @@ import java.util.function.Supplier;
  */
 public abstract class Iterables {
   private Iterables() { }
+
+  /**
+   * Convenience method for streaming the elements of the iterable.
+   *
+   * If the iterable is of a type recognized as streamable, its {@code stream()} method will be used.  Otherwise, a
+   * stream will be created using the iterable's spliterator.
+   *
+   * @param iterable the iterable to stream
+   * @param <T> the type of object contained by the iterable
+   * @return a stream over the contents of the iterable
+   */
+  public static <T> Stream<T> stream(Iterable<T> iterable) {
+    if (iterable instanceof Collection) {
+      return ((Collection<T>) iterable).stream();
+    }
+    return StreamSupport.stream(iterable.spliterator(), false);
+  }
 
   /**
    * Checks if an iterable is sorted according to the given comparator.
@@ -162,6 +182,50 @@ public abstract class Iterables {
       }
     }
     return true;
+  }
+
+  /**
+   * Gets the {@code index} item from an {@link Iterable} according to its iteration order.  Note that for some
+   * iterables (e.g. {@link java.util.HashMap}) the iteration order is not fixed.
+   *
+   * For {@link List}s and {@link BigList}s, the {@code get(...)} method (which, for "random-access" lists, is
+   * constant-time) is used.  For other iterables, the items must be iterated, requiring time linear in {@code index}.
+   * Consequently, this method should generally not be used to repeatedly fetch multiple items in, e.g. a loop.
+   *
+   * @param iterable the iterable from which an item is sought
+   * @param index the 0-based index of the desired item in the iterable's iteration order
+   * @param <T> the type of item contained in the iterable
+   * @return the required item from the iterable
+   * @throws IndexOutOfBoundsException if {@code index >= size64(iterable)}
+   * @throws NoSuchElementException if {@code index >= size64(iterable)}
+   */
+  public static <T> T get(Iterable<T> iterable, long index) {
+    if (iterable instanceof BigList) {
+      return ((BigList<T>) iterable).get(index);
+    } else if (iterable instanceof List) {
+      return ((List<T>) iterable).get(Math.toIntExact(index));
+    }
+
+    return get(iterable.iterator(), index);
+  }
+
+  /**
+   * Gets the n'th item returned by the provided iterator.
+   *
+   * The first element returned by the iterator corresponds to {@code n == 0}.
+   *
+   * @param iterator the iterator from which the given element should be obtained
+   * @param n the item to get; 0 corresponds to the first element returned by the iterator
+   * @param <T> the type of element enumerated by the iterator
+   * @return the (0-based) n'th item in the iterator
+   * @throws NoSuchElementException if the iterator contains fewer than (n+1) elements
+   */
+  public static <T> T get(Iterator<T> iterator, long n) {
+    for (long i = 0; i < n; i++) {
+      iterator.next();
+    }
+
+    return iterator.next();
   }
 
   /**
@@ -515,6 +579,28 @@ public abstract class Iterables {
     ArrayList<T> result = new ArrayList<>(iterable);
     result.set(replacementIndex, replacement);
     return result;
+  }
+
+  /**
+   * Creates a new {@link ArrayList} containing the items in the provided iterable.
+   *
+   * @param iterable the iterable whose items should be placed in the returned list
+   * @param <T> the type of item in the list
+   * @return a new {@link ArrayList} containing the items in the provided iterable
+   */
+  public static <T> ArrayList<T> newArrayList(Iterable<? extends T> iterable) {
+    return concatenate(iterable);
+  }
+
+  /**
+   * Creates a new {@link ArrayList} containing the items in the provided iterator.  This will exhaust the iterator.
+   *
+   * @param iterator the iterator whose items should be placed in the returned list
+   * @param <T> the type of item in the list
+   * @return a new {@link ArrayList} containing the items in the provided iterator
+   */
+  public static <T> ArrayList<T> newArrayList(Iterator<? extends T> iterator) {
+    return concatenate(8, iterator);
   }
 
   /**

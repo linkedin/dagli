@@ -13,6 +13,8 @@ import com.linkedin.dagli.object.Convert;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.text.token.Tokens;
 import com.linkedin.dagli.view.PreparedTransformerView;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -43,17 +45,16 @@ public class TransformerViewExample {
 
     Tokens dialogTokens = new Tokens().withTextInput(example.asDialog());
 
-    BestModel<DiscreteDistribution<String>> bestFastTextClassification =
-        new BestModel<DiscreteDistribution<String>>().withEvaluator(
-            new MultinomialEvaluation().withActualLabelInput(example.asCharacter())::withPredictedLabelInput);
+    // create a prototype for our candidate models (which will differ in epoch count)
+    FastTextClassification<String> fastTextPrototype = new FastTextClassification<String>()
+        .withLabelInput(example.asCharacter())
+        .withTokensInput(dialogTokens)
+        .withBucketCount(200000);
 
-    // define a few FastText candidate models
-    for (int epochs = 20; epochs <= 160; epochs *= 2) {
-      bestFastTextClassification = bestFastTextClassification.withCandidate(new FastTextClassification<String>().withLabelInput(example.asCharacter())
-          .withTokensInput(dialogTokens)
-          .withEpochCount(epochs)
-          .withBucketCount(200000));
-    }
+    BestModel<DiscreteDistribution<String>> bestFastTextClassification = new BestModel<DiscreteDistribution<String>>()
+        .withEvaluator(new MultinomialEvaluation().withActualLabelInput(example.asCharacter())::withPredictedLabelInput)
+        .withCandidates(
+            IntStream.of(20, 40, 80, 160).mapToObj(fastTextPrototype::withEpochCount).collect(Collectors.toList()));
 
     // cast the view to a PreparedFastTextClassification
     @SuppressWarnings("unchecked") // Java doesn't know that PreparedFastTextClassification.class can safely refer to
@@ -68,7 +69,7 @@ public class TransformerViewExample {
         .withFeaturesInput(dialogTokens);
 
     LiblinearClassification<String> predictedCharacter =
-        new LiblinearClassification<String>().withLabelInput(example.asCharacter()).withFeatureInput(embeddedFeatures);
+        new LiblinearClassification<String>().withLabelInput(example.asCharacter()).withFeaturesInput(embeddedFeatures);
 
     // Create a PreparedTransformerView, which is a very simple viewer that simply observes the prepared transformer
     // itself.  We'll use this to get the trained Liblinear classifier to we can inspect it after the DAG is trained.

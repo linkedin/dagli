@@ -3,7 +3,11 @@ package com.linkedin.dagli.vector;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.math.vector.SparseFloatArrayVector;
 import com.linkedin.dagli.math.vector.Vector;
+import com.linkedin.dagli.reducer.Reducer;
+import com.linkedin.dagli.reducer.RemoveIfUnaryReducer;
 import com.linkedin.dagli.transformer.AbstractPreparedTransformerVariadic;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.rng.core.source64.XoRoShiRo128PlusPlus;
 
@@ -14,12 +18,21 @@ import org.apache.commons.rng.core.source64.XoRoShiRo128PlusPlus;
  * vector will be stored as floats.
  */
 @ValueEquality
-public class CompositeSparseVector extends AbstractPreparedTransformerVariadic<Vector, SparseFloatArrayVector, CompositeSparseVector> {
+public class CompositeSparseVector
+    extends AbstractPreparedTransformerVariadic<Vector, Vector, CompositeSparseVector> {
   private static final long serialVersionUID = 1;
+
+  private static final List<RemoveIfUnaryReducer<Vector>> REDUCERS =
+      Collections.singletonList(new RemoveIfUnaryReducer<>());
 
   // seeds used for the position-based "hash" generator (a RNG)
   private static final long SEED1 = 0x47d288f848497589L; // arbitrary random value
   private static final long SEED2 = 0xf968177c88636faaL; // arbitrary random value
+
+  @Override
+  protected Collection<? extends Reducer<? super CompositeSparseVector>> getGraphReducers() {
+    return REDUCERS;
+  }
 
   @Override
   public SparseFloatArrayVector apply(List<? extends Vector> vectors) {

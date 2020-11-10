@@ -11,7 +11,7 @@ import com.linkedin.dagli.transformer.PreparableTransformer;
 import com.linkedin.dagli.transformer.PreparedTransformer;
 import com.linkedin.dagli.transformer.Transformer;
 import com.linkedin.dagli.tuple.Tuple;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.view.TransformerView;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.Serializable;
@@ -456,12 +456,16 @@ class DAGStructure<R> implements Serializable, Graph<Producer<?>> {
    * Returns a stream of the producers in the DAG as discovered by a breadth-first search starting from the outputs
    * (producers with a lower distance to the outputs will be returned first).
    *
-   * The producers are provided as {@link LinkedNode}s, each representing a shortest-path from that producer to one of
-   *  the DAG's outputs.  Each producer (and path to that producer) will be enumerated only once.
+   * The producers are provided as {@link LinkedStack}s, each representing a shortest-path from that producer to one of
+   * the DAG's outputs (with the top of the stack, accessible via {@link LinkedStack#peek()}, being the producer of
+   * interest, and the last/bottom element in the stack being an output node).  Each producer (and path to that
+   * producer) will be enumerated only once, even if multiple shortest-paths exist.
    *
-   * @return a stream of {@link LinkedNode}s representing paths to each connected producer in the DAG
+   * {@link Placeholder}s that are disconnected from the outputs will not be included in the returned stream.
+   *
+   * @return a stream of {@link LinkedStack}s representing paths to each connected producer in the DAG
    */
-  public Stream<LinkedNode<Producer<?>>> producers() {
+  public Stream<LinkedStack<Producer<?>>> producers() {
     return Producer.subgraphProducers(_outputs);
   }
 

@@ -5,6 +5,7 @@ import com.linkedin.dagli.handle.ProducerHandle;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.reducer.ClassReducerTable;
 import com.linkedin.dagli.reducer.Reducer;
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 
@@ -115,4 +116,26 @@ public interface ProducerInternalAPI<R, S extends Producer<R>> {
    *         available
    */
   Graph<Object> subgraph();
+
+  /**
+   * Gets a type that is a supertype of all results produced by this producer.
+   *
+   * Dagli provides a default implementation of this method that will attempt to use reflection to find the result type,
+   * but because generics are not (at present) reified in Java, the returned type is only guaranteed to be a supertype
+   * of the result type, quite possibly an {@link Object}, a {@link java.lang.reflect.WildcardType}, or a
+   * {@link java.lang.reflect.TypeVariable} if no more concrete, specific type can be ascertained.
+   *
+   * Overriding the default implementation is generally not necessary, but may be helpful in edge cases where the result
+   * type is generic but the producer has some way of ascertaining that type at run-time (e.g. if it depends on the
+   * input producers' result types).
+   *
+   * A naked type is considered to be a "supertype" of the corresponding parameterized type (e.g. {@code List}
+   * is considered a valid supertype of {@code List<String>}).  Additionally, the supertype of all results may be an
+   * interface, and is not strictly required to be a supertype of R (the generic type parameter that is [also] a
+   * supertype of all result instances): for example, a producer that is declared to have a {@code R = Number} result
+   * but knows that it will always produce {@code Double} instances can return {@code Double} from this method.
+   *
+   * @return a supertype of all result objects that may be produced by this producer
+   */
+  Type getResultSupertype();
 }

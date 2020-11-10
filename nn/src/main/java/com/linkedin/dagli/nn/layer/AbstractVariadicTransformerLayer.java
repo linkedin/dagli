@@ -1,6 +1,5 @@
 package com.linkedin.dagli.nn.layer;
 
-import com.linkedin.dagli.util.collection.Iterables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,13 +20,13 @@ abstract class AbstractVariadicTransformerLayer<I, R, S extends AbstractVariadic
   private List<NNLayer<I, ? extends NonTerminalLayer>> _inputLayers = Collections.emptyList();
 
   /**
-   * @param layers the additional input layers to be added
-   * @return a copy of this layer that will accept the provided input layers <strong>in addition to</strong> any
-   *         existing existing input layers
+   * @param layers the input layers to this instance
+   * @return a copy of this layer that will accept the provided input layers, replacing any previously-specified input
+   *         layers
    */
-  protected S withAdditionalInputs(NNLayer<I, ? extends NonTerminalLayer>[] layers) {
-    return clone(
-        c -> ((AbstractVariadicTransformerLayer<I, ?, ?>) c)._inputLayers = Iterables.append(getInputLayers(), layers));
+  @SafeVarargs
+  public final S withInputs(NNLayer<I, ? extends NonTerminalLayer>... layers) {
+    return withInputs(Arrays.asList(layers));
   }
 
   /**
@@ -35,10 +34,8 @@ abstract class AbstractVariadicTransformerLayer<I, R, S extends AbstractVariadic
    * @return a copy of this layer that will accept the provided input layers, replacing any previously-specified input
    *         layers
    */
-  @SafeVarargs
-  public final S withInputs(NNLayer<I, ? extends NonTerminalLayer>... layers) {
-    return clone(
-        c -> ((AbstractVariadicTransformerLayer<I, ?, ?>) c)._inputLayers = new ArrayList<>(Arrays.asList(layers)));
+  public S withInputs(List<? extends NNLayer<I, ? extends NonTerminalLayer>> layers) {
+    return clone(c -> ((AbstractVariadicTransformerLayer<I, ?, ?>) c)._inputLayers = new ArrayList<>(layers));
   }
 
   @Override

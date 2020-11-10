@@ -3,56 +3,60 @@ package com.linkedin.dagli.vector;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.list.VariadicList;
 import com.linkedin.dagli.math.vector.DenseFloatArrayVector;
-import com.linkedin.dagli.math.vector.Vector;
+import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.producer.Producer;
-import com.linkedin.dagli.transformer.AbstractPreparedTransformer1WithInput;
+import com.linkedin.dagli.transformer.AbstractPreparedTransformer1;
+import com.linkedin.dagli.util.collection.Iterables;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
  * Averages the inputted vectors as arguments, producing a dense vector which is the result of finding the mean of each
  * element.  So, for example, applying this to the vectors [0, 1, 2, 3] and [4, 5, 6] yields [2, 3, 4, 1.5].
  *
- * Because this transformer produces a DenseFloatArrayVector, inputting vectors with element indices less than 0 or
- * greater than 2^31 - 1 elements will result in an exception.
+ * The non-zero element indices of the input vectors must be less than {@link Integer#MAX_VALUE}.
  */
 @ValueEquality
-public class AveragedDenseVector extends
-    AbstractPreparedTransformer1WithInput<Iterable<? extends Vector>, DenseFloatArrayVector, AveragedDenseVector> {
+public class AveragedDenseVector
+    extends AbstractPreparedTransformer1<Iterable<? extends DenseVector>, DenseVector, AveragedDenseVector> {
   private static final long serialVersionUID = 1;
 
   /**
-   * Specifies which (variadic) inputs will be used.
-   *
-   * Under the hood, this method uses a VariadicList to transform these inputs into a List<Vector>, which is then the
-   * direct input to AveragedDenseVector.
-   *
-   * @param inputs the (variadic) inputs providing the vectors to be averaged
-   * @return a new AveragedDenseVector that will use the provided inputs
+   * @param inputs the inputs provided the (dense) vectors to average
+   * @return a copy of this transformer that will average the vectors provided by the given inputs
    */
   @SafeVarargs
-  public final AveragedDenseVector withInputs(Producer<? extends Vector>... inputs) {
-    return withInput(new VariadicList<Vector>().withInputs(inputs));
+  public final AveragedDenseVector withInputs(Producer<? extends DenseVector>... inputs) {
+    return withInputs(Arrays.asList(inputs));
+  }
+
+  /**
+   * @param inputs the inputs provided the (dense) vectors to average
+   * @return a copy of this transformer that will average the vectors provided by the given inputs
+   */
+  public AveragedDenseVector withInputs(List<Producer<? extends DenseVector>> inputs) {
+    return withInputList(new VariadicList<>(inputs));
+  }
+
+  /**
+   * @param input the input providing an iterable of (dense) vectors to average
+   * @return a copy of this transformer that will average the vectors provided by the given input
+   */
+  public AveragedDenseVector withInputList(Producer<? extends Iterable<? extends DenseVector>> input) {
+    return withInput1(input);
   }
 
   @Override
-  public DenseFloatArrayVector apply(Iterable<? extends Vector> values) {
-    long maxElementIndex = -1;
+  public DenseFloatArrayVector apply(Iterable<? extends DenseVector> values) {
+    long requiredCapacity = Iterables.stream(values).mapToLong(DenseVector::capacity).max().orElse(0);
 
-    for (Vector v : values) {
-      maxElementIndex = Math.max(maxElementIndex, v.maxNonZeroElementIndex().orElse(-1));
-    }
+    DenseFloatArrayVector result = DenseFloatArrayVector.wrap(new float[Math.toIntExact(requiredCapacity)]);
+    values.forEach(result::addInPlace);
 
-    // still do the sum, even if maxElementIndex == -1 (in which case we still want to check that no negative index
-    // elements are present in the input)
-    long vectorCount = 0;
-    DenseFloatArrayVector result = DenseFloatArrayVector.wrap(new float[Math.toIntExact(maxElementIndex + 1)]);
-    for (Vector v : values) {
-      vectorCount++;
-      result.addInPlace(v);
-    }
-
-    if (vectorCount > 0) {
-      result.multiplyInPlace(1.0 / vectorCount);
+    long count = Iterables.size64(values);
+    if (count > 0) {
+      result.multiplyInPlace(1.0 / count);
     }
     return result;
   }

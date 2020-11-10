@@ -3,12 +3,16 @@ package com.linkedin.dagli.liblinear;
 import com.jeffreypasternack.liblinear.Model;
 import com.jeffreypasternack.liblinear.SolverType;
 import com.linkedin.dagli.annotation.equality.ValueEquality;
+import com.linkedin.dagli.generator.Constant;
+import com.linkedin.dagli.input.DenseFeatureVectorInput;
+import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.math.vector.Vector;
+import com.linkedin.dagli.producer.MissingInput;
 import com.linkedin.dagli.producer.Producer;
-import com.linkedin.dagli.transformer.AbstractPreparableTransformer2;
-import com.linkedin.dagli.transformer.AbstractPreparedTransformer2;
-import com.linkedin.dagli.transformer.PreparedTransformer2;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import com.linkedin.dagli.transformer.AbstractPreparableTransformer3;
+import com.linkedin.dagli.transformer.AbstractPreparedTransformer3;
+import com.linkedin.dagli.transformer.PreparedTransformer3;
+import com.linkedin.dagli.vector.DensifiedVector;
 import java.util.function.Supplier;
 
 
@@ -20,9 +24,14 @@ import java.util.function.Supplier;
  * @param <N> The type of the prepared (trained) liblinear transformer
  * @param <S> The type of the derived class
  */
-abstract class AbstractLiblinearTransformer<L, R, N extends PreparedTransformer2<L, Vector, R>, S extends AbstractLiblinearTransformer<L, R, N, S>>
-    extends AbstractPreparableTransformer2<L, Vector, R, N, S> {
+abstract class AbstractLiblinearTransformer<
+    L,
+    R,
+    N extends PreparedTransformer3<Number, L, DenseVector, R>,
+    S extends AbstractLiblinearTransformer<L, R, N, S>>
+    extends AbstractPreparableTransformer3<Number, L, DenseVector, R, N, S> {
 
+  // Inputs: [per-example weight, not yet implemented], [label], [features]
   private static final long serialVersionUID = 1;
 
   protected double _bias = 1;
@@ -33,6 +42,11 @@ abstract class AbstractLiblinearTransformer<L, R, N extends PreparedTransformer2
   protected boolean _silent = false;
   protected int _threadCount = 1;
 
+  protected AbstractLiblinearTransformer() {
+    // the first input is reserved for future use as a per-example weight
+    super(new Constant<>(1.0), MissingInput.get(), MissingInput.get());
+  }
+
   /**
    * Specifies the label to use.  Depending on the cardinality of the set of unique labels provided the model will
    * be binary or multinomial.
@@ -41,17 +55,24 @@ abstract class AbstractLiblinearTransformer<L, R, N extends PreparedTransformer2
    * @return a copy of this instance that will use the specified labels
    */
   public S withLabelInput(Producer<? extends L> labelInput) {
-    return clone(c -> c._input1 = labelInput);
+    return withInput2(labelInput);
   }
 
   /**
    * Specifies the features to use (expressed as feature vectors).
    *
-   * @param featureInput the features to use
+   * @param featuresInput the features to use
    * @return a copy of this instance that will use the specified features
    */
-  public S withFeatureInput(Producer<? extends Vector> featureInput) {
-    return clone(c -> c._input2 = featureInput);
+  public S withFeaturesInput(Producer<? extends Vector> featuresInput) {
+    return withInput3(DensifiedVector.densifyIfSparse(featuresInput));
+  }
+
+  /**
+   * @return an input configurator for the feature vector input of this transformer
+   */
+  public DenseFeatureVectorInput<S> withFeaturesInput() {
+    return new DenseFeatureVectorInput<>(this::withInput3);
   }
 
   protected <T extends AbstractLiblinearTransformer<L, ?, ?, ?>> T copyTo(Supplier<T> newInstanceSupplier) {
@@ -180,26 +201,22 @@ abstract class AbstractLiblinearTransformer<L, R, N extends PreparedTransformer2
    */
   @ValueEquality
   protected static abstract class Prepared<L, R, S extends Prepared<L, R, S>>
-      extends AbstractPreparedTransformer2<L, Vector, R, Prepared<L, R, S>> {
+      extends AbstractPreparedTransformer3<Number, L, DenseVector, R, Prepared<L, R, S>> {
 
     private static final long serialVersionUID = 1;
 
     protected final double _bias;
-    protected final Long2IntOpenHashMap _featureIDMap;
     protected final Model _model;
+    protected final int _featureCount; // the number of features, excluding the bias
 
     Model getModel() {
       return _model;
     }
 
-    Long2IntOpenHashMap getFeatureIDMap() {
-      return _featureIDMap;
-    }
-
-    Prepared(double bias, Model model, Long2IntOpenHashMap featureIDMap) {
+    Prepared(double bias, Model model, int featureCount) {
       _bias = bias;
       _model = model;
-      _featureIDMap = featureIDMap;
+      _featureCount = featureCount;
     }
   }
 }

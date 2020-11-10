@@ -1,6 +1,9 @@
 package com.linkedin.dagli.vector;
 
 import com.linkedin.dagli.annotation.equality.ValueEquality;
+import com.linkedin.dagli.input.SparseFeatureVectorInput;
+import com.linkedin.dagli.math.vector.Vector;
+import com.linkedin.dagli.math.vector.VectorElement;
 import com.linkedin.dagli.preparer.AbstractStreamPreparer2;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResult;
@@ -8,8 +11,6 @@ import com.linkedin.dagli.producer.MissingInput;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.transformer.AbstractPreparableTransformer2;
 import com.linkedin.dagli.transformer.PreparedTransformer2;
-import com.linkedin.dagli.math.vector.Vector;
-import com.linkedin.dagli.math.vector.VectorElement;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
@@ -65,6 +66,13 @@ public class TopVectorElementsByMutualInformation
    */
   public TopVectorElementsByMutualInformation withVectorInput(Producer<? extends Vector> vectorInput) {
     return clone(c -> c._input2 = vectorInput);
+  }
+
+  /**
+   * @return an input configurator for the vector input of this transformer
+   */
+  public SparseFeatureVectorInput<TopVectorElementsByMutualInformation> withVectorInput() {
+    return new SparseFeatureVectorInput<>(this::withVectorInput);
   }
 
   /**

@@ -4,12 +4,13 @@ import com.linkedin.dagli.dag.DAGTransformer;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.reducer.Reducer;
 import com.linkedin.dagli.util.cloneable.AbstractCloneable;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.util.exception.Exceptions;
-import com.linkedin.dagli.util.collection.LinkedNode;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +51,7 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
    * A list of testers for the reduced DAG.  Each tester will receive the stream of producers retrieved by the
    * {@code producers()} method on the reduced DAG and should return true if it is as expected.
    */
-  final List<Predicate<Stream<LinkedNode<Producer<?>>>>> _reductionTesters = new ArrayList<>();
+  final List<Predicate<Stream<LinkedStack<Producer<?>>>>> _reductionTesters = new ArrayList<>();
 
   /**
    * True if all outputs tested (for generators) or the outputs corresponding to every input (for child nodes like
@@ -62,6 +63,8 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
    * True if {@link Producer#validate()} should not be used to validate producers.
    */
   boolean _skipValidation = false;
+
+  Type _resultSupertype = null;
 
   /**
    * Creates a new instance that will test the provided Dagli node.
@@ -101,6 +104,20 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
   @SuppressWarnings("unchecked")
   public S notEqualTo(T other) {
     _nonEquivalents.add(other);
+    return (S) this;
+  }
+
+  /**
+   * Adds a check to verify that the tested producer's reported result supertype <strong>exactly</strong> matches the
+   * provided type.  Most implementations use Dagli's default implementation for determining the result supertype, so
+   * testing is generally only required when this implementation is overridden.
+   *
+   * @param supertype the result supertype that should be reported by the producer
+   * @return this instance
+   */
+  @SuppressWarnings("unchecked")
+  public S resultSupertype(Type supertype) {
+    _resultSupertype = supertype;
     return (S) this;
   }
 
@@ -231,7 +248,7 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
    * should return true if the producers in the reduced DAG are as expected.
    */
   @SuppressWarnings("unchecked")
-  public S reductionTest(Predicate<Stream<LinkedNode<Producer<?>>>> reductionTester) {
+  public S reductionTest(Predicate<Stream<LinkedStack<Producer<?>>>> reductionTester) {
     _reductionTesters.add(reductionTester);
     return (S) this;
   }
@@ -324,6 +341,13 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
     // check for invalid names
     assertTrue(!isNullOrEmpty(_testSubject.getShortName()), "A producer's short name must not be null or empty");
     assertTrue(!isNullOrEmpty(_testSubject.getName()), "A producer's name must not be null or empty");
+
+    // check the reported result supertype
+    Type resultSupertype = Producer.getResultSupertype(_testSubject);
+    assertTrue(resultSupertype != null, "The producer erroneously reports a null result supertype");
+    if (_resultSupertype != null) {
+      assertEquals(_resultSupertype, resultSupertype, "The expected and reported result supertypes do not match");
+    }
   }
 
   private static boolean isNullOrEmpty(String str) {

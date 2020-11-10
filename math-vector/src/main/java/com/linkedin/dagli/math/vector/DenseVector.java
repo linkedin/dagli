@@ -9,7 +9,10 @@ package com.linkedin.dagli.math.vector;
  */
 public interface DenseVector extends Vector {
   /**
-   * The current capacity of the dense vector.  This will always be at least {@link #maxNonZeroElementIndex()} + 1.
+   * The current capacity of the dense vector.  This will always be at least {@link #maxNonZeroElementIndex()} + 1, and
+   * the closer the reported capacity is to this value, the better: callers will often use capacity as a cheap, O(1)
+   * method for approximating {@link #maxNonZeroElementIndex()}.
+   *
    * Accessing the values of elements at indices 0...capacity()-1 must be a O(1) (constant time) operation.
    *
    * Implementations of this method should have O(1) time complexity.

@@ -1,0 +1,7 @@
+dependencies {
+    api project(':math-distribution')
+    api project(':math-hashing')
+    api project(':math-mdarray')
+    api project(':math-number')
+    api project(':math-vector')
+}

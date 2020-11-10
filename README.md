@@ -1,5 +1,7 @@
 # Dagli
 
+[![Maven badge](https://maven-badges.herokuapp.com/maven-central/com.linkedin.dagli/core/badge.svg)](https://search.maven.org/search?q=g:com.linkedin.dagli)
+
 Dagli is a machine learning framework that makes it easy to write bug-resistant, readable, efficient, maintainable and 
 trivially deployable models in [Java 9+](documentation/java.md) (and other JVM languages).
 
@@ -13,17 +15,16 @@ regression classifier:
     
     NgramVector unigramFeatures = new NgramVector().withMaxSize(1).withInput(tokens);
     Producer<Vector> leafFeatures = new XGBoostClassification<>()
-        .withSparseFeatureInput(unigramFeatures)
+        .withFeaturesInput().fromVectors(unigramFeatures)
         .withLabelInput(label)
         .asLeafFeatures();
 
     NgramVector ngramFeatures = new NgramVector().withMaxSize(3).withInput(tokens);
-    CompositeSparseVector combinedFeatures = 
-        new CompositeSparseVector().withInputs(ngramFeatures, leafFeatures);
-    LiblinearClassification<String> prediction = 
-        new LiblinearClassification<String>().withFeatureInput(combinedFeatures).withLabelInput(label);
+    LiblinearClassification<LabelType> prediction = new LiblinearClassification<LabelType>()
+        .withFeaturesInput().fromVectors(ngramFeatures, leafFeatures)
+        .withLabelInput(label);
 
-    DAG2x1.Prepared<String, LabelType, DiscreteDistribution<String>> trainedModel = 
+    DAG2x1.Prepared<String, LabelType, DiscreteDistribution<LabelType>> trainedModel = 
         DAG.withPlaceholders(text, label).withOutput(prediction).prepare(textList, labelList);
     
     LabelType predictedLabel = trainedModel.apply("Some text for which to predict a label", null);
@@ -35,14 +36,20 @@ performance, and much more.  You can find demonstrations of these among the
 [many code examples provided with Dagli](documentation/examples.md).    
 
 # Maven Coordinates
-Dagli is [split into a number of modules](documentation/modules.md); just add dependencies on those you need in your 
+Dagli is [split into a number of modules](documentation/modules.md) that are published to 
+[Maven Central](https://search.maven.org/search?q=g:com.linkedin.dagli); just add dependencies on those you need in your 
 project.  For example, the dependencies for our above introductory example might look like this in Gradle:
 
-    implementation 'com.linkedin.dagli:core:14.0.0-beta2'              // every project using Dagli should include this
-    implementation 'com.linkedin.dagli:common:14.0.0-beta2'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
-    implementation 'com.linkedin.dagli:text-tokenization:14.0.0-beta2' // the text tokenization transformer ("Tokens")
-    implementation 'com.linkedin.dagli:liblinear:14.0.0-beta2'         // the Dagli Liblinear classification model
-    implementation 'com.linkedin.dagli:xgboost:14.0.0-beta2'           // the Dagli XGBoost classification and regression models
+    implementation 'com.linkedin.dagli:core:15.0.0-beta3'              // every project using Dagli should include this
+    implementation 'com.linkedin.dagli:common:15.0.0-beta3'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
+    implementation 'com.linkedin.dagli:text-tokenization:15.0.0-beta3' // the text tokenization transformer ("Tokens")
+    implementation 'com.linkedin.dagli:liblinear:15.0.0-beta3'         // the Dagli Liblinear classification model
+    implementation 'com.linkedin.dagli:xgboost:15.0.0-beta3'           // the Dagli XGBoost classification and regression models
+    
+If you're in a hurry, you can instead add a dependency on `all` (though training neural networks will still 
+[require a few platform-specific dependencies](examples/neural-network/build.gradle)):
+
+    implementation 'com.linkedin.dagli:all:15.0.0-beta3'  // not recommended for production due to classpath bloat 
     
 # Benefits
 - Write your machine learning pipeline as a directed acyclic graph (DAG) **once** for both training and inference.  No 
@@ -98,12 +105,9 @@ Probably the easiest way to get a feel for how Dagli models are written and used
 but--combined with explanatory comments for almost every step--these can be an excellent pedagogic tool.
 
 # Finding the Right Transformer
-Dagli includes a large and growing library of transformers; unfortunately, this can sometimes make it challenging to 
-find one that does what you want.
-
-Other than the [examples](documentation/examples.md), the [module summary](documentation/modules.md) should give you a 
-good idea of where to look.  We plan to eventually catalog available transformers in a more comprehensive way to make 
-discovery more straightforward.
+Dagli includes a large and growing library of transformers.  Other than the [examples](documentation/examples.md), the 
+[module summary](documentation/modules.md) should give you a good idea of where to look.  In the future a "transformer
+catalog" will make discovery more straightforward.
 
 # Adding New Transformers
 If an existing transformer doesn't do what you want, you can often wrap an existing function/method with a 
@@ -117,39 +121,43 @@ If an existing transformer doesn't do what you want, you can often wrap an exist
 - [Usage and Creation of Transformers](documentation/transformers.md)
 - [@Structs](documentation/structs.md)
 - [Using Avro Data with Dagli](documentation/avro.md)
-- [Planned Improvements](documentation/todo.md)
 
 # Alternative ML Solutions
 
-Dagli provides Java (and JVM) developers with a way to easily define readable, reusable, bug-resistant models and train
-them efficiently on modern multicore machines.
+Dagli lets Java (and JVM) developers easily define readable, reusable, bug-resistant models and train them efficiently on 
+modern multicore, GPU-equipped machines.
 
 Of course, there is no "one size fits all" ML framework.  Dagli provides a layer-oriented API for defining novel neural
-networks, but for complex or cutting-edge architectures, TensorFlow, PyTorch, DeepLearning4J or others may be better 
-options (Dagli supports the integration of arbitrary DeepLearning4J architectures into the model pipeline 
+networks, but for unusual architectures or cutting-edge research, TensorFlow, PyTorch, DeepLearning4J and others may be 
+better options (Dagli supports the integration of arbitrary DeepLearning4J architectures into the model pipeline 
 out-of-the-box, and, for example, pre-trained TensorFlow models can also be incorporated with a custom wrapper.)
 
-Similarly, while Dagli models have been trained with *billions* of examples, extremely large scaling across multiple 
-machines may be better served by platforms such as Hadoop, Spark, and Kubeflow.  Hadoop/Hive/Spark/Presto/etc. are 
-of course commonly used to pull data to train and evaluate Dagli models, but it is also quite possible to, e.g. create
+Similarly, while Dagli models have been trained with *billions* of examples, extremely large scale training across 
+multiple machines may be better served by platforms such as Hadoop, Spark, and Kubeflow.  Hadoop/Hive/Spark/Presto/etc. 
+are of course commonly used to pull data to train and evaluate Dagli models, but it is also very feasible to, e.g. create
 custom UDFs that train, evaluate or apply Dagli models.  
 
 [Further discussion comparing extant pipelined and joint modeling wth Dagli](documentation/comparison.md).
 
 
-# Versioning
-Our initial public release was `14.0.0-beta1`, with the "beta" designation motivated by the extensive changes relative to 
-the previous (LinkedIn-internal) version and the greater diversity of applications entailed by a public release.
-
-While in beta, releases with potentially breaking API or serialization changes will be accompanied by a major version 
-increment (e.g. `15.0.0-beta1`).  However, after the beta designation is removed, subsequent revisions will be backward
-compatible, allowing large projects to transitively depend on multiple versions of Dagli without dependency shading (with
-the *possible* exception of modules with non-backward-compatible external dependencies).
-
 ## Version History
+- `15.0.0-beta3`: *11/9/20*: Input Configurators and `MermaidVisualization`
+    - This is a major version increment and may not be compatible with models from 14.*
+    - Input configurators for more convenient, readable configuring of transformer inputs; e.g., 
+      `new LiblinearClassification<LabelType>().withFeaturesInput().fromNumbers(numberInput1, numberInput2...)...`
+    - New graph visualizer for rendering Dagli graphs as Mermaid markup
+    - [Full list of improvements](documentation/v15.0.0-beta3.md)
 - `14.0.0-beta2` *9/27/20*: update dependency metadata to prevent the annotation processors' dependencies from 
   transitively leaking into the client's classpath  
 - `14.0.0-beta1`: initial public release
+
+# Versioning Policy
+Dagli's current public release is designated as "beta" due to extensive changes relative to previous 
+(LinkedIn-internal) releases and the greater diversity of applications entailed by a public release. 
+
+While in beta, releases with potentially breaking API or serialization changes will be accompanied by a major version 
+increment (e.g. `14.0.0-beta2` to `15.0.0-beta3`).  After the beta period concludes, subsequent revisions will be backward
+compatible to allow large projects to depend on multiple versions of Dagli without dependency shading.
 
 # License
 Copyright 2020 LinkedIn Corporation.  All Rights Reserved.

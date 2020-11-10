@@ -62,7 +62,7 @@ public class XGBoostExample {
 
     // Now configure our XGBoost classifier (a gradient boosted decision tree model):
     XGBoostClassification<String> classification =
-        new XGBoostClassification<String>().withLabelInput(example.asCharacter()).withFeatureInput(denseFeatures);
+        new XGBoostClassification<String>().withLabelInput(example.asCharacter()).withFeaturesInput(denseFeatures);
 
     // Our classification result is a distribution over possible characters; we just want the most likely:
     MostLikelyLabelFromDistribution<String> mostLikelyCharacter =

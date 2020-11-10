@@ -19,7 +19,6 @@ import com.linkedin.dagli.text.token.Tokens;
 import com.linkedin.dagli.vector.ManyHotVector;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,7 +74,7 @@ public abstract class ComputationGraphExample {
    * @param arguments empty array, or a single-element array with the path to which to write the model.  If this file
    *                  already exists the program will immediately terminate rather than overwrite it.
    */
-  public static void main(String[] arguments) throws IOException, URISyntaxException {
+  public static void main(String[] arguments) throws IOException {
     Configurator.setRootLevel(Level.INFO); // set the log level so we'll see progress updates as the NN trains
 
     // Get the model path, verify that it doesn't exist yet, and create the model file:
@@ -259,7 +258,7 @@ public abstract class ComputationGraphExample {
     // ideal but should have minimal practical impact.
     CustomNeuralNetwork neuralNetwork = new CustomNeuralNetwork().withComputationGraph(graph)
         .withFeaturesInputFromNumberSequence("tokenIndices", tokenIndices, maxTokenLength, DataType.INT64)
-        .withLabelInputFromVector("classification", new ManyHotVector().withNumbersAsInput(labelIndex), maxLabels,
+        .withLabelInputFromVector("classification", new ManyHotVector().withInputs(labelIndex), maxLabels,
             DataType.FLOAT)
         .withMaxEpochs(50);
 

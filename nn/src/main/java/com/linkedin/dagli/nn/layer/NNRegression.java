@@ -61,6 +61,13 @@ public class NNRegression extends AbstractVectorLossLayer<DenseVector, NNRegress
   }
 
   /**
+   * @return a configurator that will configure the prediction input to this layer
+   */
+  public DenseLayerInput<NNRegression> withPredictionInput() {
+    return new DenseLayerInput<>(this::withPredictionInput);
+  }
+
+  /**
    * Returns a copy of this instance that will use the specified loss function.  The default loss function is
    * {@link SquaredErrorLoss}.
    *

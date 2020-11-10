@@ -35,7 +35,7 @@ public class TruncatedList<T>
     return Collections.singleton((target, context) -> {
       Integer targetMaxSize = (Integer) Constant.tryGetValue(context.getParents(target).get(1));
       if (targetMaxSize != null) {
-        TruncatedList truncatedParent = context.getParentByClass(target, TruncatedList.class);
+        TruncatedList<T> truncatedParent = context.getParentByClass(target, TruncatedList.class);
         if (truncatedParent != null) {
           Integer parentMaxSize = (Integer) Constant.tryGetValue(context.getParents(truncatedParent).get(1));
           if (parentMaxSize != null) {

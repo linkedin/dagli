@@ -13,6 +13,7 @@ dependencies {
   api project(':util')
   api project(':annotation')
 
+  implementation project.ext.dependencies.'commons-lang'
   implementation project.ext.dependencies.'log4j2-api'
   implementation project.ext.dependencies.'fastutil'
   implementation project.ext.dependencies.concurrentli

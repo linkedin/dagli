@@ -4,7 +4,7 @@ import com.linkedin.dagli.dag.DAG;
 import com.linkedin.dagli.dag.DAG1x1;
 import com.linkedin.dagli.data.dsv.DSVReader;
 import com.linkedin.dagli.distribution.MostLikelyLabelFromDistribution;
-import com.linkedin.dagli.distribution.SparseVectorizedDistribution;
+import com.linkedin.dagli.distribution.SparseVectorFromDistribution;
 import com.linkedin.dagli.evaluation.MultinomialEvaluation;
 import com.linkedin.dagli.evaluation.MultinomialEvaluationResult;
 import com.linkedin.dagli.function.FunctionResult1;
@@ -26,6 +26,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.csv.CSVFormat;
 
 
@@ -251,21 +253,15 @@ public abstract class ComplexModelExample {
         // model.  Please see the Javadoc on the BestModel and PreparationDataInferenceMode classes for more
         // information.  Incidentally, the related KFoldCrossTrained transformer can be used to cross-train a single
         // model without model selection, which can be useful for the same reason.
-        .withPreparationDataInferenceMode(BestModel.PreparationDataInferenceMode.CROSS_INFERENCE);
-
-
-    // Let's try a few maximum ngram sizes.  Conveniently, we can create them with a loop like this:
-    for (int maxNgramSize = 4; maxNgramSize <= 8; maxNgramSize += 2) {
-      // withCandidate(...) adds a candidate model for consideration and returns a new BestModel instance with it added
-      // (remember that all Dagli nodes--including BestModel--are immutable)
-      bestFastTextClassification = bestFastTextClassification.withCandidate(
-          fastTextClassification.withMaxWordNgramLength(maxNgramSize));
-    }
+        .withPreparationDataInferenceMode(BestModel.PreparationDataInferenceMode.CROSS_INFERENCE)
+        // Try a few variants of our FastText classifier with differing maximum ngram sizes as our candidate models:
+        .withCandidates(IntStream.of(4, 6, 8).mapToObj(fastTextClassification::withMaxWordNgramLength).collect(
+            Collectors.toList()));
 
     // bestFastTextClassification produces a discrete distribution over our labels, but what we really want is a feature
     // vector we can feed to a downstream model.  SparseVectorizedDistribution converts a distribution to a vector:
-    SparseVectorizedDistribution fastTextFeatures =
-        new SparseVectorizedDistribution().withInput(bestFastTextClassification);
+    SparseVectorFromDistribution fastTextFeatures =
+        new SparseVectorFromDistribution().withInput(bestFastTextClassification);
 
     // We'd also like to create two additional, simple features:
     // (1) the String length of the line of dialog:
@@ -288,7 +284,7 @@ public abstract class ComplexModelExample {
 
     // The final classification will be determined by XGBoost (boosted decision trees) using our combined features:
     XGBoostClassification<String> finalClassification = new XGBoostClassification<String>()
-        .withFeatureInput(features)
+        .withFeaturesInput(features)
         .withLabelInput(characterDialog.asCharacter());
 
     // Our classification is actually a distribution over possible characters; we just need the most likely:

@@ -85,22 +85,23 @@ public class LiblinearClassifierTest {
     Placeholder<DenseFloatArrayVector> vecPlaceholder = new Placeholder<>("Vector");
     LiblinearClassification<Integer> liblinear = new LiblinearClassification<Integer>()
         .withLabelInput(intPlaceholder)
-        .withFeatureInput(vecPlaceholder)
+        .withFeaturesInput(vecPlaceholder)
         .withLikelihoodVersusRegularizationLossMultiplier(1)
         .withBias(1);
 
-    Tester.of(liblinear).input(1, DenseFloatArrayVector.wrap(4)).test();
+    Tester.of(liblinear).input(1.0, 1, DenseFloatArrayVector.wrap(4)).test();
 
     LiblinearClassification.Prepared<Integer> prepared = liblinear.internalAPI()
         .prepare(new LocalDAGExecutor().withMaxThreads(1),
+            trainingData.stream().map(whatever -> 1).collect(Collectors.toList()), // weights (currently not used)
             trainingData.stream().map(Tuple2::get0).collect(Collectors.toList()),
             trainingData.stream().map(Tuple2::get1).collect(Collectors.toList()))
         .getPreparedTransformerForNewData();
 
-    Tester.of(prepared).input(1, DenseFloatArrayVector.wrap(4)).test();
+    Tester.of(prepared).input(1.0, 1, DenseFloatArrayVector.wrap(4)).test();
 
     for (Tuple2<Integer, DenseFloatArrayVector> pair : evalData) {
-      assertEquals(pair.get0(), prepared.apply(pair.get0(), pair.get1()).max().get().getLabel());
+      assertEquals(pair.get0(), prepared.apply(1, pair.get0(), pair.get1()).max().get().getLabel());
     }
 
     return prepared;

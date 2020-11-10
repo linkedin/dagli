@@ -15,6 +15,9 @@ import java.util.Locale;
 /**
  * In this example we predict the character who uttered a given line of dialog from a Shakespearean play using logistic
  * regression over Word2Vec pretrained embeddings.
+ *
+ * This example will not run successfully without a Word2Vec data file in your resource path!  This can be easily
+ * downloaded--please see the Javadoc for {@link Word2VecEmbedding} for details.
  */
 public class LiblinearAndWord2VecExample {
   private LiblinearAndWord2VecExample() { }
@@ -48,7 +51,7 @@ public class LiblinearAndWord2VecExample {
         .withInput(dialogTokens);
 
     // Average all the embeddings of the individual word/phrases
-    AveragedDenseVector averagedEmbedding = new AveragedDenseVector().withInput(embeddings);
+    AveragedDenseVector averagedEmbedding = new AveragedDenseVector().withInputList(embeddings);
 
     // Aalso use the average token length as a feature:
     AverageTokenLength averageTokenLength = new AverageTokenLength().withInput(dialogTokens);
@@ -62,7 +65,7 @@ public class LiblinearAndWord2VecExample {
 
     // Now configure our liblinear logistic regression / max entropy model:
     LiblinearClassification<String> classification =
-        new LiblinearClassification<String>().withLabelInput(example.asCharacter()).withFeatureInput(features);
+        new LiblinearClassification<String>().withLabelInput(example.asCharacter()).withFeaturesInput(features);
 
     // our classification result is a distribution over possible characters; we just want the most likely:
     MostLikelyLabelFromDistribution<String> mostLikelyCharacter =

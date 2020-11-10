@@ -5,7 +5,7 @@ package com.linkedin.dagli.transformer;
 import com.linkedin.dagli.transformer.internal.Transformer3InternalAPI;
 
 
-public interface Transformer3<A, B, C, R> extends Transformer<R> {
+public interface Transformer3<A, B, C, R> extends Transformer<R>, TransformerWithInputBound<Object, R> {
 
   @Override
   Transformer3InternalAPI<A, B, C, R, ? extends Transformer3<A, B, C, R>> internalAPI();

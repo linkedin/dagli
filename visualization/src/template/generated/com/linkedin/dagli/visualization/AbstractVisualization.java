@@ -3,7 +3,7 @@
 package com.linkedin.dagli.visualization;
 
 import com.linkedin.dagli.util.cloneable.AbstractCloneable;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import com.linkedin.dagli.util.function.Function1;
 import com.linkedin.dagli.util.named.Named;
 import com.linkedin.dagli.objectio.ObjectReader;
@@ -292,12 +292,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             : PreparedTransformer1.toDAG((PreparedTransformer1<A, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -380,12 +380,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             : PreparedTransformer2.toDAG((PreparedTransformer2<A, B, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -473,12 +473,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer3<A, B, C, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -573,12 +573,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer4<A, B, C, D, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -679,12 +679,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer5<A, B, C, D, E, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -790,12 +790,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer6<A, B, C, D, E, F, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -907,12 +907,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer7<A, B, C, D, E, F, G, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -1029,12 +1029,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer8<A, B, C, D, E, F, G, H, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -1158,12 +1158,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer9<A, B, C, D, E, F, G, H, I, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values
@@ -1292,12 +1292,12 @@ public abstract class AbstractVisualization<T, S extends AbstractVisualization<T
             .toDAG((PreparedTransformer10<A, B, C, D, E, F, G, H, I, J, R>) dag);
 
     ProducerToValueMap producerToValueMap =
-        new ProducerToValueMap(dagTransformer.producers().map(LinkedNode::getItem).collect(Collectors.toList()),
+        new ProducerToValueMap(dagTransformer.producers().map(LinkedStack::peek).collect(Collectors.toList()),
             renderExampleValuesPredicate);
 
     // we shouldn't really have to cast to (Placeholder<?>), but the compiler is most insistent
     List<Placeholder<?>> placeholders =
-        dagTransformer.producers(Placeholder.class).map(LinkedNode::getItem).map(p -> (Placeholder<?>) p)
+        dagTransformer.producers(Placeholder.class).map(LinkedStack::peek).map(p -> (Placeholder<?>) p)
             .collect(Collectors.toList());
 
     // execute the DAG to collect producer output values

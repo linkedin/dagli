@@ -2,7 +2,7 @@ package com.linkedin.dagli.producer.internal;
 
 import com.linkedin.dagli.producer.ChildProducer;
 import com.linkedin.dagli.producer.Producer;
-import com.linkedin.dagli.util.collection.LinkedNode;
+import com.linkedin.dagli.util.collection.LinkedStack;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.util.ArrayDeque;
 import java.util.List;
@@ -19,10 +19,10 @@ import java.util.function.Function;
  * This class is part of Dagli's internals and should not be used directly by client code.  Instead, use the public
  * API methods that themselves leverage this class, e.g. {@link ChildProducer#ancestors(ChildProducer, int)}.
  */
-public class AncestorSpliterator implements Spliterator<LinkedNode<Producer<?>>> {
+public class AncestorSpliterator implements Spliterator<LinkedStack<Producer<?>>> {
   private final ReferenceOpenHashSet<Producer<?>> _visited = new ReferenceOpenHashSet<>();
-  private ArrayDeque<LinkedNode<Producer<?>>> _queue = new ArrayDeque<>();
-  private ArrayDeque<LinkedNode<Producer<?>>> _nextQueue = new ArrayDeque<>();
+  private ArrayDeque<LinkedStack<Producer<?>>> _queue = new ArrayDeque<>();
+  private ArrayDeque<LinkedStack<Producer<?>>> _nextQueue = new ArrayDeque<>();
   private final Function<? super ChildProducer<?>, ? extends List<? extends Producer<?>>> _parentsAccessor;
   private final int _maxDepth;
   int _depth = 0;
@@ -40,7 +40,7 @@ public class AncestorSpliterator implements Spliterator<LinkedNode<Producer<?>>>
     _parentsAccessor = parentsAccessor;
     _maxDepth = maxDepth;
 
-    LinkedNode<Producer<?>> startingNode = new LinkedNode<>(producer);
+    LinkedStack<Producer<?>> startingNode = LinkedStack.of(producer);
     _parentsAccessor.apply(producer).forEach(parent -> enqueue(startingNode, parent));
     swapQueues();
   }
@@ -59,28 +59,28 @@ public class AncestorSpliterator implements Spliterator<LinkedNode<Producer<?>>>
 
     for (Producer<?> producer : producers) {
       if (_visited.add(producer)) {
-        _nextQueue.add(new LinkedNode<>(producer));
+        _nextQueue.add(LinkedStack.of(producer));
       }
     }
 
     swapQueues();
   }
 
-  private void enqueue(LinkedNode<Producer<?>> parentNode, Producer<?> producer) {
+  private void enqueue(LinkedStack<Producer<?>> parentNode, Producer<?> producer) {
     if (_visited.add(producer)) {
-      _nextQueue.add(parentNode.add(producer));
+      _nextQueue.add(parentNode.push(producer));
     }
   }
 
   private void swapQueues() {
     // swap _queue and _nextQueue
-    ArrayDeque<LinkedNode<Producer<?>>> tempQueue = _queue;
+    ArrayDeque<LinkedStack<Producer<?>>> tempQueue = _queue;
     _queue = _nextQueue;
     _nextQueue = tempQueue;
   }
 
   @Override
-  public boolean tryAdvance(Consumer<? super LinkedNode<Producer<?>>> action) {
+  public boolean tryAdvance(Consumer<? super LinkedStack<Producer<?>>> action) {
     if (_depth == _maxDepth) {
       return false;
     }
@@ -101,10 +101,10 @@ public class AncestorSpliterator implements Spliterator<LinkedNode<Producer<?>>>
       swapQueues();
     }
 
-    LinkedNode<Producer<?>> next = _queue.remove();
+    LinkedStack<Producer<?>> next = _queue.remove();
 
-    if (next.getItem() instanceof ChildProducer) {
-      _parentsAccessor.apply((ChildProducer<?>) next.getItem()).forEach(parent -> enqueue(next, parent));
+    if (next.peek() instanceof ChildProducer) {
+      _parentsAccessor.apply((ChildProducer<?>) next.peek()).forEach(parent -> enqueue(next, parent));
     }
 
     action.accept(next);

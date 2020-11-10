@@ -2,14 +2,19 @@ package com.linkedin.dagli.vector;
 
 import com.linkedin.dagli.annotation.equality.ValueEquality;
 import com.linkedin.dagli.math.vector.DenseFloatArrayVector;
+import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.math.vector.Vector;
 import com.linkedin.dagli.preparer.AbstractStreamPreparerVariadic;
 import com.linkedin.dagli.preparer.PreparerContext;
 import com.linkedin.dagli.preparer.PreparerResult;
 import com.linkedin.dagli.producer.Producer;
+import com.linkedin.dagli.reducer.AssociativeClassReducer;
+import com.linkedin.dagli.reducer.Reducer;
 import com.linkedin.dagli.transformer.AbstractPreparableTransformerVariadic;
 import com.linkedin.dagli.transformer.AbstractPreparedTransformerVariadic;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.rng.core.source64.XoRoShiRo128PlusPlus;
 
@@ -35,12 +40,34 @@ public class DensifiedVector
   private static final long SEED1 = 0x94fa58c6dcae1ba0L; // arbitrary random value
   private static final long SEED2 = 0xb7121ac241548249L; // arbitrary random value
   private static final int MISSING_VALUE_MARKER = -1;
+  private static final List<? extends Reducer<? super DensifiedVector>> REDUCERS = Collections.singletonList(
+      new AssociativeClassReducer<Vector>(DensifiedVector.class, CompositeSparseVector.class));
 
   /**
    * Create a new instance.
    */
   public DensifiedVector() {
     super();
+  }
+
+  /**
+   * If the provided vector producer is guaranteed (as determined by {@link Producer#getResultSupertype(Producer)}) to
+   * produce (only) {@link DenseVector}s, that same producer is returned; otherwise, a new {@link DensifiedVector}
+   * instance is returned that densifies the output of the provided producer.
+   *
+   * This method is useful when a dense vector is required and there's no need to densify already-dense vectors (it's
+   * very possible for densifying nominally dense vectors to be useful when they contain a large number of 0s).
+   *
+   * @param vectorInput the vector producer to be potentially densified
+   * @return a producer that outputs a {@link DenseVector}
+   */
+  public static Producer<? extends DenseVector> densifyIfSparse(Producer<? extends Vector> vectorInput) {
+    return Producer.checkedCast(vectorInput, DenseVector.class, DensifiedVector::new);
+  }
+
+  @Override
+  protected Collection<? extends Reducer<? super DensifiedVector>> getGraphReducers() {
+    return REDUCERS;
   }
 
   /**
