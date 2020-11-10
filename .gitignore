@@ -13,12 +13,13 @@ out/
 */bin/
 /out/
 */generated_tests/
+
 common/generated/
-fasttext/generated/
+core/generated/
 embedding-classification/generated/
+examples/**/generated/
+examples/**/generated_tests/
+fasttext/generated/
 nn/generated/
 text-tokenization-jflex/src/main/jflexGeneratedSrc/
 visualization-mermaid/generated/
-examples/assorted/generated/
-examples/**/generated/
-examples/**/generated_tests/
