@@ -184,16 +184,12 @@ public abstract class XGBoostAndLiblinear {
     CharacterDialog.Placeholder example = new CharacterDialog.Placeholder();
 
     // We're given the raw text, so we need to tokenize it (break it up into a list of words):
-    Tokens dialogTokens =
-        new Tokens().withLocale(Locale.ENGLISH).withTextInput(example.asDialog());
+    Tokens dialogTokens = new Tokens().withLocale(Locale.ENGLISH).withTextInput(example.asDialog());
 
     // We'd like to feed some text features into our XGBoost model, but feeding a huge number of ngrams into XGBoost
     // would be too expensive.  To keep training fast, we'll just give it unigrams.  The easiest way to create a
     // feature vector from ngrams is to use NgramVector (which will, by default, extract only unigrams):
     NgramVector unigramFeatures = new NgramVector().withInput(dialogTokens);
-
-    // XGBoost requires a dense feature representation, so let's densify our unigram features:
-    DensifiedVector denseUnigramFeatures = new DensifiedVector().withInputs(unigramFeatures);
 
     // Now we can set up our XGBoost model.  Properly speaking, we should be using different data to train XGBoost
     // than we use to train our subsequent logistic regression model, since otherwise we risk having our pipelined model
@@ -208,7 +204,7 @@ public abstract class XGBoostAndLiblinear {
     // for now, we'll just accept the additional risk of overfitting and use the same examples to train both XGBoost and
     // the downstream logistic regression model.
     XGBoostClassification<String> xgboostClassifier = new XGBoostClassification<String>()
-        .withFeaturesInput(denseUnigramFeatures)
+        .withFeaturesInput().fromVectors(unigramFeatures)
         .withLabelInput(example.asCharacter())
         .withRounds(10); // the number trees learned will be the number of rounds times the number of labels
 
@@ -229,17 +225,13 @@ public abstract class XGBoostAndLiblinear {
     BucketIndex averageTokenLengthBucket =
         new BucketIndex().withInput(new Size().withInput(dialogTokens));
 
-    // The buckets are categorical features:
-    CategoricalFeatureVector categoricalFeatures =
-        new CategoricalFeatureVector().withInputs(dialogLengthBucket, averageTokenLengthBucket);
-
-    // Which we can combine with all our other features:
-    CompositeSparseVector allFeatures =
-        new CompositeSparseVector().withInputs(ngramFeatures, categoricalFeatures, leafFeatures);
-
-    // And feed to our logistic regression classifier:
-    LiblinearClassification<String> lrClassifier =
-        new LiblinearClassification<String>().withFeaturesInput(allFeatures).withLabelInput(example.asCharacter());
+    // Feed all our features into our logistic regression classifier:
+    LiblinearClassification<String> lrClassifier = new LiblinearClassification<String>()
+        .withLabelInput(example.asCharacter())
+        .withFeaturesInput().combining()
+            .fromCategoricalValues(dialogLengthBucket, averageTokenLengthBucket) // each bucket is a categorical feature
+            .fromVectors(ngramFeatures, leafFeatures)
+        .done();
 
     // Finally, get the most likely label:
     MostLikelyLabelFromDistribution<String> predictedLabel =

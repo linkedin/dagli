@@ -258,11 +258,6 @@ public abstract class ComplexModelExample {
         .withCandidates(IntStream.of(4, 6, 8).mapToObj(fastTextClassification::withMaxWordNgramLength).collect(
             Collectors.toList()));
 
-    // bestFastTextClassification produces a discrete distribution over our labels, but what we really want is a feature
-    // vector we can feed to a downstream model.  SparseVectorizedDistribution converts a distribution to a vector:
-    SparseVectorFromDistribution fastTextFeatures =
-        new SparseVectorFromDistribution().withInput(bestFastTextClassification);
-
     // We'd also like to create two additional, simple features:
     // (1) the String length of the line of dialog:
     FunctionResult1<String, Integer> dialogLength =
@@ -272,20 +267,13 @@ public abstract class ComplexModelExample {
     FunctionResult1<List<?>, Integer> dialogTokenCount =
         new FunctionResult1<List<?>, Integer>(List::size).withInput(dialogTokens);
 
-    // But we need our features in a vector, not scalar integers, so let's put them in a vector:
-    DenseVectorFromNumbers otherFeatures = new DenseVectorFromNumbers().withInputs(dialogLength, dialogTokenCount);
-
-    // Now we have two vectors of features for ach example, but XGBoost accepts just one.  So we combine them with
-    // DensifiedVector, which both combines vectors and "densifies" them, remapping the indicies of the vector elements
-    // so that, if there are N distinct elements (across all vectors) that take non-zero values in any of the examples,
-    // then these elements will have indices 0...N-1.  Many statistical models (like XGBoost) require a dense vector as
-    // input, although others (like Liblinear) can accept any kind of vector, sparse or dense.
-    DensifiedVector features = new DensifiedVector().withInputs(fastTextFeatures, otherFeatures);
-
     // The final classification will be determined by XGBoost (boosted decision trees) using our combined features:
     XGBoostClassification<String> finalClassification = new XGBoostClassification<String>()
-        .withFeaturesInput(features)
-        .withLabelInput(characterDialog.asCharacter());
+        .withLabelInput(characterDialog.asCharacter())
+        .withFeaturesInput().combining()
+            .fromDistributions(bestFastTextClassification) // use the vectorized FastText prediction as features
+            .fromNumbers(dialogLength, dialogTokenCount) // our scalar features
+        .done();
 
     // Our classification is actually a distribution over possible characters; we just need the most likely:
     MostLikelyLabelFromDistribution<String> mostLikelyCharacter =

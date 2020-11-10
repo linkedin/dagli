@@ -54,15 +54,13 @@ public class XGBoostExample {
     // We'll also use the average token length as a feature (not a very good feature, but this is just an example!):
     AverageTokenLength averageTokenLength = new AverageTokenLength().withInput(dialogTokens);
 
-    // We need to convert this value a vector so we can combine it with our other features;
-    DenseVectorFromNumbers averageTokenLengthVector = new DenseVectorFromNumbers().withInputs(averageTokenLength);
-
-    // Now we combine our features into one vector and densify them, because XGBoost requires dense features:
-    DensifiedVector denseFeatures = new DensifiedVector().withInputs(topNgramFeatures, averageTokenLengthVector);
-
     // Now configure our XGBoost classifier (a gradient boosted decision tree model):
-    XGBoostClassification<String> classification =
-        new XGBoostClassification<String>().withLabelInput(example.asCharacter()).withFeaturesInput(denseFeatures);
+    XGBoostClassification<String> classification = new XGBoostClassification<String>()
+        .withLabelInput(example.asCharacter())
+        .withFeaturesInput().combining()
+          .fromNumbers(averageTokenLength)
+          .fromVectors(topNgramFeatures)
+        .done();
 
     // Our classification result is a distribution over possible characters; we just want the most likely:
     MostLikelyLabelFromDistribution<String> mostLikelyCharacter =
