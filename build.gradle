@@ -2,8 +2,16 @@
 // dependencies to avoid cross-module misalignment.
 //
 // To build (and test) Dagli, run "gradle build".
+//
 // To publish Dagli, run "gradle uploadArchives --no-daemon --no-parallel"
 // ("--no-daemon --no-parallel" is required, as otherwise the published data will likely be corrupt/incomplete.)
+//
+// For uploadArchives to work, you'll need to have the following properties defined:
+// signing.*: keys/credentials for signing artifacts; please see the documentation for the "signing" plugin for details
+// ossrhUsername: your username for Sonatype's OSS repository
+// ossrhPassword: your password for Sonatype's OSS repository
+// We recommend configuring these in your default gradle properties (e.g. ~/.gradle/gradle.properties), making sure to
+// keep this file private.  Your credentials should (of course) never be checked in or otherwise shared.
 
 allprojects {
   apply plugin: 'checkstyle'
@@ -126,43 +134,45 @@ subprojects {
     sign configurations.archives
   }
 
-  uploadArchives {
-    repositories {
-      mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+    uploadArchives {
+      repositories {
+        mavenDeployer {
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-          authentication(userName: ossrhUsername, password: ossrhPassword)
-        }
-
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-          authentication(userName: ossrhUsername, password: ossrhPassword)
-        }
-
-        pom.project {
-          name project.name
-          packaging 'jar'
-
-          description 'DAG-oriented machine learning framework for bug-resistant, readable, efficient, maintainable and trivially deployable models in Java and other JVM languages'
-          url 'https://github.com/linkedin/dagli'
-
-          scm {
-            connection 'scm:git@github.com:linkedin/dagli.git'
-            developerConnection 'scm:git@github.com:linkedin/dagli.git'
-            url 'scm:git@github.com:linkedin/dagli.git'
+          repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
           }
 
-          licenses {
-            license {
-              name 'BSD 2-Clause License'
-              url 'https://opensource.org/licenses/BSD-2-Clause'
+          snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+          }
+
+          pom.project {
+            name project.name
+            packaging 'jar'
+
+            description 'DAG-oriented machine learning framework for bug-resistant, readable, efficient, maintainable and trivially deployable models in Java and other JVM languages'
+            url 'https://github.com/linkedin/dagli'
+
+            scm {
+              connection 'scm:git@github.com:linkedin/dagli.git'
+              developerConnection 'scm:git@github.com:linkedin/dagli.git'
+              url 'scm:git@github.com:linkedin/dagli.git'
             }
-          }
 
-          developers {
-            developer {
-              id 'jeffpasternack'
-              name 'Jeff Pasternack'
+            licenses {
+              license {
+                name 'BSD 2-Clause License'
+                url 'https://opensource.org/licenses/BSD-2-Clause'
+              }
+            }
+
+            developers {
+              developer {
+                id 'jeffpasternack'
+                name 'Jeff Pasternack'
+              }
             }
           }
         }
