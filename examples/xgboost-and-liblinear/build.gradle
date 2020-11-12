@@ -3,12 +3,11 @@ test {
 }
 
 dependencies {
-  implementation project(':all')
-//  implementation project(':common')
-//  implementation project(':data')
-//  implementation project(':liblinear')
-//  implementation project(':text-tokenization')
-//  implementation project(':xgboost')
+  implementation project(':common')
+  implementation project(':data')
+  implementation project(':liblinear')
+  implementation project(':text-tokenization')
+  implementation project(':xgboost')
 
   // without the annotation processor, we can't build our CharacterDialogStruct:
   annotationProcessor project(':annotation-processor')
