@@ -35,4 +35,8 @@ Lucene's JFlex tokenization rules, which are the basis of those in text-tokeniza
 * Copyright 2001-present The Apache Software Foundation
 * License: Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
 
+Criteo-Fork's Windows XGBoost4J binary (xgboost4j.dll):
+* https://github.com/criteo-forks/xgboost-jars
+* License: Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+
 The text of the licenses for these included works may be found in the /licenses/ directory.
