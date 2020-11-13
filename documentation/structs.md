@@ -47,7 +47,7 @@ Given a @Struct definition class, Dagli's annotation processor will create a @St
 
 @Struct is especially useful for encapsulating the inputs and outputs to a DAG; rather than using ordinal inputs and outputs (which can result in logic bugs if different inputs/outputs with the same type are accidentally swapped), the struct bundles them as named fields, making code more readable and making it much harder to make mistakes.
 
-For example, assume we're building a model that predicts a person's location; we might express this model as a `DAG4x1<String, Integer, String, String, Location, Location>` that accepts the person's name, age, email address and favorite color, `Location` label and, after the model is trained, will infer a `Location`, or we could much more clearly express this as a `DAG2x1<MyStruct, Location, Location>` (the `Location` label input would only be used when training [preparing] the model, and would be null when doing inference the prepared `DAG2x1.Prepared<...>`). 
+For example, assume we're building a model that predicts a person's location; we might express this model as a `DAG5x1<String, Integer, String, String, Location, Location>` that accepts the person's name, age, email address and favorite color, `Location` label and, after the model is trained, will infer a `Location`, or we could much more clearly express this as a `DAG2x1<MyStruct, Location, Location>` (the `Location` label input would only be used when training [preparing] the model, and would be null when doing inference the prepared `DAG2x1.Prepared<...>`). 
 
 ## Setting up Gradle to Generate @Structs
 Dagli generates @Structs using an annotation processor.  Annotation processors run whenever your project is compiled.  In Gradle 5+, annotation processors must be explicitly imported; consequently, in each module you plan to define @Structs, add these dependencies to your build.gradle file:
@@ -89,7 +89,7 @@ A @Struct extending another @Struct will (of course) inherit all its fields.
 As with our `MyStruct` example's `_favoriteColor` field, a @Struct may have optional fields marked as `@Optional`.  If not set using the builder (e.g. `MyStruct.Builder`) these fields will assume the default value provided on the base class. 
 
 #### Type Parameters
-@Structs can be defined with type parameters; e.g. the @Struct `MyGenericStruct<L extends CharSequence>` may be defined as:
+@Structs can be defined with type parameters; e.g. the @Struct `MyGenericStruct<T extends CharSequence>` may be defined as:
 
     @Struct("MyGenericStruct")
     abstract class MyGenericStructBase<T extends CharSequence> {
@@ -97,10 +97,12 @@ As with our `MyStruct` example's `_favoriteColor` field, a @Struct may have opti
     } 
 
 #### Methods on @Structs
-@Structs extent their defining base class; to define a method for a @Struct, just add it to the base class.
+@Structs extend their defining base class; to define a method for a @Struct, just add it to the base class.
 
 #### Virtual Fields on @Structs
-The `@VirtualField` annotation may be applied to a parameterless method in a @Struct definition class, which will cause Dagli to generate a corresponding inner class on the @Struct (a transformer may be used to obtain the virtual field's value) and otherwise treat it as a read-only field.
+The `@VirtualField` annotation may be applied to a parameterless method in a @Struct definition class, which will cause
+Dagli to generate a transformer may be used to obtain the virtual field's value as an inner class on the @Struct and 
+otherwise treat it as a read-only field.
 
 #### `@TrivialPublicConstructor`
 When added to a @Struct definition class with no *non-optional* fields, Dagli will generate a trivial (parameterless) constructor for the generated @Struct, providing an alternative to using the builder. 
@@ -152,7 +154,7 @@ still use a more "traditional" `builder()` method because they don't need to be 
             .setNameColumnName("Name")
             .setAgeColumnName("Age")
             .setEmailColumnName("E-mail")
-            .setFavoriteColor("FavColor")
+            .setFavoriteColorColumnName("FavColor")
             .build());
             
     for (MyStruct struct : reader) {
