@@ -103,9 +103,9 @@ Probably the easiest way to get a feel for how Dagli models are written and used
 but--combined with explanatory comments for almost every step--these can be an excellent pedagogic tool.
 
 # Finding the Right Transformer
-Dagli includes a large and growing library of transformers.  Other than the [examples](documentation/examples.md), the 
-[module summary](documentation/modules.md) should give you a good idea of where to look.  In the future a "transformer
-catalog" will make discovery more straightforward.
+Dagli includes a large and growing library of transformers.  The [examples](documentation/examples.md) illustrate the
+use of a number of transformers, and the [Javadoc](https://javadoc.io/doc/com.linkedin.dagli/all) is searchable.  You
+may also want to check the [module summary](documentation/modules.md) for a broader overview of what is available.
 
 # Adding New Transformers
 If an existing transformer doesn't do what you want, you can often wrap an existing function/method with a 
