@@ -143,7 +143,7 @@ custom UDFs that train, evaluate or apply Dagli models.
 - `15.0.0-beta4`: *11/11/20*: `xgboost` now bundles in [support for Windows](xgboost/README.md)
 - `15.0.0-beta3`: *11/9/20*: Input Configurators and `MermaidVisualization`
     - This is a major version increment and may not be compatible with models from 14.*
-    - [Input configurators](documentation/transformers.md#Input%20Configurators) for more convenient, readable 
+    - [Input configurators](documentation/transformers.md#input-configurators) for more convenient, readable 
       configuration of transformer inputs; e.g., 
       `new LiblinearClassification<LabelType>().withFeaturesInput().fromNumbers(numberInput1, numberInput2...)...`
     - New graph visualizer for rendering Dagli graphs as Mermaid markup
