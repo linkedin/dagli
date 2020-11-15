@@ -36,7 +36,7 @@ public class SparseFeatureVectorInput<T>
   /**
    * Gets an "aggregated" configurator that combines multiple input values into a single input vector.
    *
-   * After all input values have been specified, call {@link WithFeatureVectorInput.Aggregated#done()} to obtain the configured transformer.
+   * After all input values have been specified, call {@link Aggregated#done()} to obtain the configured transformer.
    *
    * @return an "aggregated" configurator that combines multiple input values into a single input vector
    */

@@ -29,7 +29,7 @@ public class DenseLayerInput<T>
   /**
    * Gets an "aggregated" configurator that concatenates multiple input values into a single layer input.
    *
-   * After all input values have been specified, call {@link #done()} to obtain the configured transformer.
+   * After all input values have been specified, call {@link Aggregated#done()} to obtain the configured transformer.
    *
    * @return an "aggregated" configurator that concatenates multiple input values into a single layer input
    */

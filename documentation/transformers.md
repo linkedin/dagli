@@ -23,7 +23,54 @@ The arity of a transformers may be categorized into three categories:
 - *Dynamic* transformers, e.g. `PreparedTransformerDynamic`, accept any number of inputs of types that are not statically known (by the compiler.)  Because of the increased burden on the implementor to ensure type safety, these should be avoided if possible.
 
 Note that, as far as the **user** of a transformer is concerned, the "real" arity doesn't matter: a transformer might have an actual arity of 4 but offer only `withLabelInput(...)` and `withFeaturesInput(...)` methods through its public API (and thus appear to accept only two inputs).  This discrepancy is fairly common since transformers may want to set their "hidden" inputs themselves for a variety of reasons (e.g. a transformer might create inputs for the `Max` and `Min` of another, user-specified `Long` input to allow it know the maximum and minimum `Long` value provided). 
-  
+
+# Specifying Transformer Inputs
+The input nodes (whose results provide the input values to the transformer) are specified via
+`with[InputName]Input(...)` methods.  Since transformers (like most things in Dagli) are immutable, these methods return
+a **copy** of the transformer configured to use the specified input.  For example, 
+`xgboostClassification.withLabelInput(labelProducer)` returns a copy of `xgboostClassification` that will accept the
+output of the `labelProvider` node as its input.  Transformers with a single input will typically just name their
+input-specifying method `withInput(...)`, e.g. `doubleArrayFromVector.withInput(vectorProducer)`.
+
+## Input Configurators
+Introduced in Dagli 15, *input configurators* are a convenient way to specify an input to a transformer when a 
+conversion is required.  For example, let's say we have several nodes in our DAG, `fpValue1`, `fpValue2`, and 
+`fpValue3`, each producing a floating-point value that we'd like to concatenate into a feature vector for use in a 
+`LiblinearClassification` model.  We could express this as:
+
+    new LiblinearClassification<LabelType>()
+        .withLabelInput(...)
+        .withFeaturesInput(new DenseVectorFromNumbers().withInputs(fpValue1, fpValue2, fpValue3)); 
+
+However, this requires us to explicitly create a `DenseVectorFromNumbers` transformer to convert our floating-point
+producers into a vector.  Instead, we can more conveniently use a 
+[feature vector input configurator](../common/src/main/java/com/linkedin/dagli/input/DenseFeatureVectorInput.java) 
+obtained by calling `withFeaturesInput()`:
+
+    new LiblinearClassification<LabelType>()
+        .withLabelInput(...)
+        .withFeaturesInput().fromNumbers(fpValue1, fpValue2, fpValue3));
+
+Input configurators can also conveniently combine different types of values into an aggregated input 
+value.  For example, to combine our floating point values and an ngram feature vector produced by an 
+`NgramVector` transformer, we can use the configurator's `combining()` method:
+
+    new LiblinearClassification<LabelType>()
+        .withLabelInput(...)
+        .withFeaturesInput().combining()
+            .fromNumbers(fpValue1, fpValue2, fpValue3))
+            .fromVectors(ngramVector)
+        .done();
+
+Of course, we could have also combined our feature values using a `DensifiedVector` 
+transformer, but using the configurator allowed us to express this more clearly and concisely.
+
+For many input types, conversions are rarely used, and no `with[InputName]Input()` method to provide a configurator will
+be available (for example, `LiblinearClassification` does not define a `withLabelInput()` method because the label can
+be any arbitrary type).  If you're writing a new transformer and would like to provide configurators for your inputs, 
+please see [com.linkedin.dagli.input](../common/src/main/java/com/linkedin/dagli/input/) for existing implementations 
+(and base classes that can be extended to create configurators for new input types).
+
 # Prepared Transformers
 Prepared transformers are essentially functions: they accept inputs and produce an output.  However, they can sometimes be a little more complicated than this implies when they use minibatching or benefit from caching data across examples (e.g. to reuse thread-local buffers).  
 
@@ -120,3 +167,10 @@ The advantage is that knowing a preparer is idempotent allows certain useful gra
 
 ## Reductions
 All Dagli nodes, including transformers, can provide *reducers* to optimize DAGs containing those nodes.  For example, `com.linkedin.dagli.object.ConditionalValue` has a reducer that replaces the transformer with either its if-true or if-false producer input in the DAG if the conditional input is a `Constant` (because Dagli does extensive "constant folding", any producer whose constant-value output can be determined before executing the DAG will be replaced by a `Constant` instance).
+
+## Naming Convention
+ 
+Transformers are normally named according to their result: for example, the transformer that sums multiple input vectors
+is `VectorSum` and the transformer for an XGBoost classification model is `XGBoostClassification`.  The most prominent
+exception to this rule is `NeuralNetwork`, whose results can vary according to the neural network's architecture (e.g. a
+multinomial classification, a regression, a structured prediction, etc.).

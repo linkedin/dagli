@@ -24,7 +24,7 @@ public class TopVectorElementsByLiblinearMTWeightTest {
         .internalAPI()
         .withInputs(MissingInput.get(), MissingInput.get(), MissingInput.get());
 
-    Tester.of(top).input(1.0,true, DenseFloatArrayVector.wrap(3)).test();
+    Tester.of(top).input(1.0, true, DenseFloatArrayVector.wrap(3)).test();
 
     List<Boolean> labels = Arrays.asList(true, false, true, false);
     List<DenseFloatArrayVector> vectors =

@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public abstract class Tester {
   private static final int TEST_LIST_SIZE = 100;
-  private static final int HALF_LIST_SIZE = TEST_LIST_SIZE / 2;
 
   private Tester() { }
 
@@ -78,25 +77,37 @@ public abstract class Tester {
    * Runs basic tests on an {@link ObjectWriter} to ensure that values can be written and read back via the associated
    * reader.
    *
-   * @param writer the writer to test.
+   * @param writer the writer to test (which must support writing arbitrary Serializable objects)
    */
   public static void testWriter(ObjectWriter<Object> writer) {
-    List<Object> list = createTestList();
-    Object[] listArray = list.toArray();
+    testWriter(writer, createTestList());
+  }
+  /**
+   * Runs basic tests on an {@link ObjectWriter} to ensure that values can be written and read back via the associated
+   * reader.
+   *
+   * @param writer the writer to test
+   * @param toWrite the list of items to be written and read back as part of the test
+   */
+  public static <T> void testWriter(ObjectWriter<T> writer, List<T> toWrite) {
+    int size = toWrite.size();
+    int halfSize = size / 2;
+    @SuppressWarnings("unchecked")
+    T[] toWriteArray = (T[]) toWrite.toArray(); // masquerade this Object[] as a T[]
 
     assertEquals(writer.size64(), 0);
 
-    writer.write(listArray, 0, HALF_LIST_SIZE);
+    writer.write(toWriteArray, 0, halfSize);
 
-    assertEquals(writer.size64(), HALF_LIST_SIZE);
+    assertEquals(writer.size64(), halfSize);
 
-    writer.write(listArray, HALF_LIST_SIZE, TEST_LIST_SIZE - HALF_LIST_SIZE);
-    assertEquals(writer.size64(), TEST_LIST_SIZE);
+    writer.write(toWriteArray, halfSize, size - halfSize);
+    assertEquals(writer.size64(), size);
     writer.close();
-    ObjectReader<Object> reader = writer.createReader();
+    ObjectReader<T> reader = writer.createReader();
 
-    assertEquals(TEST_LIST_SIZE, reader.size64());
-    testIterators(reader, list);
+    assertEquals(size, reader.size64());
+    testIterators(reader, toWrite);
   }
 
   /**

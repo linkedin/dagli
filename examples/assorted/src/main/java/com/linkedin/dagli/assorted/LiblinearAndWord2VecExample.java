@@ -3,12 +3,11 @@ package com.linkedin.dagli.assorted;
 import com.linkedin.dagli.dag.DAG;
 import com.linkedin.dagli.dag.DAG1x1;
 import com.linkedin.dagli.distribution.MostLikelyLabelFromDistribution;
-import com.linkedin.dagli.word2vec.Word2VecEmbedding;
 import com.linkedin.dagli.liblinear.LiblinearClassification;
 import com.linkedin.dagli.text.token.Tokens;
 import com.linkedin.dagli.vector.AveragedDenseVector;
-import com.linkedin.dagli.vector.CompositeSparseVector;
 import com.linkedin.dagli.vector.DenseVectorFromNumbers;
+import com.linkedin.dagli.word2vec.Word2VecEmbedding;
 import java.util.Locale;
 
 

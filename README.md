@@ -1,6 +1,6 @@
 # Dagli
-
 [![Maven badge](https://maven-badges.herokuapp.com/maven-central/com.linkedin.dagli/core/badge.svg)](https://search.maven.org/search?q=g:com.linkedin.dagli)
+[![javadoc](https://javadoc.io/badge2/com.linkedin.dagli/all/javadoc.svg)](https://javadoc.io/doc/com.linkedin.dagli/all)
 
 Dagli is a machine learning framework that makes it easy to write bug-resistant, readable, efficient, maintainable and 
 trivially deployable models in [Java 9+](documentation/java.md) (and other JVM languages).
@@ -139,10 +139,12 @@ custom UDFs that train, evaluate or apply Dagli models.
 
 
 # Version History
+- `15.0.0-beta5`: *11/15/20*: [aggregated Javadoc](https://javadoc.io/doc/com.linkedin.dagli/all) now available
 - `15.0.0-beta4`: *11/11/20*: `xgboost` now bundles in [support for Windows](xgboost/README.md)
 - `15.0.0-beta3`: *11/9/20*: Input Configurators and `MermaidVisualization`
     - This is a major version increment and may not be compatible with models from 14.*
-    - Input configurators for more convenient, readable configuring of transformer inputs; e.g., 
+    - [Input configurators](documentation/transformers.md#Input Configurators) for more convenient, readable 
+      configuration of transformer inputs; e.g., 
       `new LiblinearClassification<LabelType>().withFeaturesInput().fromNumbers(numberInput1, numberInput2...)...`
     - New graph visualizer for rendering Dagli graphs as Mermaid markup
     - [Full list of improvements](documentation/v15.0.0-beta3.md)

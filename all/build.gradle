@@ -24,3 +24,12 @@ dependencies {
 
   // annotation-processor not included (not possible to make annotation processor dependencies transitive)
 }
+
+javadoc {
+  // modify the javadoc generation configuration to include (almost) everything that's not an example; this allows this
+  // project ("all") to provide a single, aggregated javadoc collection for Dagli's many modules.
+  def targets = rootProject.subprojects
+  targets.removeIf {["annotation-processor", "objectio-testing"].contains(it.name) || it.ext.isExample }
+  source = targets.collect { it.sourceSets.main.allJava }
+  classpath = project.sourceSets.main.runtimeClasspath
+}

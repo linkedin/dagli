@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  *     graph.
  * (5) Any method that relies on the correctness of a {@link Producer}'s ancestors will yield incorrect results relative
  *     to the conceptual state of the producer as currently situated in the working graph.  This includes
- *     {@link Producer#hasConstantResult()}, {@link Producer#equals(Object)}, etc.
+ *     {@link Producer#hasConstantResult()}, {@link Object#equals(Object)}, etc.
  *
  * Graph reducers should be immutable (i.e. their externally visible methods and fields should remain consistent once
  * they are constructed).  They may be invoked in multiple threads simultaneously.  They do not need to be serializable.

@@ -478,8 +478,8 @@ abstract class AbstractProducer<R, I extends ProducerInternalAPI<R, S>, S extend
 
   /**
    * Derived classes should override this method to calculate the hashCode of the instance if and only if they have
-   * overriden the {@link #computeEqualsUnsafe(AbstractProducer)} method.  The hashCode produced must be consistent
-   * with this method, such that two instances comparing equal must also have the same hashCode.
+   * overriden the {@link AbstractProducer#computeEqualsUnsafe(AbstractProducer)} method.  The hashCode produced must be
+   * consistent with this method, such that two instances comparing equal must also have the same hashCode.
    *
    * @return a hashcode for this instance
    */

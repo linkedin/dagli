@@ -216,7 +216,8 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
   }
 
   /**
-   * Adds each expected output value from a collection; equivalent to calling {@link #output(Object)} for each value.
+   * Adds each expected output value from a collection; equivalent to calling {@link AbstractTestBuilder#output(Object)}
+   * for each value.
    *
    * @param outputs the output values to add
    * @return this instance
@@ -228,7 +229,8 @@ abstract class AbstractTestBuilder<R, T extends Producer<R>, S extends AbstractT
   }
 
   /**
-   * Adds each output test from a collection; equivalent to calling {@link #outputTest(Predicate)} for each test.
+   * Adds each output test from a collection; equivalent to calling {@link AbstractTestBuilder#outputTest(Predicate)}
+   * for each test.
    *
    * @param outputTests the output tests to add
    * @return this instance

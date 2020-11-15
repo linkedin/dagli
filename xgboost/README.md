@@ -18,7 +18,7 @@ module instead and add a dependency on the XGBoost4J Windows JAR from
 [Criteo forks](https://github.com/criteo-forks/xgboost-jars).
 
 ### Mac OSX
-Mac OSX is limited to a single-thread because the included XGBoost4J native library for OSX is not built with OpenMP 
-support (presumably to avoid compatibility issues when libomp is not installed).  It is possible to [build
+Mac OSX is limited to single-threaded training because the included XGBoost4J native library for OSX is not built with 
+OpenMP support (presumably to avoid compatibility issues when libomp is not installed).  It is possible to [build
 the library with multi-threading support](https://xgboost.readthedocs.io/en/latest/jvm/#enabling-openmp-for-mac-os), 
 which can then be used as a dependency alongside `xgboost-core`.

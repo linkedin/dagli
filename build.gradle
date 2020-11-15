@@ -18,7 +18,7 @@ allprojects {
   apply plugin: 'idea'
 }
 
-def dagliVersion = "15.0.0-beta4"
+def dagliVersion = "15.0.0-beta5"
 def javaVersion = JavaVersion.VERSION_1_9
 def jdk = "1.9"
 
@@ -26,6 +26,21 @@ idea {
   project {
     jdkName = jdk // you may still need to specify the JDK manually in IntelliJ
     languageLevel = javaVersion
+  }
+}
+
+// curls https://javadoc.io/doc/com.linkedin.dagli/[module name] for each module to ensure that javadoc.io knows about
+// it.  This should only need to be run after publishing a new module to the central repository (and not merely a new
+// version of an existing module, which javadoc.io will pick up automatically).
+// This command will not work if curl is not available on your $PATH (or equivalent).
+task javadocAnnounce {
+  doLast {
+    subprojects.forEach({
+      println("Now curling " + it.name)
+      def curl = ["curl", "https://javadoc.io/doc/com.linkedin.dagli/" + it.name].execute()
+      curl.waitFor()
+      sleep(3000) // be polite: 3s delay between requests
+    })
   }
 }
 
@@ -37,7 +52,8 @@ subprojects {
   apply plugin: 'maven'
   apply plugin: 'signing'
 
-  if (project.parent.name == "examples" || project.name == "examples") {
+  ext.isExample = (project.parent.name == "examples" || project.name == "examples")
+  if (ext.isExample) {
     uploadArchives.enabled = false // don't upload example JARs
   }
 

@@ -5,8 +5,6 @@ import com.linkedin.dagli.dag.DAG1x1;
 import com.linkedin.dagli.distribution.MostLikelyLabelFromDistribution;
 import com.linkedin.dagli.list.NgramVector;
 import com.linkedin.dagli.text.token.Tokens;
-import com.linkedin.dagli.vector.DenseVectorFromNumbers;
-import com.linkedin.dagli.vector.DensifiedVector;
 import com.linkedin.dagli.vector.TopVectorElementsByMutualInformation;
 import com.linkedin.dagli.xgboost.XGBoostClassification;
 import java.util.Locale;
