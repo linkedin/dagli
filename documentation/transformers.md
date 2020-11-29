@@ -65,11 +65,11 @@ value.  For example, to combine our floating point values and an ngram feature v
 Of course, we could have also combined our feature values using a `DensifiedVector` 
 transformer, but using the configurator allowed us to express this more clearly and concisely.
 
-For many input types, conversions are rarely used, and no `with[InputName]Input()` method to provide a configurator will
-be available (for example, `LiblinearClassification` does not define a `withLabelInput()` method because the label can
-be any arbitrary type).  If you're writing a new transformer and would like to provide configurators for your inputs, 
-please see [com.linkedin.dagli.input](../common/src/main/java/com/linkedin/dagli/input/) for existing implementations 
-(and base classes that can be extended to create configurators for new input types).
+For many input types, conversions are rarely used, and no no-arg `with[InputName]Input()` method to provide a 
+configurator will be available (for example, `LiblinearClassification` does not define a `withLabelInput()` method 
+because the label can be any arbitrary type).  If you're writing a new transformer and would like to provide 
+configurators for your inputs, please see [com.linkedin.dagli.input](../common/src/main/java/com/linkedin/dagli/input/) 
+for existing implementations (and base classes that can be extended to create configurators for new input types).
 
 # Prepared Transformers
 Prepared transformers are essentially functions: they accept inputs and produce an output.  However, they can sometimes be a little more complicated than this implies when they use minibatching or benefit from caching data across examples (e.g. to reuse thread-local buffers).  
