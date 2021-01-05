@@ -84,9 +84,14 @@ class MethodReference implements Serializable, Named {
               + "constructor.  This restriction may be lifted in the future; for now we recommend defining a "
               + "serializable function object to perform your desired purpose and using that instead.");
       Arguments.check(!_methodName.startsWith(LAMBDA_PREFIX),
-          "MethodReference cannot represent a lambda function because these are backed by arbitrary, "
-          + "anonymous implementations and thus inherently unsafe to serialize.  Use method references (e.g. "
-          + "String::length) instead.");
+          "The method provided is a lambda function.  MethodReference cannot represent a lambda function "
+              + "because these are backed by arbitrary, anonymous implementations and thus inherently unsafe to "
+              + "serialize.  Use method references (e.g. String::length) instead.  If you *were* providing a method "
+              + "reference, your compiler likely shimmed it; this has been observed to occur when creating static "
+              + "references to instance methods (e.g. ClassA::instanceMethod) that are inherited from an inaccessible "
+              + "ancestor (e.g. if ClassA inherited instanceMethod from some inaccessible [to you] ClassB).  In such "
+              + "corner cases, you always have the (admittedly less convenient) option to just define a new function "
+              + "object instead.");
       Arguments.check(sl.getCapturedArgCount() <= 1,
         "The provided function has unexpected captured arguments and is thus presumably a lambda function.  "
           + "MethodReference cannot represent a lambda function because these are backed by arbitrary, "

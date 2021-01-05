@@ -30,7 +30,7 @@ import com.linkedin.dagli.util.exception.Exceptions;
    * Composes this function with another by mapping the result of this function.  The returned function is equivalent
    * to {@code mapper.apply(this.apply(...))}.
    *
-   * This method is analogous to {@link java.util.function.Function#andThen(Function)}.
+   * This method is analogous to {@link java.util.function.Function#andThen(java.util.function.Function)}.
    *
    * @param mapper the function that will map the result of this one in the returned composed function<#if composedTypeIndex == f.ObjectFunctionIndex>
    * @param <Q> the type of the result of the composed function</#if>

@@ -282,6 +282,18 @@ abstract class AbstractXGBoostModel<
     return _earlyStoppingRounds >= 1;
   }
 
+  /**
+   * Gets a producer that provides the actual XGBoost Booster object trained by the model.  This producer is
+   * guaranteed to have a constant result ({@link Producer#hasConstantResult()} == true); that is, the Booster
+   * instance "result" will be identical for every example.
+   *
+   * @return a producer that provides the Booster object representing the trained XGBoost model
+   */
+  public Producer<Booster> asBooster() {
+    return new FunctionResult1<Prepared<L, R, ?>, Booster>(Prepared::getBooster).withInput(
+        new PreparedTransformerView<P>(this));
+  }
+
   protected abstract XGBoostObjective getObjective(int labelCount);
   protected abstract XGBoostObjectiveType getObjectiveType();
 
@@ -518,6 +530,10 @@ abstract class AbstractXGBoostModel<
 
     /**
      * Gets the underlying XGBoost booster (the trained model).
+     *
+     * Please note that the Booster instance itself is mutable, but modifying it will violate the immutability invariant
+     * of this transformer; while this is almost certain to be safe in any practical context (the only plausible
+     * exception being if two DAGs shared the same instance of this transformer), you do so at your own risk.
      *
      * @return the Booster object representing the trained XGBoost model
      */

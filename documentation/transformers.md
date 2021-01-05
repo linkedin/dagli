@@ -79,11 +79,15 @@ Though prepared transformers are typically used only as part of a DAG, they may 
 ## Creating a New Prepared Transformer
 
 ### Alternatives
-Rather than creating a new transformer, it's possible to wrap a "safely-serializable" function (a function object or a method reference, but not a lambda) as a `FunctionResultX` transformer, like so:
+Rather than creating a new transformer, it's possible to wrap a "safely-serializable" function (a function object or a 
+method reference, but not a lambda) as a `FunctionResultX` transformer, like so:
     
     FunctionResult1<String, Integer> stringLength = new FunctionResult1<>(String::length).withInput(stringProducer);
     
-This is convenient for transformers that correspond to existing, simple functions that have no configurable properties.
+This is convenient for transformers that correspond to existing functions.  <small>There is one uncommon exception: a 
+method reference to `A:method` where `A` inherits `method` from an inaccessible class `B`, will not be 
+safely-serializable if the compiler creates a lambda "shim"--if you see an exception to this effect,
+just create a simple transformer instead.</small> 
 
 ### An Example
 
