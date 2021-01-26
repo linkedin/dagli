@@ -16,7 +16,12 @@ import java.util.function.Consumer;
  * be {@link Token#close()}'d to unregister the listener.  Input is not consumed when no listeners are waiting.
  *
  * This class should not be used in parallel with any competing readers of stdin in the same program.
+ *
+ * @deprecated because it can be difficult to know a priori whether your code might run in a context where stdin behaves
+ *             differently than "normal" or other dependencies might be impacted by an asynchronous thread blocking on
+ *             stdin, we currently recommend against using this class in production code.
  */
+@Deprecated
 public abstract class StandardInputListener {
   private StandardInputListener() { }
 

@@ -239,7 +239,6 @@ public abstract class BagOfNgramsExample {
         .withEvaluationHoldoutProportion(0.2, 1337) // used to identify the best model across epochs
         .withMaxTrainingAmountWithoutImprovement(10) // criteria for early stopping
         .withMaxEpochs(500) // we'll stop well before this
-        .withInteractiveCommands(true) // you can type "stop" to stop training at any time
         .withTrainingModelArchitectureLogging(true) // log the model's architecture just before training begins
         .withOptimizer(new AdaMax());
 

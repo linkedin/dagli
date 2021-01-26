@@ -147,7 +147,14 @@ public abstract class AbstractNeuralNetwork<
    *
    * @param enabled whether or not interactive commands should be enabled
    * @return a copy of this neural network that will enable or disable interactive commands
+   *
+   * @deprecated this method is deprecated because it will create an asynchronous thread that blocks on stdin, which
+   *             can rarely create issues since stdin can vary depending on the context in which the code is run, and
+   *             it is possible for other dependencies using stdin/stdout to conflict with it.  Interactive commands may
+   *             still be used during development/testing, but if you encounter problems (e.g. the program hangs), try
+   *             disabling this option.
    */
+  @Deprecated
   public S withInteractiveCommands(boolean enabled) {
     return clone(c -> ((AbstractNeuralNetwork<?, ?, ?>) c)._interactiveCommands = enabled);
   }
