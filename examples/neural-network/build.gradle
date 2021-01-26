@@ -1,30 +1,16 @@
-plugins {
-  id "com.google.osdetector" version "1.6.2"
-}
-
-// The dependencies for DeepLearning4J require a platform classifier string:
-def platform = osdetector.classifier
-if (osdetector.os == "osx") {
-  platform = "mac" + platform // need to adjust "osx-*" to "macosx-*"
-}
-
 dependencies {
-  // DeepLearning4J (our neural network backend in this example) has a number of dependencies, which will vary depending
-  // on whether you want to use your CPU, GPU, CPU with AVX2 instructions, etc.  Please see https://deeplearning4j.org/
-  // for more information; here we use the most generic (and typically slowest) CPU-oriented dependencies.
-  // If you are using Maven, note that your build setup will be much simpler: Gradle does not import transitive
-  // dependencies from a JAR's pom.xml, which means we're forced to specify everything manually :(
+  // We're using Dagli's nn-dl4j module, which is backed by DeepLearning4J.  DL4J has several backends depending on
+  // whether you want to use your GPU (CUDA), CPU, CPU with AVX2 instructions, etc.  Please see
+  // https://deeplearning4j.konduit.ai/config/backends for more information.
 
-  // ND4J is DeepLearning4J's linear algebra backend (this is the CPU edition):
-  implementation project.ext.dependencies.nd4j
-  // Needed by ND4J for OpenBLAS linear algebra on the CPU:
-  implementation project.ext.dependencies.javacpp
+  // By default, we use the generic CPU-based backend for maximum compatibility:
+  implementation "org.nd4j:nd4j-native-platform:1.0.0-beta7"
+  // To use CUDA (with a GPU), use these dependencies instead of nd4j-native-platform:
+  // implementation "org.nd4j:nd4j-cuda-10.2-platform:1.0.0-beta7" // requires CUDA 10.2
+  // implementation "org.deeplearning4j:deeplearning4j-cuda-10.2:1.0.0-beta7" // allows DL4J to leverage cuDNN 7.6
 
-  // explicitly importing the exact libraries needed by DL4J/ND4J for the platform seems to be necessary due to a
-  // "feature" of Gradle that prevents it from importing transitive dependencies when directed by a JAR's pom.xml:
-  implementation "org.bytedeco:javacpp:1.5.3:$platform"
-  implementation "org.nd4j:nd4j-native:1.0.0-beta7:$platform"
-  implementation "org.bytedeco:openblas:0.3.9-1.5.3:$platform"
+  // Please note that cuDNN support is tied to the CUDA library version (i.e. for CUDA 10.2 you need cuDNN 7.6
+  // installed); for details, please see https://deeplearning4j.konduit.ai/config/backends/config-cudnn
 
   implementation project(':common')
   implementation project(':data')

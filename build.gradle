@@ -97,7 +97,6 @@ subprojects {
       "concurrentli": "com.concurrentli:concurrentli:1.3.2",
       "deeplearning4j": "org.deeplearning4j:deeplearning4j-core:1.0.0-beta7",
       "fastutil": "it.unimi.dsi:fastutil:8.3.0",
-      "javacpp": "org.bytedeco:javacpp:1.5.3",
       "javapoet": "com.squareup:javapoet:1.9.0",
       "jflex": "de.jflex:jflex:1.6.1",
       "junit": "org.junit.jupiter:junit-jupiter-engine:5.6.2",
@@ -109,7 +108,6 @@ subprojects {
       "log4j2-core": "org.apache.logging.log4j:log4j-core:2.13.3",
       "log4j2-slf4j-impl": "org.apache.logging.log4j:log4j-slf4j-impl:2.13.3",
       "migz": "com.linkedin.migz:migz:2.0.beta-1",
-      "nd4j": "org.nd4j:nd4j-native-platform:1.0.0-beta7",
       "xgboost4j": "ml.dmlc:xgboost4j:0.90",
     ]
   }

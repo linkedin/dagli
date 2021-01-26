@@ -1,12 +1,3 @@
-plugins {
-  id "com.google.osdetector" version "1.6.2"
-}
-
-def platform = osdetector.classifier
-if (osdetector.os == "osx") {
-  platform = "mac" + platform // need to adjust "osx-*" to "macosx-*"
-}
-
 dependencies {
   api project(':core')
   api project(':common')
@@ -21,14 +12,13 @@ dependencies {
   testImplementation project.ext.dependencies.'log4j2-slf4j-impl'
   testImplementation project.ext.dependencies.'log4j2-core'
 
-  testImplementation project.ext.dependencies.nd4j
-  testImplementation project.ext.dependencies.javacpp
-
-  // explicitly importing the exact libraries needed for the platform seems to be necessary due to a "feature" of Gradle
-  // that prevents it from importing transitive dependencies when directed by a JAR's pom.xml
-  testImplementation "org.bytedeco:javacpp:1.5.3:$platform"
-  testImplementation "org.nd4j:nd4j-native:1.0.0-beta7:$platform"
-  testImplementation "org.bytedeco:openblas:0.3.9-1.5.3:$platform"
+  // ND4J provides linear algebra for DL4J; for testing we use the generic CPU-based library for maximum compatibility:
+  testImplementation "org.nd4j:nd4j-native-platform:1.0.0-beta7"
+  // if we were using CUDA (with a GPU), we'd use these dependencies instead of nd4j-native-platform:
+  // testImplementation "org.nd4j:nd4j-cuda-10.2-platform:1.0.0-beta7" // use CUDA 10.2
+  // testImplementation "org.deeplearning4j:deeplearning4j-cuda-10.2:1.0.0-beta7" // allows DL4J to leverage cuDNN
+  // Please note that cuDNN support is tied to the CUDA library version (i.e. for CUDA 10.2 you need cuDNN 7.6
+  // installed); for details, please see https://deeplearning4j.konduit.ai/config/backends/config-cudnn
 
   annotationProcessor project(':annotation-processor')
   compileOnly project(':annotation-processor')
