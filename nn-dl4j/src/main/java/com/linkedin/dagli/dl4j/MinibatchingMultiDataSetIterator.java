@@ -86,6 +86,25 @@ class MinibatchingMultiDataSetIterator implements MultiDataSetIterator, AutoClos
     return true;
   }
 
+  /**
+   * Checks if all the INDArray elements in an array of INDArrays are null and, if so, returns null.
+   *
+   * Otherwise, the original {@code arrays} instance is returned.
+   *
+   * @param arrays the array of INDArray elements to check
+   * @return null if all elements of {@code arrays} are null, otherwise returns {@code arrays} itself.
+   */
+  private static INDArray[] nullIfNullElements(INDArray[] arrays) {
+    if (arrays != null) {
+      for (INDArray array : arrays) {
+        if (array != null) {
+          return arrays;
+        }
+      }
+    }
+    return null;
+  }
+
   @Override
   public MultiDataSet next() {
     int count = _examplesIterator.next(_buffer);
@@ -93,10 +112,15 @@ class MinibatchingMultiDataSetIterator implements MultiDataSetIterator, AutoClos
       _minibatcher.addExample(_buffer[i]);
     }
 
+    // The call to nullIfNullElements(...) to replace arrays of null masks with nulls should not be necessary, but is
+    // used to work around this bug in DL4J 1.0.0-beta7:
+    // https://community.konduit.ai/t/bertiterator-produces-npe-while-training-on-gpu/580
+    // TODO: remove this workaround when the bug is fixed.
     org.nd4j.linalg.dataset.MultiDataSet result =
         new org.nd4j.linalg.dataset.MultiDataSet(_minibatcher.getFeatureMinibatchINDArrays(),
-            _minibatcher.getLabelMinibatchINDArrays(), _minibatcher.getFeatureMaskMinibatchINDArrays(),
-            _minibatcher.getLabelMaskMinibatchINDArrays());
+            nullIfNullElements(_minibatcher.getLabelMinibatchINDArrays()),
+            _minibatcher.getFeatureMaskMinibatchINDArrays(),
+            nullIfNullElements(_minibatcher.getLabelMaskMinibatchINDArrays()));
 
     assert Arrays.stream(result.getFeatures()).allMatch(MinibatchingMultiDataSetIterator::isValidINDArray);
 
