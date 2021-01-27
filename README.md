@@ -40,15 +40,22 @@ Dagli is [split into a number of modules](documentation/modules.md) that are pub
 [Maven Central](https://search.maven.org/search?q=g:com.linkedin.dagli); just add dependencies on those you need in your 
 project.  For example, the dependencies for our above introductory example might look like this in Gradle:
 
-    implementation 'com.linkedin.dagli:common:15.0.0-beta4'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
-    implementation 'com.linkedin.dagli:text-tokenization:15.0.0-beta4' // the text tokenization transformer ("Tokens")
-    implementation 'com.linkedin.dagli:liblinear:15.0.0-beta4'         // the Dagli Liblinear classification model
-    implementation 'com.linkedin.dagli:xgboost:15.0.0-beta4'           // the Dagli XGBoost classification and regression models
+    implementation 'com.linkedin.dagli:common:15.0.0-beta6'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
+    implementation 'com.linkedin.dagli:text-tokenization:15.0.0-beta6' // the text tokenization transformer ("Tokens")
+    implementation 'com.linkedin.dagli:liblinear:15.0.0-beta6'         // the Dagli Liblinear classification model
+    implementation 'com.linkedin.dagli:xgboost:15.0.0-beta6'           // the Dagli XGBoost classification and regression models
     
-If you're in a hurry, you can instead add a dependency on `all` (though training neural networks will still 
-[require a few platform-specific dependencies](examples/neural-network/build.gradle)):
+If you're in a hurry, you can instead add a dependency on `all`:
 
-    implementation 'com.linkedin.dagli:all:15.0.0-beta4'  // not recommended for production due to classpath bloat 
+    implementation 'com.linkedin.dagli:all:15.0.0-beta6'  // not recommended for production due to classpath bloat 
+
+To train neural networks, you'll also need to add a
+[dependency for either CPU- or GPU-backed linear algebra](examples/neural-network/build.gradle):
+
+    implementation "org.nd4j:nd4j-native-platform:1.0.0-beta7" // CPU-only computation
+    // implementation "org.nd4j:nd4j-cuda-10.2-platform:1.0.0-beta7" // alternatively, we can use CUDA 10.2 (GPU)
+    // implementation "org.deeplearning4j:deeplearning4j-cuda-10.2:1.0.0-beta7" // along with cuDNN 7.6 (optional)
+    
     
 # Benefits
 - Write your machine learning pipeline as a directed acyclic graph (DAG) **once** for both training and inference.  No 
@@ -139,6 +146,9 @@ custom UDFs that train, evaluate or apply Dagli models.
 
 
 # Version History
+- `15.0.0-beta6`: *1/26/21*: Added workaround for 
+    [DL4J bug](https://community.konduit.ai/t/bertiterator-produces-npe-while-training-on-gpu/580) that caused a null 
+    pointer exception when using CUDA (GPU) to train neural networks.  Thanks to @cyberbeat for reporting this.
 - `15.0.0-beta5`: *11/15/20*: [aggregated Javadoc](https://javadoc.io/doc/com.linkedin.dagli/all) now available
 - `15.0.0-beta4`: *11/11/20*: `xgboost` now bundles in [support for Windows](xgboost/README.md)
 - `15.0.0-beta3`: *11/9/20*: Input Configurators and `MermaidVisualization`
