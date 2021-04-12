@@ -241,7 +241,7 @@ public class NNClassification<L> extends AbstractVectorLossLayer<DiscreteDistrib
    * @param labelInput the producer that will provide the labels used to train the neural network
    * @return a copy of this instance that will obtain its labels from the specified source
    */
-  public NNClassification<L> withMultilabelLabelsInput(Producer<Iterable<? extends L>> labelInput) {
+  public NNClassification<L> withMultilabelLabelsInput(Producer<? extends Iterable<? extends L>> labelInput) {
     return clone(c -> {
       // the policy we use doesn't matter so long as it doesn't result in the indexed count being different than the
       // number of unique items being encountered (which the default policy does): this is because the labels are not
