@@ -9,11 +9,27 @@ import org.nd4j.common.primitives.Pair;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 
+/**
+ * DL4J vertex that reshapes its input, transforming it into a different shape of multidimensional array with the same
+ * number of elements.
+ */
 public class ReshapeMasklessVertex extends SameDiffLambdaVertex {
   private static final long serialVersionUID = 1;
 
   private final long[] _newShape;
 
+  /**
+   * Default constructor for deserialization.
+   */
+  private ReshapeMasklessVertex() {
+    _newShape = null;
+  }
+
+  /**
+   * Creates a new DL4J vertex that will reshape its input to the shape provided.
+   *
+   * @param newShape the shape of the output; should have the same number of elements as the vertex's input
+   */
   public ReshapeMasklessVertex(long[] newShape) {
     _newShape = newShape;
   }

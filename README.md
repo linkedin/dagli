@@ -146,6 +146,8 @@ custom UDFs that train, evaluate or apply Dagli models.
 
 
 # Version History
+- `15.0.0-beta8`: *8/21/21*: Added default constructors to Dagli's implementation of DL4J vertices where needed to 
+    ensure their serializability 
 - `15.0.0-beta7`: *4/12/21*: Loosened erroneously-strict generic constraint on argument to 
    `NNClassification::withMultilabelLabelsInput(...)` 
 - `15.0.0-beta6`: *1/26/21*: Added workaround for 

@@ -23,6 +23,14 @@ public class PositionalEncodingVertex extends SameDiffLambdaVertex {
   private final long _sequenceLength;
   private final long _vectorLength;
 
+  /**
+   * Private constructor for deserialization.
+   */
+  private PositionalEncodingVertex() {
+    _sequenceLength = 0;
+    _vectorLength = 0;
+  }
+
   public PositionalEncodingVertex(long sequenceLength, long vectorLength) {
     _sequenceLength = sequenceLength;
     _vectorLength = vectorLength;
