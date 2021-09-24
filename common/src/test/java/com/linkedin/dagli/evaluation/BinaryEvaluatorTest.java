@@ -9,6 +9,21 @@ import org.junit.jupiter.api.Test;
  */
 public class BinaryEvaluatorTest {
   @Test
+  public void testBinaryConfusionMatrixDegenerateResults() {
+    // degenerate results with two examples, one positive and one negative, both misclassified
+    BinaryConfusionMatrix bcm = BinaryConfusionMatrix.Builder.setTruePositiveWeight(0)
+        .setFalsePositiveWeight(1)
+        .setTrueNegativeWeight(0)
+        .setFalseNegativeWeight(1)
+        .build();
+
+    Assertions.assertEquals(bcm.getF1Score(), 0);
+    Assertions.assertEquals(bcm.getRecall(), 0);
+    Assertions.assertEquals(bcm.getPrecision(), 0);
+    Assertions.assertEquals(bcm.getAccuracy(), 0);
+  }
+
+  @Test
   public void testEvaluator() {
     Tester.of(new BinaryEvaluation())
         .input(1.0, true, 0)

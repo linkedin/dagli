@@ -146,6 +146,9 @@ class BinaryConfusionMatrixBase implements Serializable {
   }
 
   /**
+   * Calculates the (weighted) F1-score, the harmonic mean of recall and precision.  In the rare edge case where
+   * precision and recall are both zero, we canonically define the F1-score as 0.
+   *
    * @return the (weighted) F1-score, the harmonic mean of recall and precision:
    *         2 * (recall * precision) / (recall + precision)
    */
@@ -153,7 +156,8 @@ class BinaryConfusionMatrixBase implements Serializable {
   public double getF1Score() {
     double recall = getRecall();
     double precision = getPrecision();
-    return 2 * (recall * precision) / (recall + precision);
+    double recallPrecisionSum = recall + precision;
+    return recallPrecisionSum == 0 ? 0 : 2 * (recall * precision) / recallPrecisionSum;
   }
 
   @VirtualField("Summary")
