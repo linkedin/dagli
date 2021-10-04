@@ -898,7 +898,7 @@ public abstract class AbstractNeuralNetwork<
 
       // update unsatisfied dependency sets of its parents (if applicable)
       if (next instanceof NNChildLayer) {
-        for (NNLayer<?, ?> parent : ((NNChildLayer<?, ?>) next).internalAPI().getInputLayers()) {
+        for (NNLayer<?, ?> parent : ((NNChildLayer<?, ?>) next).internalAPI().getInputLayerSet()) {
           Set<NNChildLayer<?, ?>> unsatisfied = unsatisfiedDependenciesMap.get(parent);
           assert unsatisfied.contains(next);
           unsatisfied.remove(next);
@@ -946,7 +946,7 @@ public abstract class AbstractNeuralNetwork<
       NNChildLayer<?, ?> next = queue.poll();
       next.internalAPI().validate(); // this is a good time to validate, before invalid layers can cause trouble
 
-      for (NNLayer<?, ?> parentLayer : next.internalAPI().getInputLayers()) {
+      for (NNLayer<?, ?> parentLayer : next.internalAPI().getInputLayerSet()) {
         assert parentLayer != null;
 
         Set<NNChildLayer<?, ?>> childrenSet = parentToChildMap.computeIfAbsent(parentLayer, k -> new HashSet<>());

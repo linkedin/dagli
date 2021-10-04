@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * Outputs a sequence of (sub)vectors constructed by splitting an input vector into equal-sized subvectors.  The input
- * vector must be evenly divisible by the requested split size.
+ * vector must be evenly divisible by the requested split size.  The default split size (subvector length) is 1.
  *
  * For example, if the input vector is of shape [features], then the output vector sequence will be of shape
  * [features / splitSize, splitSize].
@@ -28,7 +28,7 @@ public class NNSplitVectorSequenceLayer
     extends AbstractUnaryVectorLayer<List<DenseVector>, NNSplitVectorSequenceLayer> implements NonTerminalLayer {
   private static final long serialVersionUID = 1;
 
-  private Producer<? extends Number> _splitSizeProvider = null;
+  private Producer<? extends Number> _splitSizeProvider = new Constant<>(1);
 
   @Override
   public <R> R accept(NNLayerVisitor<R> visitor) {

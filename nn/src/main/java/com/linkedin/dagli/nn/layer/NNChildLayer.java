@@ -4,8 +4,9 @@ import com.linkedin.dagli.annotation.Versioned;
 import com.linkedin.dagli.nn.result.NNResult;
 import com.linkedin.dagli.producer.Producer;
 import com.linkedin.dagli.util.invariant.Arguments;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 
 /**
@@ -41,6 +42,17 @@ public abstract class NNChildLayer<R, S extends NNChildLayer<R, S>> extends NNLa
      */
     public List<? extends NNLayer<?, ? extends NonTerminalLayer>> getInputLayers() {
       return NNChildLayer.this.getInputLayers();
+    }
+
+    /**
+     * A non-root layer may have multiple equivalent (as determined by {@link Object#equals(Object)}) inputs.  This
+     * method returns a (de-duplicated) set (with unspecified order) of the layers returned by
+     * {@link #getInputLayers()}.
+     *
+     * @return a set of the {@link NNLayer}s whose outputs are the inputs of this layer
+     */
+    public Set<? extends NNLayer<?, ? extends NonTerminalLayer>> getInputLayerSet() {
+      return new HashSet<>(getInputLayers());
     }
 
     /**
