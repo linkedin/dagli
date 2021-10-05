@@ -42,6 +42,7 @@ import com.linkedin.dagli.nn.layer.NNVectorSequenceMeanLayer;
 import com.linkedin.dagli.nn.layer.NNVectorSequenceSumLayer;
 import com.linkedin.dagli.nn.layer.NNVectorSumLayer;
 import com.linkedin.dagli.nn.layer.NonTerminalLayer;
+import com.linkedin.dagli.nn.layer.SequenceLinearization;
 import com.linkedin.dagli.util.array.ArraysEx;
 import java.util.List;
 import java.util.Map;
@@ -395,8 +396,20 @@ class NetworkBuilderLayerVisitor implements NNLayerVisitor<Void> {
     return null;
   }
 
+  // We only support the CONTIGUOUS_ELEMENTS_BY_ELEMENT_INDEX linearization scheme due to how DL4J represents sequences
+  //of vectors (elements are stored at [timestep index, element index] in row-major arrays).
+  private void checkLinearization(NNLayer<?, ?> layer, SequenceLinearization linearization) {
+    if (!linearization.equals(SequenceLinearization.BY_ELEMENT_INDEX)
+        && !linearization.equals(SequenceLinearization.DEFAULT)) {
+      throw new UnsupportedOperationException(
+          "The layer " + layer + " requires a vector sequence linearization scheme not currently supported by DL4J: "
+              + linearization);
+    }
+  }
+
   @Override
   public Void visit(NNLinearizedVectorSequenceLayer visited) {
+    checkLinearization(visited, visited.getSequenceLinearization());
     String maskedName = _layerNames.get(visited) + "-Masked";
     if (!_graphBuilder.getVertices().containsKey(maskedName)) {
       _graphBuilder.addLayer(maskedName, new MaskLayer(), getParentNames(visited));
@@ -408,6 +421,7 @@ class NetworkBuilderLayerVisitor implements NNLayerVisitor<Void> {
 
   @Override
   public Void visit(NNSplitVectorSequenceLayer visited) {
+    checkLinearization(visited, visited.getSequenceLinearization());
     long[] newShape = _dynamicConfigs.get(visited).getOutputShape();
     _graphBuilder.addVertex(_layerNames.get(visited), new ReshapeMasklessVertex(
         new long[]{-1, newShape[1], newShape[0]}), getParentNames(visited));

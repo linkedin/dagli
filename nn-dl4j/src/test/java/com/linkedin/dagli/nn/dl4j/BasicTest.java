@@ -3,18 +3,25 @@ package com.linkedin.dagli.nn.dl4j;
 import com.linkedin.dagli.dag.DAG;
 import com.linkedin.dagli.dag.DAG2x1;
 import com.linkedin.dagli.dl4j.NeuralNetwork;
+import com.linkedin.dagli.generator.Constant;
+import com.linkedin.dagli.list.VariadicList;
 import com.linkedin.dagli.math.distribution.DiscreteDistribution;
 import com.linkedin.dagli.math.vector.DenseFloatArrayVector;
 import com.linkedin.dagli.math.vector.DenseVector;
 import com.linkedin.dagli.nn.activation.Identity;
+import com.linkedin.dagli.nn.layer.Bidirectionality;
 import com.linkedin.dagli.nn.layer.NNClassification;
 import com.linkedin.dagli.nn.layer.NNDenseLayer;
+import com.linkedin.dagli.nn.layer.NNLSTMLayer;
+import com.linkedin.dagli.nn.layer.NNLastVectorInSequenceLayer;
 import com.linkedin.dagli.nn.layer.NNMaxPoolingLayer;
 import com.linkedin.dagli.nn.layer.NNRegression;
 import com.linkedin.dagli.nn.layer.NNSplitVectorSequenceLayer;
 import com.linkedin.dagli.nn.optimizer.StochasticGradientDescent;
 import com.linkedin.dagli.objectio.ConstantReader;
 import com.linkedin.dagli.placeholder.Placeholder;
+import com.linkedin.dagli.vector.DenseVectorFromNumbers;
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +30,40 @@ import org.junit.jupiter.api.Test;
  * Makes sure that a neural network can be trained without throwing an exception.
  */
 public class BasicTest {
+
+  /**
+   * Tests a NN using a sequential input to help vet that our sequence inputs to DL4J are not misshapen.
+   */
+  @Test
+  public void testSequentialInput() {
+    Placeholder<Integer> integerPlaceholder = new Placeholder<>();
+    Placeholder<Boolean> booleanPlaceholder = new Placeholder<>();
+
+    ArrayList<DenseVectorFromNumbers> list = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      list.add(new DenseVectorFromNumbers().withInputs(integerPlaceholder, integerPlaceholder));
+    }
+
+    NNLSTMLayer lstmLayer = new NNLSTMLayer()
+        .withInputFromVectorSequence(new VariadicList<>(list))
+        .withBidirectionality(Bidirectionality.FORWARD_ONLY);
+
+    NNLastVectorInSequenceLayer poolingLayer = new NNLastVectorInSequenceLayer().withInput(lstmLayer);
+
+    NNClassification<Boolean> labelClassification = new NNClassification<Boolean>()
+        .withFeaturesInput(poolingLayer)
+        .withBinaryLabelInput(new Constant<>(false));
+
+    NeuralNetwork neuralNetwork = new NeuralNetwork()
+        .withLossLayers(labelClassification)
+        .withMaxEpochs(5);
+
+    DAG2x1<Integer, Boolean, DiscreteDistribution<Boolean>> dag =
+        DAG.withPlaceholders(integerPlaceholder, booleanPlaceholder)
+            .withOutput(neuralNetwork.asLayerOutput(labelClassification));
+    dag.prepare(Arrays.asList(1, 2, 3, 4), Arrays.asList(true, false, true, false));
+  }
+
   /**
    * Creates a NN with duplicate (i.e. {@link Object#equals(Object)}) ancestors.  This is very much a corner case, but
    * it helps guard against an incorrect assumption that all layer object instances in the neural network's graph must

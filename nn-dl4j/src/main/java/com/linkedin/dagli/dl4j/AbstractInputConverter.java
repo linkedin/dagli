@@ -76,7 +76,7 @@ public abstract class AbstractInputConverter<T, S extends AbstractInputConverter
     if (_exampleMaskSubarrayShape == null) {
       return null;
     }
-    long[] shape = MDArrays.concatenate(new long[] { exampleCount }, _exampleSubarrayShape);
+    long[] shape = MDArrays.concatenate(new long[] { exampleCount }, _exampleMaskSubarrayShape);
     return Nd4j.zeros(DataType.FLOAT, shape); // this creates an array with 'c' (row-major) ordering, as desired
   }
 

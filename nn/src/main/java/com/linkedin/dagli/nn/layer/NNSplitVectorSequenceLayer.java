@@ -19,6 +19,14 @@ import java.util.Map;
  * For example, if the input vector is of shape [features], then the output vector sequence will be of shape
  * [features / splitSize, splitSize].
  *
+ * The mapping of the elements in the input vector to the elements in the outputted vector sequence is
+ * specified by {@link #withSequenceLinearization(SequenceLinearization)}.
+ *
+ * <strong>Caution:</strong> {@link NNSplitVectorSequenceLayer} is almost never necessary and should be avoided when
+ * possible, since its correctness depends on the ordering of the input vector adhering to the expected linearization
+ * scheme.  For example, rather than splitting an input vector you can simply input a sequence of vectors to your
+ * neural network.
+ *
  * <strong>Known limitation in DL4J:</strong> Masking information (if applicable) is not preserved.  Using
  * {@link NNLastVectorInSequenceLayer} on the returned sequence, which considers the original mask provided to the
  * neural network, may result in an exception if that mask does not fit the sequence outputted by this layer.
@@ -29,6 +37,30 @@ public class NNSplitVectorSequenceLayer
   private static final long serialVersionUID = 1;
 
   private Producer<? extends Number> _splitSizeProvider = new Constant<>(1);
+  private SequenceLinearization _sequenceLinearization = SequenceLinearization.DEFAULT;
+
+  /**
+   * Gets the linearization scheme this layer will expect its inputs to follow.  By default, this is
+   * {@link SequenceLinearization#DEFAULT}, in which case the default linearization used by the underlying neural
+   * network library is expected.
+   *
+   * @return the linearization scheme expected by this layer
+   */
+  public SequenceLinearization getSequenceLinearization() {
+    return _sequenceLinearization;
+  }
+
+  /**
+   * Returns a copy of this instance that will split its inputs in accordance with the specified linearization scheme.
+   * <strong>Not all linearizations will necessarily be supported by a given underlying neural network library.</strong>
+   * Unsupported linearizations will result in an exception when trying to train the network.
+   *
+   * @param sequenceLinearization the linearization scheme the input vector will be expected to adhere to
+   * @return a copy of this instance that will expect the specified linearization scheme
+   */
+  public NNSplitVectorSequenceLayer withSequenceLinearization(SequenceLinearization sequenceLinearization) {
+    return clone(c -> c._sequenceLinearization = sequenceLinearization);
+  }
 
   @Override
   public <R> R accept(NNLayerVisitor<R> visitor) {
