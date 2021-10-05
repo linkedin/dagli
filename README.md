@@ -40,14 +40,14 @@ Dagli is [split into a number of modules](documentation/modules.md) that are pub
 [Maven Central](https://search.maven.org/search?q=g:com.linkedin.dagli); just add dependencies on those you need in your 
 project.  For example, the dependencies for our above introductory example might look like this in Gradle:
 
-    implementation 'com.linkedin.dagli:common:15.0.0-beta7'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
-    implementation 'com.linkedin.dagli:text-tokenization:15.0.0-beta7' // the text tokenization transformer ("Tokens")
-    implementation 'com.linkedin.dagli:liblinear:15.0.0-beta7'         // the Dagli Liblinear classification model
-    implementation 'com.linkedin.dagli:xgboost:15.0.0-beta7'           // the Dagli XGBoost classification and regression models
+    implementation 'com.linkedin.dagli:common:15.0.0-beta9'            // commonly used transformers: bucketization, model selection, ngram featurization, etc.
+    implementation 'com.linkedin.dagli:text-tokenization:15.0.0-beta9' // the text tokenization transformer ("Tokens")
+    implementation 'com.linkedin.dagli:liblinear:15.0.0-beta9'         // the Dagli Liblinear classification model
+    implementation 'com.linkedin.dagli:xgboost:15.0.0-beta9'           // the Dagli XGBoost classification and regression models
     
 If you're in a hurry, you can instead add a dependency on `all`:
 
-    implementation 'com.linkedin.dagli:all:15.0.0-beta7'  // not recommended for production due to classpath bloat 
+    implementation 'com.linkedin.dagli:all:15.0.0-beta9'  // not recommended for production due to classpath bloat 
 
 To train neural networks, you'll also need to add a
 [dependency for either CPU- or GPU-backed linear algebra](examples/neural-network/build.gradle):
@@ -146,6 +146,11 @@ custom UDFs that train, evaluate or apply Dagli models.
 
 
 # Version History
+- `15.0.0-beta9`: *10/4/21*:
+    - `BinaryConfusionMatrix` now calculates F1-scores as 0 (rather than NaN) when precision and recall are both 0
+    - Fixed corner case where neural networks with multiple logically equivalent layers were improperly considered 
+      invalid.
+    - Fixed vector sequence input bug in DL4J neural networks
 - `15.0.0-beta8`: *8/21/21*: Added default constructors to Dagli's implementation of DL4J vertices where needed to 
     ensure their serializability 
 - `15.0.0-beta7`: *4/12/21*: Loosened erroneously-strict generic constraint on argument to 
