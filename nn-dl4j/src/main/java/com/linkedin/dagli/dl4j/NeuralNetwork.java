@@ -349,5 +349,10 @@ public class NeuralNetwork
     public Map<String, INDArrayAsMDArray> getParameters(LayerHandle<?> layerHandle) {
       return getParametersForLayerName(_layerNames.get(layerHandle));
     }
+
+    @Override
+    public ComputationGraph getComputationGraph() {
+      return super.getComputationGraph();
+    }
   }
 }
