@@ -531,7 +531,13 @@ public abstract class AbstractNeuralNetwork<
       if (result.containsKey(layer)) {
         continue; // ignore duplicate layers
       }
-      String baseName = layer.internalAPI().hasName() ? layer.getClass().getSimpleName() : layer.getName();
+    String baseName;
+if (layer.internalAPI().hasName()) {
+    baseName = layer.getClass().getSimpleName();
+} else {
+    baseName = layer.getName();
+}
+
       String name = baseName + "-0";
       for (int i = 1; !usedNames.add(name); i++) {
         name = baseName + "-" + i;
